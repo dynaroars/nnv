@@ -1963,7 +1963,7 @@ We represent the network in~\autoref{fig:dnn-b} as a formula $\alpha$:
 
 \paragraph{Satisfiability Solving} We can check the satisfiability of $\alpha \land \phi_{in} \land \neg \phi_{out}$ using constraint solving.~\autoref{sec:se-smt} shows how to perform symbolic execution and an SMT solver (e.g., Z3) to automatically generate this formula from a given DNN and property, and check its satisfiability.~\autoref{sec:using-milp} shows how to encode the problem as a MILP constraints, solvable using a MILP solver (e.g., Gurobi).
 
-In this case, the formula is satisfiable, i.e., the property is invalid, and the solver returns \sat{}.  Any satisfying assignment, e.g., $x_1=-1$ and $x_2=2$, is a counterexample (\autoref{sec:properties-counterexamples}) to the property, as it satisfies the precondition $\phi_{in}$ but violates the postcondition $\phi_{out}$, i.e., $x_5 = -3.5$, which is  $< 0$.
+For~\autoref{ex:dnn-sat}, the formula is satisfiable, i.e., the property is invalid, and the solver returns \sat{}.  Any satisfying assignment, e.g., $x_1=-1$ and $x_2=2$, is a counterexample (\autoref{sec:properties-counterexamples}) to the property, as it satisfies the precondition $\phi_{in}$ but violates the postcondition $\phi_{out}$, i.e., $x_5 = -3.5$, which is  $< 0$.
 \end{example}
 
 \begin{problem}\label{problem:z3-dnn}
@@ -4336,11 +4336,10 @@ Note that because BaB splits ReLU neurons into active/inactive cases, it is also
     \BlankLine
 
     $\problems \leftarrow \{ \emptyset \}$ \tcp{initialize verification problems}\label{line:babinit}
-    % $\prooftree \gets \{ ~ \}$ \tcp{initialize proof tree}\label{line:prooftree}
+
 
     \While(\tcp*[h]{main loop}){$\problems$}{\label{line:babstart}
         $\sigma_i \gets \Select(\problems)$ \tcp{process problem $i$-th}\label{line:babselect}
-        % \Parfor(\tcp*[h]{process in parallel}){$\sigma_i ~\In~ \problems$}{ \label{line:parfor}
             \If{\Deduce{$\mathcal{N}, \phi_{in}, \phi_{out}, \sigma_i$}}{\label{line:babdeduce}
                 $\counterexample \leftarrow \LP(\mathcal{N}, \phi_{in}, \phi_{out}, \sigma_i)$ \tcp{check satisfiability}\label{line:bablp}
                 \If(\tcp*[h]{found a valid cex}){$\counterexample$}{
@@ -4350,13 +4349,6 @@ Note that because BaB splits ReLU neurons into active/inactive cases, it is also
                 \tcp{create new activation patterns}
                 $\problems \leftarrow \problems \cup \{ \sigma_i \cup \{v_i\} ~;~ \sigma_i \land \{\overline{v_i}\} \}$
             }
-            %\Else(\tcp*[h]{detect a conflict}){
-                % $\clauses \leftarrow \clauses \cup \AnalyzeConflict(\igraph_i)$ \\ \label{line:analyze_conflict}
-            %    $\prooftree \leftarrow \prooftree \cup \{ \sigma_i \}$ \tcp{build proof tree} \label{line:record_proof}
-            %}
-        % }
-        % \If(\tcp*[h]{no more problems}){$\isEmpty(\problems)$}{
-        % }
 
     }\label{line:babend}
     \Return{\myunsat}\label{line:babunsat}
@@ -4452,7 +4444,7 @@ For the other subproblem with $\overline{v_4}$ inactive, \Deduce determines infe
 
 \item \textbf{Fourth iteration}~\bab{} has two subproblems corresponding to activation patterns $\{v_4, v_2, v_1\}$ and $\{v_4, v_2, \overline{v_1}\}$, both which are then determined infeasible and discarded.
 
-\item \textbf{Fith iteration}~Finally, \bab{} has no more activation patterns in \problems, stops the search, and returns \unsat{}, indicating that the property is valid.
+\item \textbf{Fifth iteration}~Finally, \bab{} has no more activation patterns in \problems, stops the search, and returns \unsat{}, indicating that the property is valid.
 \end{enumerate}
 
 \autoref{fig:bab-example}b illustrates the BaB search tree corresponding to the above process. Each white node represents a branching decision where \bab{} splits a neuron, while each red node represents a leaf node where \Deduce determines infeasibility and prunes the branch. Notice that not all activation patterns are explored because some branches are pruned early due to infeasibility. In other words, while there are $2^4=16$ possible complete activation patterns for the three ReLU neurons, \bab{} only explores 6 of them in this example.
@@ -7199,10 +7191,104 @@ Thus, the property in~\autoref{eq:prop1} is \emph{not valid} for the DNN in~\aut
 % \end{table}
 
 
-%\chapter{VNN-COMPs}\label{chap:vnncomps}
+\chapter{VNN-COMPs}\label{chap:vnncomps}
 
-%\chapter{Benchmarks Generation}\label{chap:benchmarks-generation}
+As the NNV field matured, it became increasingly difficult to compare approaches. Papers often evaluated tools on different benchmarks, under different hardware assumptions, and using different specification languages. This fragmentation made it hard to assess the true state of the art, identify open challenges, and drive progress.
 
+Inspired by the success of other formal methods competitions (e.g., SAT, SMT, model checking), the International Verification of Neural Networks Competition (\textbf{VNN-COMP}) was created to address these issues by providing a standardized, reproducible, an automated evaluation framework for neural network verification tools. VNN-COMP has been held annually since 2020, with each edition refining rules, benchmarks, and infrastructure based on community feedback and lessons learned.
+
+
+
+\section{The 2025 Edition at a Glance}
+
+VNN-COMP 2025 continued the trend toward increased automation, standardization, and scale. In this iteration:
+
+Eight teams participated (with one team withdrawing during evaluation).
+
+Tools were evaluated on 16 regular benchmarks and 9 extended benchmarks, covering a diverse range of network architectures and property types.
+
+All tools were run on cost-equivalent cloud hardware, ensuring fairness across different computational strategies.
+
+The entire evaluation process was driven by an automated pipeline, minimizing human intervention and improving reproducibility.
+
+The competition evaluated tools under realistic constraints that reflect how verification systems are used in practice, rather than under hand-tuned, tool-specific experimental setups.
+
+\section{Standardization Efforts}
+
+A defining feature of VNN-COMP is its emphasis on standardization. Without common standards, meaningful comparison between tools is nearly impossible. The 2025 competition standardized three key aspects.
+
+4.1 Neural Network Format: ONNX
+
+All neural networks in VNN-COMP 2025 were provided in the ONNX (Open Neural Network Exchange) format. ONNX serves as a common intermediate representation supported by many machine learning frameworks.
+
+Using ONNX provides several benefits:
+
+Tool developers can focus on verification rather than framework-specific parsing.
+
+Benchmarks are reusable across tools and across years.
+
+Networks can be generated from real-world training pipelines.
+
+4.2 Specification Format: VNN-LIB
+
+Specifications were expressed using VNN-LIB, a standardized specification language designed specifically for neural network verification. VNN-LIB builds on ideas from SMT-LIB, enabling precise and unambiguous descriptions of verification properties.
+
+Typical VNN-LIB specifications describe:
+
+Input constraints (e.g., bounded perturbations around an image).
+
+Output constraints (e.g., the correct class has the highest score).
+
+By enforcing a common specification language, VNN-COMP ensures that all tools are solving the same formal problem.
+
+4.3 Evaluation Infrastructure
+
+All tools were evaluated using a uniform, automated pipeline based on AWS cloud instances. Participants selected from a predefined set of cost-equivalent configurations, allowing different trade-offs between CPU and GPU resources while maintaining fairness.
+
+Crucially:
+
+Tools were executed with parameters chosen before the final benchmark sets were released.
+
+No manual tuning was allowed after benchmarks became public.
+
+This setup prevents overfitting to specific benchmarks and mirrors realistic deployment scenarios.
+
+\section{Organization and Timeline}
+
+The organization of VNN-COMP 2025 followed a well-defined timeline:
+
+February 2025: Call for participation.
+
+March–May 2025: Rule discussion and finalization.
+
+April–June 2025: Benchmark proposal and discussion.
+
+Spring–Summer 2025: Development of automated submission and testing infrastructure.
+
+Mid-July 2025: Tool submission deadline.
+
+July 22, 2025: Presentation of final results at SAIV.
+
+All discussions were conducted transparently via public GitHub repositories, covering rules, benchmarks, and tool submissions. Final benchmarks and results were archived in separate repositories to ensure long-term availability and reproducibility.
+
+\subsection{Competition Contribution Papers}
+
+A notable addition in the 2025 edition was the introduction of Competition Contribution papers in the SAIV proceedings. Tool developers and benchmark contributors were invited to submit short papers describing:
+\begin{itemize}
+\item Tool architectures and verification techniques.
+\item Benchmark construction methodologies.
+\item Lessons learned from participating in the competition.
+\end{itemize}
+
+These papers were reviewed by a program committee composed primarily of tool-team members. While lighter-weight than traditional conference papers, these contributions serve as valuable documentation of the state of the art and complement the raw competition results.
+
+\section{Perspective: Why VNN-COMP Matters}
+
+From a broader perspective, VNN-COMP plays a role similar to that of SAT, SMT, and model-checking competitions in earlier decades. Those competitions were instrumental in transforming formal methods from primarily theoretical pursuits into robust, industrially relevant technologies.
+
+In my view, VNN-COMP is essential infrastructure for the neural network verification community. It forces clarity, discourages vague claims, and exposes real bottlenecks. Equally importantly, it highlights that no single technique dominates across all problem classes—progress will likely come from hybrid approaches, better benchmarks, and tighter integration with learning pipelines.
+
+As neural networks continue to enter safety-critical systems, the importance of rigorous, reproducible evaluation frameworks like VNN-COMP will only grow.
 
 %\chapter{Conclusion}
 
@@ -9738,227 +9824,4 @@ Although restarting may seem like an engineering aspect, it plays a crucial role
 
 \bibliographystyle{abbrv}
 \bibliography{book.bib}
-
-
-\end{document}
-
-
-\section{PGD Quiz Problems with Solutions}
-
-\subsection*{Easy Problems}
-
-\begin{problem}[PGD Step and Gradient Direction]\label{prob:pgd-easy1}
-Consider
-\[
-y = 3x_1 - 2x_2 + 1, \quad -1 \le x_1 \le 1, \ -1 \le x_2 \le 1.
-\]
-\begin{enumerate}
-    \item Compute the gradient $\nabla_x y$.
-    \item If you want to \emph{minimize} $y$, in which direction should you move: $+\nabla_x y$ or $-\nabla_x y$?
-    \item Starting from $(x_1^{(0)}, x_2^{(0)}) = (0, 0)$ and $\eta = 0.5$, perform one PGD update (including clipping if needed).
-\end{enumerate}
-
-\begin{solution}
-We have
-\[
-\nabla_x y = \left(\frac{\partial y}{\partial x_1}, \frac{\partial y}{\partial x_2}\right) = (3, -2).
-\]
-To minimize $y$, we move in direction $-\nabla_x y = (-3, 2)$.
-Starting from $(0, 0)$:
-\[
-x_1^{(1)} = 0 - 0.5 \times 3 = -1.5 \Rightarrow \text{clip to } -1, \qquad
-x_2^{(1)} = 0 - 0.5 \times (-2) = 1.
-\]
-Thus, $(x_1^{(1)}, x_2^{(1)}) = (-1, 1)$.
-Compute
-\[
-y = 3(-1) - 2(1) + 1 = -4 < 0,
-\]
-so PGD finds a counterexample in one step.
-\end{solution}
-\end{problem}
-
-\begin{problem}[Gradient Intuition]\label{prob:pgd-easy2}
-Suppose $\nabla_x y = (4, -1.5)$ at some input $(x_1, x_2)$.
-Which variable, $x_1$ or $x_2$, affects $y$ more strongly, and why?
-
-\begin{solution}
-Because $|4| > |{-1.5}|$, $x_1$ affects $y$ more strongly — small changes in $x_1$ cause larger changes in $y$ than the same changes in $x_2$.
-\end{solution}
-\end{problem}
-
-
-\subsection*{Medium Problems}
-
-\begin{problem}[PGD with Projection]\label{prob:pgd-med1}
-Consider
-\[
-y = -x_1 + 2x_2 + 0.5, \quad -1 \le x_1, x_2 \le 1.
-\]
-We want to find a counterexample to $y > 0$ using PGD starting from $(x_1^{(0)}, x_2^{(0)}) = (0, 0)$.
-\begin{enumerate}
-    \item Compute the gradient $\nabla_x y$.
-    \item Use step size $\eta = 1.0$ and perform one PGD update.
-    \item Apply projection (clipping) if necessary.
-    \item Compute $y$ at the new point. Has a counterexample been found?
-\end{enumerate}
-
-\begin{solution}
-Gradient:
-\[
-\nabla_x y = (-1, 2).
-\]
-Update:
-\[
-x^{(1)} = (0, 0) - 1.0 \times (-1, 2) = (1, -2).
-\]
-Project (clip to $[-1, 1]$):
-\[
-x^{(1)} = (1, -1).
-\]
-Compute:
-\[
-y = -1 + 2(-1) + 0.5 = -2.5 < 0.
-\]
-Thus, a counterexample is found after one iteration.
-\end{solution}
-\end{problem}
-
-\begin{problem}[Choosing Step Size]\label{prob:pgd-med2}
-Let
-\[
-y = 2x_1 - 3x_2 + 1, \quad -1 \le x_1, x_2 \le 1.
-\]
-Starting from $(x_1^{(0)}, x_2^{(0)}) = (0, 0)$:
-\begin{enumerate}
-    \item For $\eta = 0.25$, perform two PGD iterations and check if $y \le 0$.
-    \item For $\eta = 1.0$, perform one PGD iteration.
-    Which step size finds a counterexample faster?
-\end{enumerate}
-
-\begin{solution}
-\[
-\nabla_x y = (2, -3).
-\]
-For $\eta = 0.25$:
-\[
-x^{(1)} = (0, 0) - 0.25(2, -3) = (-0.5, 0.75), \quad y = 2(-0.5) - 3(0.75) + 1 = -2.25 < 0.
-\]
-Counterexample found after 1 step.
-For $\eta = 1.0$:
-\[
-x^{(1)} = (0, 0) - 1.0(2, -3) = (-2, 3) \Rightarrow \text{clip to } (-1, 1),
-\]
-so $(x_1, x_2) = (-1, 1)$, and
-\[
-y = 2(-1) - 3(1) + 1 = -4 < 0.
-\]
-Both find a counterexample, but $\eta = 1.0$ overshoots while $\eta = 0.25$ converges smoothly.
-\end{solution}
-\end{problem}
-
-\subsection*{Hard Problems}
-
-\begin{problem}[Nonlinear Gradient Update]\label{prob:pgd-hard1}
-Let
-\[
-y = x_1^2 - 4x_1x_2 + 2x_2^2 + 1, \quad -2 \le x_1, x_2 \le 2.
-\]
-\begin{enumerate}
-    \item Compute the gradient $\nabla_x y = \left( \frac{\partial y}{\partial x_1}, \frac{\partial y}{\partial x_2} \right)$.
-    \item Starting from $(x_1^{(0)}, x_2^{(0)}) = (1, 1)$ and $\eta = 0.5$, perform one PGD update to minimize $y$.
-    \item Clip the result if it goes out of range, and compute the new value of $y$.
-    \item Discuss whether the gradient direction still aligns with the direction of decreasing $y$ after this step.
-\end{enumerate}
-
-\begin{solution}
-\[
-\frac{\partial y}{\partial x_1} = 2x_1 - 4x_2, \qquad
-\frac{\partial y}{\partial x_2} = -4x_1 + 4x_2.
-\]
-At $(1,1)$:
-\[
-\nabla_x y = (2(1) - 4(1), -4(1) + 4(1)) = (-2, 0).
-\]
-Update:
-\[
-x^{(1)} = (1, 1) - 0.5(-2, 0) = (2, 1).
-\]
-Clip (still within $[-2, 2]$).
-Compute
-\[
-y(2, 1) = 2^2 - 4(2)(1) + 2(1)^2 + 1 = 4 - 8 + 2 + 1 = -1 < y(1, 1)=0.
-\]
-Thus $y$ decreases — gradient direction aligns with the desired decrease.
-\end{solution}
-\end{problem}
-
-\begin{problem}[Multiple Iterations and Convergence]\label{prob:pgd-hard2}
-Consider
-\[
-y = x_1^2 + x_2^2 - 2x_1 - 4x_2 + 4, \quad -3 \le x_1, x_2 \le 3.
-\]
-\begin{enumerate}
-    \item Derive $\nabla_x y$.
-    \item Start from $(x_1^{(0)}, x_2^{(0)}) = (0, 0)$ and use $\eta = 0.5$.
-    \item Perform 3 PGD iterations, showing all intermediate points (after clipping).
-    \item Does PGD converge toward the minimum (or violation)? Explain why.
-\end{enumerate}
-
-\begin{solution}
-\[
-\nabla_x y = (2x_1 - 2, 2x_2 - 4).
-\]
-\begin{align*}
-(0, 0):\ & \nabla y = (-2, -4), & x^{(1)} &= (0, 0) - 0.5(-2, -4) = (1, 2) \\
-(1, 2):\ & \nabla y = (0, 0), & x^{(2)} &= (1, 2) \\
-\end{align*}
-The process converges after one step because $(1, 2)$ is the true minimum (solves $\nabla y = 0$).
-Thus PGD converges to the optimal violation point quickly.
-\end{solution}
-\end{problem}
-
-\begin{problem}[Effect of Step Size on Overshooting]\label{prob:pgd-hard3}
-Let
-\[
-y = 3x_1 - 4x_2 + 2, \quad -1 \le x_1, x_2 \le 1.
-\]
-Starting from $(x_1^{(0)}, x_2^{(0)}) = (0, 0)$:
-\begin{enumerate}
-    \item Compute one PGD update with $\eta = 0.2$ and another with $\eta = 1.0$.
-    \item Compare the updated points and $y$ values.
-    \item Explain why a larger $\eta$ might lead to faster or less stable convergence.
-\end{enumerate}
-
-\begin{solution}
-\[
-\nabla_x y = (3, -4).
-\]
-For $\eta = 0.2$:
-\[
-x^{(1)} = (0, 0) - 0.2(3, -4) = (-0.6, 0.8), \quad y = 3(-0.6) - 4(0.8) + 2 = -3.4 < 0.
-\]
-For $\eta = 1.0$:
-\[
-x^{(1)} = (0, 0) - 1.0(3, -4) = (-3, 4) \Rightarrow \text{clip to } (-1, 1),
-\]
-\[
-y = 3(-1) - 4(1) + 2 = -5 < 0.
-\]
-Large $\eta$ converges faster but risks overshooting or oscillating; small $\eta$ is slower but more stable.
-\end{solution}
-\end{problem}
-
-
-
-
-
-
-f(x,y):
-   
-    x = 13423423
-    y = 13423423 
-    r = x * y 
-
-   assert(r >= 0)
 
