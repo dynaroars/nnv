@@ -4404,7 +4404,7 @@ Abstraction is (very) quick but may yield false positives (declaring feasible wh
 \[
 (x_1, x_2) \in [-2.0, 2.0] \times [-1.0, 1,0] \Rightarrow (y_1 > y_2),
 \]
-by showing that counterexample exists, i.e., no inputs $(x_1,x_2)$ in the given input range such that $y_1 \le y_2$.
+by showing that no counterexample exists, i.e., no inputs $(x_1,x_2)$ in the given input range such that $y_1 \le y_2$.
 
 \begin{figure}
     \begin{minipage}[b]{\linewidth}
@@ -7298,13 +7298,13 @@ As neural networks continue to enter safety-critical systems, the importance of 
 
 \chapter{Formal Methods}\label{chap:formal-methods}
 
-Neural network verification (NNV) is a rising topic that applies \emph{formal methods} (FM) to machine learning systems, particularly neural networks (NN).  This chapter explains what FM are, how verification differs from testing and debugging, and key concepts such as specifications, soundness, and completeness. It provides the foundational knowledge about formal methods necessary to understand NNV.
+Neural network verification (NNV) is a rising topic that applies \emph{formal methods} (FM) to machine learning systems, particularly neural networks (NN).  This chapter explains what FM are, how verification differs from testing and debugging, and key concepts such as specifications and common FM techniques.
 
 \section{What Are Formal Methods (FM)?}
 
 FM are techniques for analyzing systems, e.g., computer software, using \emph{mathematically precise models and reasoning}. In FM the behavior of a program is described and analyzed using logic and mathematics rather than informal reasoning or empirical testing. This allows formal methods to provide \emph{guarantees} about system properties. For example, an FM might prove that a sorting algorithm always produces a correctly ordered list for any input list
 
-To motivate the need for FM, consider a simple function that computes the absolute value of an integer, where the goal is to show that the function always returns a non-negative number.
+\paragraph{Compared to Testing} To motivate the need for FM, consider a simple function that computes the absolute value of an integer, where the goal is to show that the function always returns a non-negative number.
 
 \begin{lstlisting}[language=Python, caption={Absolute value function}, label={lst:abs_val}]
 def abs_val(x):
@@ -7343,7 +7343,7 @@ At the heart of FM is a \emph{specification}---a precise description of what it 
 
 Software engineers often write specifications informally in natural language, e.g., an algorithm should be ``corect'' and ``fast' or a web server should be ``robust against attacks''. However, these informal specifications are often ambiguous and imprecise, making them vulnerable to misinterpretation and error. For example, What is correct? how fast is fast enough? How much perturbation should a system be able to handle to be considered ``robust''?  
 
-\begin{problem} 
+\begin{problem}[Sorting Specification] 
     Give the formal specification for a sorting function \code{sort(l1)} that takes a list of integers \code{l1} and returns a list of integers \code{l2}. The specification should define what it means for the output \code{l2} to be a correct sorting of the input \code{l1}.
 \end{problem}    
 
@@ -7366,15 +7366,45 @@ This statement is more precise. It defines exactly what inputs are allowed (thos
 Once having a formal specification like this, we can apply formal verification techniques to prove or disprove it.
 
 
-\section{FM Technique}
+\subsection{Pre and Post Conditions}
+A common way to express formal specifications is using \emph{preconditions} and \emph{postconditions}. A precondition describes the assumptions about the inputs to a function, while a postcondition describes the guarantees about the outputs given that the preconditions hold. Typically, preconditions and postconditions are expressed using logical formulas and together form the specification of the form: 
+\begin{equation}
+P \implies Q,
+\end{equation}
+which means: if the precondition $P$ holds for the inputs, then the postcondition $Q$ must hold for the outputs.
+
+
+\paragraph{Post-condition} A postcondition is a logical statement that must be true after a function has executed, assuming the precondition held. It typically describes the \emph{expected behavior} and \emph{outcomes} of the function with respect to its inputs. For example, the postcondition for \code{sqrt(x)} might state that the output $y$ must be non-negative and that $y^2 = x$. For \code{idiv(a, b)}, the postcondition might state that the output $q$ must satisfy $a = b \cdot q + r$ for some remainder $r$ such that $0 \leq r < |b|$.
+
+We want the postcondition to be as strong as possible, i.e., it as precisely as possible describes the expected behavior of the function. For example, for \code{idiv(a, b)}, a (weak) postcondition might simply state that the output is an integer, while a (strong) postcondition would specify the exact relationship between inputs and outputs as described above. Similarly, for \code{sqrt(x)}, a weak postcondition might state that the output is a real number, while a strong postcondition would specify the exact relationship between input and output $y^2 = x$.
+
+
+\paragraph{Pre-condition} A precondition is a logical statement that must be true before a function is executed. It typically lists \emph{assumptions} and \emph{constraints} on the inputs. For example, a \code{sqrt(x)} function might have the precondition that \code{x} must be non-negative. Similarly, an integer division function \code{idiv(a, b)} might have the precondition that \code{b} must be non-zero to avoid division by zero errors.
+
+The precondition should be as weak as possible, i.e., it should not impose unnecessary restrictions or assumptions that limit the applicability of the function. Moreover, the user might not even be aware of all the assumptions that are needed for the function to work correctly, and therefore a strong precondition might be unrealistic. Ideally, there should be \emph{no} precondition at all (i.e., as weak as possible), meaning the function works for all possible inputs.
+For example, for \code{sqrt(x)} we can have a weak precondition that \code{x} is any real number, and the postcondition would then specify if the input is negative, the output is NaN (not a number) and otherwise the output is non-negative and its square is equal to \code{x}.
+
+
+\begin{problem}[Minimum Specification]
+    Give a specification for a function \code{min(l)} that takes a list of integers \code{l} and returns the minimum integer in the list.  Clearly state the precondition and postcondition for the function.
+\end{problem}
+
+
+\begin{problem}[Duplicate]
+    Give a specification for a function \code{remove\_duplicates(l)} that takes a list of integers \code{l} and returns a list of integers \code{l2} that contains the same integers as \code{l} but with all duplicates removed.  Clearly state the precondition and postcondition for the function.
+\end{problem}    
+
+
+%\paragraph{What to Blame?} 
+\section{FM Techniques}
 % ## Formal Methods as Tools: Models, Specifications, and Reasoning
 
-At a high level, an FM technique is an algorithm and implemented as a tool (a program) that analyzes a system.  The FM tool takes as inputs
+At a high level, an FM technique is an algorithm, often implemented as a software tool that analyzes a system.  The FM tool takes as \emph{inputs}
 \begin{itemize}
-    \item A \emph{specification} of the desired property of the system
     \item A \emph{model} of the system to be analyzed
+    \item A \emph{specification} of the desired property of the system or program
 \end{itemize}
-and applies a \emph{reasoning process} to determine whether the model satisfies the specification. The tool produces an \emph{outcome} indicating whether the property holds, does not hold, or is unknown.
+and applies a \emph{reasoning process} to determine whether the model satisfies the specification. The tool produces an \emph{output} indicating whether the property holds, does not hold, or is unknown.
 
 \paragraph{System Model}
 The FM tool takes as input a \emph{model} of the system to be analyzed. This model is a mathematical abstraction of the system's behavior. It may be a program written in a language such as C or Python, a neural network in ONNX format, or other representations such as state machines or transition systems. This model, e.g., the program, is created by the programmer and is intended to capture the desired specification (\autoref{sec:fm-spec}) of the system.  However, the model might contain bugs or inaccuracies that violate the intended specification, which is what the FM tool aims to detect.
@@ -7401,7 +7431,7 @@ The formal specification of the system is:
 
 \paragraph{FM Reasoning Process}
 
-Once the model and specification are given, a FM tool applies a \emph{reasoning process}---an algorithm---to determine whether the model satisfies the specification. 
+Once the model and specification are given, a FM tool applies a \emph{reasoning process}---an algorithm---to determine whether the model satisfies the specification. \autoref{sec:fm-techniques} describes several major classes of FM techniques, each with its own reasoning process.
 
 % Different formal-methods techniques use different reasoning processes:
 
@@ -7418,7 +7448,7 @@ Finally, the FM algorithm/tool produces one of the \emph{three} possible results
 \begin{enumerate}
 \item Proved:  the model satisfies the specification. 
 \item Disproved: the model does not satisfy the specification. Typically a counterexample is also provided to show the violation (bug).
-\item Unknown: the tool cannot determine whether the model satisfies the specification.
+\item Unknown: the FM tool cannot determine whether the model satisfies the specification within its resource limits (e.g., time, memory).
 \end{enumerate}
 % ## Soundness and Completeness of Formal-Methods Tools
 
@@ -7473,27 +7503,32 @@ Finally, the FM algorithm/tool produces one of the \emph{three} possible results
 
 % ---
 
-\section{Major Classes of Formal Methods Algorithms}
+\section{Major Classes of Formal Methods Algorithms}\label{sec:fm-techniques}
 
 % *(Using One Running Example)*
 
-We now introduce the major classes of formal-methods techniques. All of these techniques \emph{statically analyze}--- analyzing the program representation (e.g., code) without running the program---the model and specification to determine whether the property holds.
+We now introduce the major classes of formal-methods techniques. In contrast to dynamic or testing-based analysis, which execute the program on specific inputs, these formal methods statically analyze the program's structure and logic to reason about all possible behaviors.
 
-We will use the `clip` function in~\autoref{ex:clip} as a running example demonstrate how each technique reasons about the same model and specification.
+We will use the \code{clip} function in~\autoref{ex:clip} as a running example demonstrate how each technique reasons about the same model and specification.
 
 
 
 \paragraph{Model Checking}
 
-Model checking (MC) works by \emph{exploring all possible states} of a system and checking whether \emph{bad states} which violate the specification are reachable. MC works well for systems with a finite number of states such as hardware designs and communication protocols because these systems have finite state spaces that can be exhaustively explored. However, MC struggles with systems involving continuous variables or infinite state spaces, e.g., a program with loops. 
+Model checking (MC) works by \emph{exploring all possible states} of a system and checking whether \emph{bad states} which violate the specification are reachable. 
+
+MC works well for systems with a finite number of states such as hardware designs and communication protocols because these systems have finite state spaces that can be exhaustively explored. However, MC struggles with systems involving continuous variables or infinite state spaces, e.g., a program with loops. 
 
 \begin{example}
 For \code{clip}, MC would build a state machine representing all possible execution paths of the program for different inputs. It would then check whether any path leads to a state where the output is < 0 or > 10. 
-A standard (naive) MC would struggle here because the number of states is infinite (the input $x$ is a real number). So MC would need to discretize or bound the input space, e.g., by considering only integer values of x from -1000 to 1000, to make the analysis feasible.
+
+A standard (na\"ive) MC would struggle here because the number of states is huge (the input $x$ is a real number). So MC would need to discretize or bound the input space, e.g., by considering only integer values of x from -1000 to 1000, to make the analysis feasible.
 \end{example}
 
 \paragraph{Interactive Theorem Proving}  
-An interactive theorem prover (ITP) or \emph{proof assistant} attempts to reason about the program using \emph{logical inference rules} to construct a formal proof that the specification holds for all possible inputs. The reason it is called ``interactive'' is that the user must guide the proof process by by providing lemmas, definitions, and strategies to help the prover construct the proof.  ITPs are powerful and can prove deep rich properties about programs. However, they may require significant human guidance to construct the proofs and do not scale well to large or complex systems. 
+An interactive theorem prover (ITP) or \emph{proof assistant} attempts to reason about the program using \emph{logical inference rules} to construct a formal proof that the specification holds for all possible inputs. The reason it is called ``interactive'' is that the user must guide the proof process by providing lemmas, definitions, and strategies to help the prover construct the proof.  
+
+ITPs are powerful and can prove deep rich properties about programs. However, they may require significant human guidance to construct the proofs and do not scale well to large or complex systems. 
 
 \begin{example}
 For \code{clip}, a TP might reason as follows:
@@ -7531,8 +7566,9 @@ It would then check whether these constraints are satisfiable. In this case, the
 
 
 \paragraph{Abstract Interpretation}
-Abstract interpretation (AbsInt) analyzes a program by automatically computing \emph{over-approximations} of its behavior. Instead of tracking exact values, AbsInt tracks abstract properties such as ranges or signs of variables, e.g., instead of saying ``x = 5'', AbsInt might say ``x is in [0, 10]'' or ``x is non-negative''. Because AbsInt is fully automated and works with over-approximations, it is efficient and scales well to large programs. However, this comes at the cost of precision. AbsInt may produce false positives (reporting potential violations that are not real bugs) due to the over-approximation.
+Abstract interpretation (AbsInt) analyzes a program by automatically computing \emph{over-approximations} of its behavior. Instead of tracking exact values, AbsInt tracks abstract properties such as ranges or signs of variables, e.g., instead of saying ``x = 5'', AbsInt might say ``x is in [0, 10]'' or ``x is non-negative''. 
 
+Because AbsInt is fully automated and uses over-approximations, it is efficient and scales well to large programs. However, overapproximation comes at the cost of precision: it can cause AbsInt to produce false positives by reporting potential violations that are not real bugs.
 
 
 \begin{example}
@@ -7550,93 +7586,33 @@ For neural network verification, AbsInt is often used to compute bounds on the o
 
 
 
-% ---
+\section{Soundness and Completeness}
 
-% ## Why This Matters for Neural Network Verification
+Two core concepts in formal methods are \emph{soundness} and \emph{completeness}. These describe the correctness and power of an FM algorithm\footnote{Mike Hicks also wrote a good blog post on this topic: \url{http://www.pl-enthusiast.net/2017/10/23/what-is-soundness-in-static-analysis/}.}.  
 
-% Neural network verification tools follow the **same structure**:
-
-% * The neural network is the **model**
-% * Robustness or safety conditions are the **specification**
-% * SMT, abstract interpretation, or hybrid techniques perform the **reasoning**
-% * The result is **proved, disproved, or unknown**
-
-% Nothing about this framework is unique to neural networks. What is new is the complexity of the model.
-
-% Understanding formal methods at this level is essential before studying neural network verification algorithms.
+\begin{definition}
+An FM algorithm is \textbf{sound} if every property it claims to prove is actually true. In other words, if it says \emph{``this property holds in this system,''} then the property truly holds. Conversely, an FM algorithm is \textbf{unsound} if it can claim that a false property is true.
+\end{definition}
 
 
+Two things to note about soundness:
+\begin{itemize}
+    \item While a sound FM algorithm never claims a false property is true, it may claims that a true property is false (i.e., it can give false counterexamples). Thus, an extremely conservative FM algorithm that claims every property is false is still sound. Similarly, an FM algorithm that returns ``unknown'' for every property is also sound. 
+    \item It is important to distinguish between an FM algorithm and its implementation (the software tool). An FM algorithm may be sound, but its implementation---typically written by human (or AI nowadays)---may contain bugs that cause it to produce unsound results. 
+\end{itemize}
+
+\begin{definition}
+An FM algorithm is \textbf{complete} if it can prove every true property. That is, if the property holds, the verifier will always be able to prove it. Conversely, an FM algorithm is \textbf{incomplete} if there exist true properties that it cannot prove.
+\end{definition}
+
+Two things to note about completeness:
+\begin{itemize}
+    \item While a complete FM algorithm can prove every true property, it may also claim that a false property is true (i.e., it can produce false proofs). Thus, an extremely reckless (and not trustworth) FM algorithm that claims every property is true is still complete. Similarly, an FM algorithm that returns ``unknown'' for every property is also complete. 
+    \item As with soundness, it is important to distinguish between an FM algorithm and its implementation. An FM algorithm may be complete, but its implementation may contain bugs that cause it to produce incomplete results.
+\end{itemize}
 
 
-
-% ## 4. Soundness and Completeness
-
-% Two core concepts in formal methods are **soundness** and **completeness**. These describe the reliability of a verification technique.
-
-% A verification method is **sound** if every property it claims to prove is actually true. In other words, a sound verifier never lies. If it says “this property holds,” then the property truly holds.
-
-% A verification method is **complete** if it can prove every true property. That is, if the property holds, the verifier will always succeed in proving it.
-
-% In practice, most verification tools cannot be both sound and complete for complex systems. Neural network verification problems are computationally hard, involving nonlinear functions and high-dimensional spaces. As a result, many NNV tools are designed to be sound but incomplete. They may fail to prove some true properties, but they will never incorrectly prove a false one.
-
-% This tradeoff is intentional. In safety-critical contexts, a false proof is unacceptable. An inconclusive result is inconvenient but safe.
-
-% ---
-
-% ## 5. Formal Methods Techniques in Practice
-
-% Formal methods encompass several families of techniques, each suited to different kinds of systems.
-
-% **Model checking** explores a system’s state space to determine whether undesirable states are reachable. It has been extremely successful in hardware verification and communication protocols but struggles with systems that involve continuous values.
-
-% **Theorem proving** uses logical inference to prove correctness properties. It is highly expressive but often requires significant human guidance.
-
-% **SAT and SMT solving** reduce verification problems to questions of logical satisfiability. Modern SAT and SMT solvers are highly optimized and form the backbone of many verification tools. Neural network verification heavily relies on these solvers to reason about constraints induced by network layers and activation functions.
-
-% **Abstract interpretation** analyzes systems by computing over-approximations of their behavior. It sacrifices precision in exchange for scalability while maintaining soundness.
-
-% Neural network verification combines ideas from SMT solving, optimization, and abstract interpretation to handle the numerical and nonlinear nature of neural networks.
-
-% ---
-
-% ## 6. Neural Network Verification as Formal Verification
-
-% Neural networks are often viewed as opaque or mysterious, but from a formal methods perspective, they are deterministic mathematical functions. Once trained, a neural network computes a fixed function from inputs to outputs.
-
-% This makes neural networks amenable to formal reasoning. A verification problem for a neural network typically asks whether the function computed by the network satisfies a given specification for all inputs in a specified region.
-
-% If the property holds, the verifier produces a proof. If it does not hold, the verifier produces a **counterexample**—a specific input that violates the property. This counterexample is not a heuristic or guess; it is a mathematically valid witness showing that the property is false.
-
-% This structure mirrors classical formal verification exactly. Neural network verification is not a new paradigm—it is a new application domain for established formal methods ideas.
-
-% ---
-
-% ## 7. Why Formal Methods Matter for Machine Learning
-
-% Machine learning systems are increasingly deployed in real-world settings where failures can cause harm. In such settings, average-case performance metrics like accuracy are insufficient. Rare failures matter precisely because they are rare and unexpected.
-
-% Testing can reveal many problems, but it cannot rule out all possible failures. Formal methods provide a way to reason about worst-case behavior and to establish guarantees that testing cannot.
-
-% Neural network verification exists because learned models are now used in contexts where guarantees matter. It provides tools for answering questions that testing alone cannot answer.
-
-% ---
-
-% ## 8. Limits of Formal Methods
-
-% Formal methods do not solve all problems. Verification can only reason about the model and specification provided. If the specification is incomplete or unrealistic, the guarantees are limited.
-
-% Verification does not ensure that a model is well-trained, unbiased, or appropriate for its task. It ensures only that the model satisfies the specified properties.
-
-% Understanding these limits is part of understanding formal methods. They provide precise answers to precise questions—not vague assurances.
-
-% ---
-
-% ## 9. Summary
-
-% Formal methods provide mathematically rigorous techniques for reasoning about system behavior. Verification differs fundamentally from testing and debugging by offering guarantees rather than empirical confidence. Neural network verification is a direct extension of these ideas to machine-learned models.
-
-% With this background, the reader is now prepared to study the concrete neural network verification techniques presented in the rest of this book.
-
+Ideally, FM algorithm should be both sound and complete: never prove a false property and can prove every true property. However,  we can only hope to achieve one of the two properties because achieving both is often computationally infeasible for complex systems. Between the two, soundness is typically prioritized in safety-critical settings because it is better to be unsure about a system (and say ``unknown'' or even claim that it is unsafe) than to incorrectly claim that it is safe when it is not. Thus, most practical FM algorithms are designed to be sound but incomplete.
 
 
 
@@ -9717,101 +9693,107 @@ Although restarting may seem like an engineering aspect, it plays a crucial role
 \begin{itemize}
     \item Week 1 (Aug 27): 
     \begin{itemize}
-        \item Introduction (basic terminologies and concepts).
-        \item Videos of neural networks 
-        \begin{itemize}
-            \item But what is a neural network?~\cite{3blue1brown2017neuralnetworks}
-            \item Large Language Models~\cite{3blue1brown2017llms}
-        \end{itemize}
+        \item Introduction / Syllabus Overview
+        \item Formal Methods Overview (\autoref{chap:formal-methods})
     \end{itemize}
     \item Week 2 (Sept 3):
     \begin{itemize}
     \item HW due: Post a short introduction about yourself on Canvas
-    \item Topics: Background on Logic~\autoref{chap:logic} and Linear Programming~\autoref{chap:lp}
-    \item Quiz: no quiz this week
-    \end{itemize}
-    \item Week 3 (Sept 10):
+    \item Topics: 
     \begin{itemize}
-        \item HW due: MILP problem~\autoref{ex:milp-online}
-        \item Topics: DNN and Properties and their formal representation (~\autoref{chap:nn-basics} and~\autoref{chap:properties})
-        \item Quiz:~\autoref{problem:milp-hand}
-    \end{itemize}
-    \item Week 4 (Sept 17):
-    \begin{itemize}
-        \item HW due: Neural Networks and Properties~\autoref{problem:z3-properties}
-        \item Topics: DNN Verification (\autoref{sec:verification})
-        \item Quiz:~\autoref{problem:drone}
-    \end{itemize}
-    \item Week 5 (Sept 24): No class this week (prof not available). No quiz or HW due.
-
-    \item Programming Assignment 1 (PA1)
-    \begin{itemize}
-        \item Symbolic Execution of Neural Networks~\autoref{sec:pa1}
-        \item Due date \alert{Monday October 6, 2025 11:59pm}
-    \end{itemize}
-    \item Week 6 (Oct 1):
-    \begin{itemize}
-        \item HW due:~\autoref{ex:negation-trick},~\autoref{problem:z3-dnn}, and~\autoref{problem:pattern-enumeration}. %, and ~\autoref{problem:nnv-pattern}
-        \item Topics: Activation Pattern Search (\autoref{sec:activation-patterns}) and Symbolic Execution (\autoref{sec:se-smt})
-        \item Quiz:~\autoref{problem:mydnntwo}
-    \end{itemize}
-    \item Week 7 (Oct 8):
-    \begin{itemize}
-        \item No HW because of PA1 due date
-        \item Topics: MILP Enncoding of DNNs (\autoref{sec:using-milp})
-        \item Quiz: (Re)Do~\autoref{ex:milp-dnn} by hand
-    \end{itemize}
-    \item Programming Assignment 2 (PA2)
-    \begin{itemize}
-        \item Abstraction~\autoref{sec:pa2}
-        \item Due date \alert{Wednesday October 29, 2025 11:59pm}
-    \end{itemize}
-    \item Week 8 (Oct 15):
-    \begin{itemize}
-      \item HW: Do~\autoref{prob:milp-dnn}
-       \item Topics: Abstraction (\autoref{chap:abstractions}), Interval and Zonotope (\autoref{sec:interval-abstraction},~\autoref{sec:zonotope-abstraction})
-       \item Quiz:~\autoref{prob:stable-neuron}
-    \end{itemize}
-  \item Week 9 (Oct 22):
+        \item Short Videos
         \begin{itemize}
-          \item Topics: Abstraction (\autoref{chap:abstractions}), Interval and Zonotope (\autoref{sec:interval-abstraction},~\autoref{sec:zonotope-abstraction})
-          \item HW: Do~\autoref{prob:int-abs}
-          \item Quiz:~\autoref{prob:correct-abs}
+            \item Formal Verification: A Quick Primer~\cite{axiomise2020formal}
+            \item But what is a neural network?~\cite{3blue1brown2017neuralnetworks}
+            \item Large Language Models~\cite{3blue1brown2017llms}
         \end{itemize}
-    \item Week 10 (Oct 29):
-    \begin{itemize}
-        \item No HW because of PA2 due date
-        \item Topics: Zonotope~\autoref{sec:zonotope-abstraction} and BaB Algorithm~\autoref{chap:bab}
-        \item Quiz: attendance
+
+    \item    Background on Logic~\autoref{chap:logics} and Linear Programming~\autoref{chap:lp}
     \end{itemize}
-    \item Week 11 (Nov 5):
-    \begin{itemize}
-        \item HW: Do~\autoref{prob:bab-detailed},~\autoref{prob:bab-counterexample}, and ~\autoref{prob:bab-interval}
-        \item Topics: Adversarial Attacks~\autoref{chap:adversarial-attacks} and Proof Certificates~\autoref{chap:proof-gen-check}
-        \item Quiz:~\autoref{prob:bab-understanding}
+    \item Quiz: TBD
     \end{itemize}
-    \item Programming Assignment 3 (PA3)
-    \begin{itemize}
-        \item Branch and Bound~\autoref{sec:pa3}
-        \item Due date \alert{Tuesday Nov 25, 2025 11:59pm}
-    \end{itemize}
-    \item Week 12 (Nov 12):
-    \begin{itemize}
-        \item Topics: Engineering and Optimization Tricks~\autoref{chap:common-engineering}, \neuralsat{} algorithm~\autoref{chap:neuralsat}, \reluplex{} algorithm~\autoref{chap:reluplex}
-        \item HW: Do~\autoref{prob:compute-gradients},~\autoref{prob:pgd-iterations}
-        \item Quiz:~\autoref{prob:pgd-iterations} (part 2 only)
-    \end{itemize}
-    \item Week 13 (Nov 19):
-    \begin{itemize}
-        \item Topics: TBD
-        \item HW: Do~\autoref{prob:proof-tree} and~\autoref{problem:reluplex-hand}
-        \item Quiz: \autoref{problem:reluplex-basic-nonbasic}
-    \end{itemize}
-    \item Final Project---Programming Assignment 4 (PA4)
-    \begin{itemize}
-        \item Putting everything together~\autoref{sec:pa4}
-        \item Due date \alert{Wednesday Dec 10, 2025 11:59pm}
-    \end{itemize}
+%     \item Week 3 (Sept 10):
+%     \begin{itemize}
+%         \item HW due: MILP problem~\autoref{ex:milp-online}
+%         \item Topics: DNN and Properties and their formal representation (~\autoref{chap:nn-basics} and~\autoref{chap:properties})
+%         \item Quiz:~\autoref{problem:milp-hand}
+%     \end{itemize}
+%     \item Week 4 (Sept 17):
+%     \begin{itemize}
+%         \item HW due: Neural Networks and Properties~\autoref{problem:z3-properties}
+%         \item Topics: DNN Verification (\autoref{sec:verification})
+%         \item Quiz:~\autoref{problem:drone}
+%     \end{itemize}
+%     \item Week 5 (Sept 24): No class this week (prof not available). No quiz or HW due.
+
+%     \item Programming Assignment 1 (PA1)
+%     \begin{itemize}
+%         \item Symbolic Execution of Neural Networks~\autoref{sec:pa1}
+%         \item Due date \alert{Monday October 6, 2025 11:59pm}
+%     \end{itemize}
+%     \item Week 6 (Oct 1):
+%     \begin{itemize}
+%         \item HW due:~\autoref{ex:negation-trick},~\autoref{problem:z3-dnn}, and~\autoref{problem:pattern-enumeration}. %, and ~\autoref{problem:nnv-pattern}
+%         \item Topics: Activation Pattern Search (\autoref{sec:activation-patterns}) and Symbolic Execution (\autoref{sec:se-smt})
+%         \item Quiz:~\autoref{problem:mydnntwo}
+%     \end{itemize}
+%     \item Week 7 (Oct 8):
+%     \begin{itemize}
+%         \item No HW because of PA1 due date
+%         \item Topics: MILP Enncoding of DNNs (\autoref{sec:using-milp})
+%         \item Quiz: (Re)Do~\autoref{ex:milp-dnn} by hand
+%     \end{itemize}
+%     \item Programming Assignment 2 (PA2)
+%     \begin{itemize}
+%         \item Abstraction~\autoref{sec:pa2}
+%         \item Due date \alert{Wednesday October 29, 2025 11:59pm}
+%     \end{itemize}
+%     \item Week 8 (Oct 15):
+%     \begin{itemize}
+%       \item HW: Do~\autoref{prob:milp-dnn}
+%        \item Topics: Abstraction (\autoref{chap:abstractions}), Interval and Zonotope (\autoref{sec:interval-abstraction},~\autoref{sec:zonotope-abstraction})
+%        \item Quiz:~\autoref{prob:stable-neuron}
+%     \end{itemize}
+%   \item Week 9 (Oct 22):
+%         \begin{itemize}
+%           \item Topics: Abstraction (\autoref{chap:abstractions}), Interval and Zonotope (\autoref{sec:interval-abstraction},~\autoref{sec:zonotope-abstraction})
+%           \item HW: Do~\autoref{prob:int-abs}
+%           \item Quiz:~\autoref{prob:correct-abs}
+%         \end{itemize}
+%     \item Week 10 (Oct 29):
+%     \begin{itemize}
+%         \item No HW because of PA2 due date
+%         \item Topics: Zonotope~\autoref{sec:zonotope-abstraction} and BaB Algorithm~\autoref{chap:bab}
+%         \item Quiz: attendance
+%     \end{itemize}
+%     \item Week 11 (Nov 5):
+%     \begin{itemize}
+%         \item HW: Do~\autoref{prob:bab-detailed},~\autoref{prob:bab-counterexample}, and ~\autoref{prob:bab-interval}
+%         \item Topics: Adversarial Attacks~\autoref{chap:adversarial-attacks} and Proof Certificates~\autoref{chap:proof-gen-check}
+%         \item Quiz:~\autoref{prob:bab-understanding}
+%     \end{itemize}
+%     \item Programming Assignment 3 (PA3)
+%     \begin{itemize}
+%         \item Branch and Bound~\autoref{sec:pa3}
+%         \item Due date \alert{Tuesday Nov 25, 2025 11:59pm}
+%     \end{itemize}
+%     \item Week 12 (Nov 12):
+%     \begin{itemize}
+%         \item Topics: Engineering and Optimization Tricks~\autoref{chap:common-engineering}, \neuralsat{} algorithm~\autoref{chap:neuralsat}, \reluplex{} algorithm~\autoref{chap:reluplex}
+%         \item HW: Do~\autoref{prob:compute-gradients},~\autoref{prob:pgd-iterations}
+%         \item Quiz:~\autoref{prob:pgd-iterations} (part 2 only)
+%     \end{itemize}
+%     \item Week 13 (Nov 19):
+%     \begin{itemize}
+%         \item Topics: TBD
+%         \item HW: Do~\autoref{prob:proof-tree} and~\autoref{problem:reluplex-hand}
+%         \item Quiz: \autoref{problem:reluplex-basic-nonbasic}
+%     \end{itemize}
+%     \item Final Project---Programming Assignment 4 (PA4)
+%     \begin{itemize}
+%         \item Putting everything together~\autoref{sec:pa4}
+%         \item Due date \alert{Wednesday Dec 10, 2025 11:59pm}
+%     \end{itemize}
 
 
 \end{itemize}
@@ -9824,4 +9806,6 @@ Although restarting may seem like an engineering aspect, it plays a crucial role
 
 \bibliographystyle{abbrv}
 \bibliography{book.bib}
+
+\end{document}
 
