@@ -7386,12 +7386,11 @@ For example, for \code{sqrt(x)} we can have a weak precondition that \code{x} is
 
 
 \begin{problem}[Minimum Specification]
-    Give a specification for a function \code{min(l)} that takes a list of integers \code{l} and returns the minimum integer in the list.  Clearly state the precondition and postcondition for the function.
+    Give a specification for a function \code{m=min(l)} that takes a list of integers \code{l} and returns the minimum integer \code{m} in the list.  Clearly state the precondition and postcondition for the function.
 \end{problem}
 
-
-\begin{problem}[Duplicate]
-    Give a specification for a function \code{remove\_duplicates(l)} that takes a list of integers \code{l} and returns a list of integers \code{l2} that contains the same integers as \code{l} but with all duplicates removed.  Clearly state the precondition and postcondition for the function.
+\begin{problem}[Duplicate]\label{problem:duplicate-specs}
+    Give a specification for a function \code{l2=remove\_duplicates(l)} that takes a list of integers \code{l} and returns a list of integers \code{l2} that contains the same integers as \code{l} but with all duplicates removed.  Clearly state the precondition and postcondition for the function.
 \end{problem}    
 
 
@@ -7614,8 +7613,6 @@ Two things to note about completeness:
 
 Ideally, FM algorithm should be both sound and complete: never prove a false property and can prove every true property. However,  we can only hope to achieve one of the two properties because achieving both is often computationally infeasible for complex systems. Between the two, soundness is typically prioritized in safety-critical settings because it is better to be unsure about a system (and say ``unknown'' or even claim that it is unsafe) than to incorrectly claim that it is safe when it is not. Thus, most practical FM algorithms are designed to be sound but incomplete.
 
-
-
 \chapter{Logics}\label{chap:logics}
 
 The topic of neural network verification (NNV) relies heavily on two fundamental areas: 
@@ -7704,7 +7701,6 @@ The truth value of a formula is defined recursively:
 
 \begin{problem}
 For the formula
-
 \[
 (x \lor y) \land (\lnot x \lor z),
 \]
@@ -7827,7 +7823,6 @@ First, do the reasoning informally by hand, and then confirm with an SMT solver 
 
 Z3~\cite{de2008z3} is a well-known SMT solver developed by Microsoft Research. Here we'll show how to use it to check propositional formulae and SMT formulae involving linear arithmetic constraints.
 
-
 \paragraph{Installing} You can install Z3 using your package manager, for example
 
 \begin{lstlisting}
@@ -7865,7 +7860,7 @@ print(s.model())   #a possible model is {x=True, y=True}
 \end{lstlisting}
 \end{example}
 
-\begin{problem}
+\begin{problem}\label{prob:z3-0}
 Modify the code in~\autoref{ex:z3-propositional} to check
 
 \[
@@ -7877,7 +7872,7 @@ Confirm that the result is \texttt{unsat}.
 
 
 
-\begin{example}[Linear Constraints.]
+\begin{example}[Linear Constraints.]\label{ex:z3-linear-constraints}
 
 We now use Z3 as an SMT solver to check linear constraints.
 
@@ -7906,7 +7901,7 @@ print(s.model()) # Output: {x=0, y=0}
 \end{lstlisting}
 \end{example}
 
-\begin{problem}
+\begin{problem}\label{prob:z3-1}
 Use Z3 to check whether the constraints
 \[
 x+y=5, \quad x \geq 0, \quad y \geq 0
@@ -7914,11 +7909,11 @@ x+y=5, \quad x \geq 0, \quad y \geq 0
 are satisfiable, and if so, ask Z3 for a model.
 \end{problem}
 
-\begin{problem}
+\begin{problem}\label{prob:z3-2}
 Use Z3 to check the formula given in~\autoref{ex:smt2}. Do it for both the reals and integers.
 \end{problem}
 
-\begin{problem}
+\begin{problem}\label{prob:z3-3}
 Use Z3 to formulate and check the statement \texttt{``If $x>3$ then $y>2$ AND $x \leq 1$''}.
 Is it satisfiable? What model does Z3 return?
 \end{problem}
@@ -9691,28 +9686,39 @@ Although restarting may seem like an engineering aspect, it plays a crucial role
 \chapter{Schedule}\label{chap:schedule}
 
 \begin{itemize}
-    \item Week 1 (Aug 27): 
+    \item Week 1: 
     \begin{itemize}
         \item Introduction / Syllabus Overview
-        \item Formal Methods Overview (\autoref{chap:formal-methods})
+        \item Formal Methods and Specifications Overview (\autoref{chap:formal-methods})
+        \item HW: Post a short introduction about yourself on Canvas
     \end{itemize}
-    \item Week 2 (Sept 3):
+    \item Week 2:
     \begin{itemize}
-    \item HW due: Post a short introduction about yourself on Canvas
     \item Topics: 
     \begin{itemize}
+    \item  Background on Logic and Satisfiability~\autoref{chap:logics}
+    \end{itemize}
+    \item Quiz:~\autoref{problem:duplicate-specs}
+    \item HW: Using Z3 SMT Solver to check satisfiability.
+    \begin{itemize}
+        \item Familiarize yourself with Z3 and install it on your machine (\autoref{sec:z3}). Try a few examples as given in~\autoref{ex:z3-propositional} and~\autoref{ex:z3-linear-constraints}.
+        \item Do~\autoref{prob:z3-0},~\autoref{prob:z3-1},~\autoref{prob:z3-2},~\autoref{prob:z3-3}
+    \end{itemize}
+        
+
+    \end{itemize}
+
+    \item Week 3:
+    \begin{itemize}
+        \item  Backgrounds on Linear Programming (\autoref{chap:lp})
         \item Short Videos
         \begin{itemize}
             \item Formal Verification: A Quick Primer~\cite{axiomise2020formal}
             \item But what is a neural network?~\cite{3blue1brown2017neuralnetworks}
             \item Large Language Models~\cite{3blue1brown2017llms}
         \end{itemize}
+    \end{itemize}
 
-    \item    Background on Logic~\autoref{chap:logics} and Linear Programming~\autoref{chap:lp}
-    \end{itemize}
-    \item Quiz: TBD
-    \end{itemize}
-%     \item Week 3 (Sept 10):
 %     \begin{itemize}
 %         \item HW due: MILP problem~\autoref{ex:milp-online}
 %         \item Topics: DNN and Properties and their formal representation (~\autoref{chap:nn-basics} and~\autoref{chap:properties})
@@ -9809,3 +9815,27 @@ Although restarting may seem like an engineering aspect, it plays a crucial role
 
 \end{document}
 
+
+"This statement is not provable"
+True: that means something statement is true but cannot be proved
+False: we can prove a false statement 
+
+Undecidable :  considered hardest problem
+
+Halting 
+
+
+
+
+boolean values: true or false
+
+satisfiability problem  : determiene whether a formula (that only involves boolean variables) is satisfiable or not  :   NP-Complete, takes exponential time
+
+
+Z3 SMT solver from Microsoft. 
+
+Forall x,  ThereExists y,    y > x 
+ThereExits x.  ForallY      y <= x 
+
+
+For everynumber x, there is NO number y such that y > x 
