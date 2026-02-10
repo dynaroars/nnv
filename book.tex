@@ -7590,25 +7590,26 @@ For neural network verification, AbsInt is often used to compute bounds on the o
 Two core concepts in formal methods are \emph{soundness} and \emph{completeness}. These describe the correctness and power of an FM algorithm\footnote{Mike Hicks also wrote a good blog post on this topic: \url{http://www.pl-enthusiast.net/2017/10/23/what-is-soundness-in-static-analysis/}.}.  
 
 \begin{definition}
-An FM algorithm is \textbf{sound} if every property it claims to prove is actually true. In other words, if it says \emph{``this property holds in this system,''} then the property truly holds. Conversely, an FM algorithm is \textbf{unsound} if it can claim that a false property is true.
+An FM algorithm is \textbf{sound} if every property it claims to prove is actually true. In other words, if it says \emph{``this property holds in this system,''} then the property truly holds. Conversely, an FM algorithm is \emph{not} sound if it can claim that a false property is true.
 \end{definition}
 
 
-Two things to note about soundness:
-\begin{itemize}
-    \item While a sound FM algorithm never claims a false property is true, it may claims that a true property is false (i.e., it can give false counterexamples). Thus, an extremely conservative FM algorithm that claims every property is false is still sound. Similarly, an FM algorithm that returns ``unknown'' for every property is also sound. 
-    \item It is important to distinguish between an FM algorithm and its implementation (the software tool). An FM algorithm may be sound, but its implementation---typically written by human (or AI nowadays)---may contain bugs that cause it to produce unsound results. 
-\end{itemize}
 
 \begin{definition}
 An FM algorithm is \textbf{complete} if it can prove every true property. That is, if the property holds, the verifier will always be able to prove it. Conversely, an FM algorithm is \textbf{incomplete} if there exist true properties that it cannot prove.
 \end{definition}
 
-Two things to note about completeness:
+
+
+Some notes
 \begin{itemize}
-    \item While a complete FM algorithm can prove every true property, it may also claim that a false property is true (i.e., it can produce false proofs). Thus, an extremely reckless (and not trustworth) FM algorithm that claims every property is true is still complete. Similarly, an FM algorithm that returns ``unknown'' for every property is also complete. 
-    \item As with soundness, it is important to distinguish between an FM algorithm and its implementation. An FM algorithm may be complete, but its implementation may contain bugs that cause it to produce incomplete results.
+    \item While a sound FM algorithm never claims a false property is true, it may claim that a true property is false (i.e., it can give false counterexamples). Thus, an extremely conservative FM algorithm that claims every property is false is still sound. Similarly, an FM algorithm that returns ``unknown'' for every property is also sound. 
+    
+    Similarly, while a complete FM algorithm can prove every true property, it may also claim that a false property is true (i.e., it can produce false proofs). Thus, an extremely reckless (and not trustworth) FM algorithm that claims every property is true is still complete. Similarly, an FM algorithm that returns ``unknown'' for every property is also complete. 
+
+    \item It is important to distinguish between an FM algorithm and its implementation (the software tool). An FM algorithm may be sound (or complete), but its implementation---typically written by human (or AI nowadays)---may contain bugs that cause it to produce unsound (or incomplete) results. 
 \end{itemize}
+
 
 
 Ideally, FM algorithm should be both sound and complete: never prove a false property and can prove every true property. However,  we can only hope to achieve one of the two properties because achieving both is often computationally infeasible for complex systems. Between the two, soundness is typically prioritized in safety-critical settings because it is better to be unsure about a system (and say ``unknown'' or even claim that it is unsafe) than to incorrectly claim that it is safe when it is not. Thus, most practical FM algorithms are designed to be sound but incomplete.
@@ -9704,7 +9705,6 @@ Although restarting may seem like an engineering aspect, it plays a crucial role
         \item Familiarize yourself with Z3 and install it on your machine (\autoref{sec:z3}). Try a few examples as given in~\autoref{ex:z3-propositional} and~\autoref{ex:z3-linear-constraints}.
         \item Do~\autoref{prob:z3-0},~\autoref{prob:z3-1},~\autoref{prob:z3-2},~\autoref{prob:z3-3}
     \end{itemize}
-        
 
     \end{itemize}
 
