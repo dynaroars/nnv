@@ -7634,7 +7634,7 @@ A \emph{propositional variable} is a symbol (e.g., $x, y, z$). Logical formulae 
   \item Constants: $\top$ and $\bot$ are formulae.
   \item Negation: If $\phi$ is a formula, then so is $\lnot{\phi}$.
   \item Binary connectives: If $\phi, \psi$ are formulae, then so are
-    $(\phi \land \psi)$, $(\phi \lor \psi)$, and $(\phi \to \psi)$.
+    $(\phi \land \psi)$, $(\phi \lor \psi)$, and $(\phi \implies \psi)$.
 \end{itemize}
 
 \begin{example}
@@ -7689,15 +7689,16 @@ A logical formula in propositional logic has a truth value, which can be either 
 For example, the formula $x \lor \lnot{x}$ is always \texttt{True}, while the formula $x \land y$ is \texttt{True} if both $x$ and $y$ are \texttt{True}, and \texttt{False} otherwise.
 This is the \emph{semantics} of the formula.
 
-A\emph{assignment} $\sigma$ maps each formula to $\texttt{True}$ or $\texttt{False}$.
-The truth value of a formula is defined recursively:
+A\emph{assignment} $\sigma$, which is a mapping from propositional variables to truth values, evaluates each formula to $\texttt{True}$ or $\texttt{False}$.
+The truth value of a propositional formula over the connectives $\top, \bot, \lnot, \land, \lor, \implies$ under an assignment $\sigma$
+is defined recursively:
 \begin{align*}
   \sigma(\top) &\quad = \texttt{True}, \\
   \sigma(\bot) &\quad = \texttt{False}, \\
   \sigma(\lnot{\phi}) = \texttt{True} &\quad \text{iff } \sigma(\phi) = \texttt{False}, \\
   \sigma(\phi \land \psi) = \texttt{True} &\quad \text{iff } \sigma(\phi) = \texttt{True} \text{ and } \sigma(\psi) = \texttt{True}, \\
   \sigma(\phi \lor \psi) = \texttt{True} &\quad \text{iff } \sigma(\phi) = \texttt{True} \text{ or } \sigma(\psi) = \texttt{True}, \\
-  \sigma(\phi \to \psi) = \texttt{True} &\quad \text{iff } \sigma(\phi) = \texttt{False} \text{ or } \sigma(\psi) = \texttt{True}.
+  \sigma(\phi \implies \psi) = \texttt{True} &\quad \text{iff } \sigma(\phi) = \texttt{False} \text{ or } \sigma(\psi) = \texttt{True}.
 \end{align*}
 
 \begin{problem}
@@ -7713,37 +7714,37 @@ evaluate its truth value under all $2^3=8$ possible assignments of $x,y,z$.
      A formula $\phi$
 
 \begin{itemize}
-  \item is \emph{satisfiable} if there exists \textbf{some} $\sigma$ such that $\sigma(\phi) = \texttt{True}$.
-  \item is \emph{unsatisfiable} if \textbf{no} assignment satisfies it.
-  \item is \emph{valid} if \textbf{all} assignments satisfy it.
+  \item is \emph{satisfiable} if there exists \textbf{some} assignment $\sigma$ that satisfies it, i.e., $\exists \sigma.~ \sigma(\phi) = \texttt{True}$.
+  \item is \emph{unsatisfiable} if \textbf{no} assignment satisfies it, i.e., $\forall \sigma.~\sigma(\phi) = \texttt{False}$.
+  \item is \emph{valid} if \textbf{all} assignments satisfy it, i.e., $\forall \sigma. \sigma(\phi) = \texttt{True}$.
 \end{itemize}
 \end{definition}
 
-\begin{example} The formula $x$ is satisfiable (e.g., $\sigma(x) = \texttt{True}$).
+\begin{example} The formula $p$ is satisfiable (i.e., $\exists \sigma.~\sigma(p) = \texttt{True}$).
 
 
 \noindent The formula
 \[
-(x) \land (\lnot{x})
+(p) \land (\lnot{p})
 \]
 is unsatisfiable (no assignment works).
 In contrast,
 \[
-(x \lor \lnot{x})
+(p \lor \lnot{p})
 \]
 is valid.
 \end{example}
 
 \begin{problem}
-Show that $(\phi \to \psi)$ is equivalent to $(\lnot \phi \lor \psi)$.
+Show that $(\phi \implies \psi)$ is equivalent to $(\lnot \phi \lor \psi)$.
 (Hint: construct a truth table.)
 \end{problem}
 
 \begin{problem}\label{problem:short-questions}
     Assume $p,q$ are boolean variables.
     \begin{enumerate}
-        \item Can a formula satisfiable but not valid?  If yes, provide an example of such a formula over $p,q$.
-        \item Can a formula valid but not satisfiable? If yes, provide an example of such a formula over $p,q$.
+        \item Can a formula be satisfiable but not valid?  If yes, provide an example of such a formula over $p,q$.
+        \item Can a formula be valid but not satisfiable? If yes, provide an example of such a formula over $p,q$.
         \item Give a formula over $p,q$ that is satisfiable under exactly 1 assignment.
         \item Let $\phi$ be a formula over $p,q$, if $\phi$ is valid, how many assignments satisfy it?
     \end{enumerate}
