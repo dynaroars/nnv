@@ -948,7 +948,7 @@ This means that softmax maps the input vector $x$ to a probability distribution 
 \end{example}
 
 \begin{example}\label{ex:z3-dnn}
-Use Z3 to encode the DNN in~\autoref{fig:dnn} and compute its output $x_5$ for the input $(x_1, x_2) = (2.0, 0.5)$.
+Use Z3 to encode the DNN in~\autoref{fig:dnn} and compute its output $x_5$ for the input $(x_1, x_2) = (2.0, 0.5)$ and find an input that maximizes the output $x_5$.
 
 \begin{lstlisting}[language=python,multicols=2]
 from z3 import Real, If, Solver, sat
@@ -964,14 +964,13 @@ l2b = x4 ==  0.5 * x1 - 0.5 * x2 - 1.0
 l2b_ = x4_ == If(x4 > 0, x4, 0)
 l3 = x5 == -1.0 * x3_ + 1.0 * x4_ - 1.0
 
-# check output for input (x1, x2) = (2.0, 0.5)
+# output for input (x1, x2) = (2.0, 0.5)
 s = Solver()
 s.add(l2a);s.add(l2b);
 s.add(l2a_); s.add(l2b_);s.add(l3)
 
 # specify input values
-s.add(x1 == 2.0)
-s.add(x2 == 0.5)
+s.add(x1 == 2.0); s.add(x2 == 0.5)
 if s.check() == sat:
     print(s.model())
 
