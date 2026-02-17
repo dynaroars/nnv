@@ -951,21 +951,39 @@ This means that softmax maps the input vector $x$ to a probability distribution 
 Use Z3 to encode the DNN in~\autoref{fig:dnn} and compute its output $x_5$ for the input $(x_1, x_2) = (2.0, 0.5)$.
 
 \begin{lstlisting}[language=python,multicols=2]
-#setup the network
-x1 = z3.Real(`x1')
-x2 = z3.Real(`x2')
-x3 = -0.5*x1 + 0.5*x2 + 1.0    
-x3_ = z3.If(x3 <= 0, 0, x3)  # ReLU
-x4 = 0.5*x1 + -0.5*x2 + -1.0
-x4_ = z3.If(x4 <= 0, 0, x4)  # ReLU
-x5 = -1.0*x3_ + 1.0*x4_ - 1.0
+from z3 import Real, If, Solver, sat
 
-#check output on given input
-s = z3.Solver()
-s.add(x1 == 2.0, x2 == 0.5)
-if s.check() == z3.sat:
-    m = s.model()
-    print("Output x5 is ", m.evaluate(x5))
+x1, x2, = Real('x1'), Real('x2') 
+x3, x3_, = Real('x3'), Real('x3_')
+x4, x4_ = Real('x4'), Real('x4_')
+x5 = Real('x5')
+
+l2a = x3 == -0.5 * x1 + 0.5 * x2 + 1.0
+l2a_ = x3_ == If(x3 > 0, x3, 0)
+l2b = x4 ==  0.5 * x1 - 0.5 * x2 - 1.0
+l2b_ = x4_ == If(x4 > 0, x4, 0)
+l3 = x5 == -1.0 * x3_ + 1.0 * x4_ - 1.0
+
+# check output for input (x1, x2) = (2.0, 0.5)
+s = Solver()
+s.add(l2a);s.add(l2b);
+s.add(l2a_); s.add(l2b_);s.add(l3)
+
+# specify input values
+s.add(x1 == 2.0)
+s.add(x2 == 0.5)
+if s.check() == sat:
+    print(s.model())
+
+# find an input that maximizes the output x5
+o = Optimize()
+o.add(l2a); o.add(l2b)
+o.add(l2a_); o.add(l2b_); o.add(l3)
+
+#maximize x5
+o.maximize(x5)
+if o.check() == sat:
+    print(o.model())
 \end{lstlisting} 
 \end{example}
 
