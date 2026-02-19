@@ -1855,17 +1855,17 @@ Consider the NN in~\autoref{fig:proofnet}. Recall that in this network the hidde
 \begin{itemize}
     \item Encode this network using Z3.
     \begin{itemize}
-        \item Try to use Z3 to evaluate the network on various inputs.
+        \item Try to use Z3 to evaluate the network on various inputs.u
     \end{itemize}
-\item Come UB with \textbf{three} properties that this network \emph{does not} have.  Recall that a property often has the form in~\autoref{sec:properties-def}.
+\item Come up with \textbf{three} properties that this network \emph{does not} have.  Recall that a property often has the form in~\autoref{sec:properties-def}.
 \begin{itemize}
     \item Argue why each property does not hold by providing a counterexample (\autoref{sec:properties-counterexamples}).
-    \item (Optional, Easy) Try to use Z3 to show that the properties you came UB with do not hold by asking Z3 to find counterexamples (one for each property).
+    \item (Optional, Easy) Try to use Z3 to show that the properties you came up with do not hold by asking Z3 to find counterexamples (one for each property).
 \end{itemize}
-\item Come UB with \textbf{three} properties that that this network has (i.e., as long as the precondition holds, the postcondition holds).
+\item Come up with \textbf{three} properties that that this network has (i.e., as long as the precondition holds, the postcondition holds).
 \begin{itemize}
     \item Argue why each property always holds (e.g., for any input satisfying the range X, the first layer outputs values in range Y, etc).
-    \item (Optional) Show that the properties you came UB will always hold by using Z3 to prove that no counterexample exists (i.e., \unsat{}).
+    \item (Optional) Show that the properties you came up will always hold by using Z3 to prove that no counterexample exists (i.e., \unsat{}).
 \end{itemize}
 \end{itemize}
 
@@ -2355,7 +2355,7 @@ As shown in~\autoref{ex:relu_milp1}, the upper and lower bounds of neuron $x_3$ 
     \item \textbf{Scalability:} While MILP is efficient in dealing with linear constraints, it still cannot be applied directly to real-world DNNs due to the large search space. Each ReLU application to an unstable neuron introduces a binary variable (\autoref{sec:relu-encoding}), leading to exponential number of possible branches, and real-world DNNs can have millions of such ReLUs, making the search space intractable.
 
     \item \textbf{Limited exploitation of network structure and modern hardware} Off-the-shelf MILP solvers are designed for arbitrary MILP problems and do not exploit DNN-specific structures and concepts such as activation patterns (\autoref{sec:activation-patterns}) to prune the search space.
-    Moreover, MILP solvers, even industrial-strength ones such as Gurobi~\cite{gurobi}, are primarily CPU-based and does not leverage the massive parallelism provided by modern GPUs to speed UB computation.
+    Moreover, MILP solvers, even industrial-strength ones such as Gurobi~\cite{gurobi}, are primarily CPU-based and does not leverage the massive parallelism provided by modern GPUs to speed up computation.
 
     %\item \textbf{Generic branch-and-bound algorithms:} While MILP solvers employ branch-and-bound (BaB) algorithms, these are generic and not tailored to DNNs. In contrast, specialized DNN verification algorithms leverage DNN-specific BaB strategies, such as layer-wise branching, abstract domain propagation, and neuron-specific heuristics, enabling greater efficiency.
 
@@ -4473,7 +4473,7 @@ For the other subproblem with $\overline{v_4}$ inactive, \Deduce determines infe
 
 
 \begin{problem}\label{prob:bab-detailed}
-Do~\autoref{ex:bab} but come UB with concrete values for each step, e.g., what are the bounds computed by \Deduce, what does \mycode{LP} return, etc to illustrate the process in more detail.
+Do~\autoref{ex:bab} but come up with concrete values for each step, e.g., what are the bounds computed by \Deduce, what does \mycode{LP} return, etc to illustrate the process in more detail.
 \end{problem}
 
 
@@ -5194,7 +5194,7 @@ while being close enough to a proven unsatisfiable node that it has a reasonable
 % \hd{Without X, \proofcheck{} will have to check all the children.}
 
 % \hd{It backjumps when the leave node is proved and X optimization is enabled.
-% We can keep backing UB until it cannot prove anymore, however, after N times, each time half the length of an activation pattern, an activation pattern is shortened to $1 / 2^{N}$ (e.g., if $N=2$, after 2 times of backing up, an activation pattern is shortened to 1/4 of its length).
+% We can keep backing up until it cannot prove anymore, however, after N times, each time half the length of an activation pattern, an activation pattern is shortened to $1 / 2^{N}$ (e.g., if $N=2$, after 2 times of backing up, an activation pattern is shortened to 1/4 of its length).
 % This is when the pruned leaves by those proved interiors are getting overlapped (due to parallelization, we backjump on multiple leaves), so more backjumps might not helpful.
 % Instead, we start over with a new iteration with remaining leaves.
 % I experienced with $N = \{1, 2, 3, 4, 5\}$ and I settled down $N=2$ for all experiments (fixed N) which seems to be good enough in our experiments.
@@ -5498,7 +5498,7 @@ while being close enough to a proven unsatisfiable node that it has a reasonable
 % problem, i.e., the number of nodes of the proof tree.
 % When interpreting these plots, understand that the y-axis log scale means that vertical
 % distances have a different meaning as you move upward in the plot.
-% While the vast majority of the verification problems have proof trees of fewer then 2000 leaves, but 17 of them have larger trees UB to a maximum of more than 10000 leaves.
+% While the vast majority of the verification problems have proof trees of fewer then 2000 leaves, but 17 of them have larger trees up to a maximum of more than 10000 leaves.
 % Note also that even among the smaller sized proof trees, there are some problems that cannot be solved.
 % This is due to complexity of solving the MILP constraints at the leaves of those proof trees.
 
@@ -5673,7 +5673,7 @@ Many verifiers, e.g.,~\cite{katz2019marabou,wang2018formal,wang2021beta,duong202
 The idea is to split the original verification problem into subproblems, each checking whether the DNN produces the desired output from a smaller input region and returns \unsat{} if all subproblems are verified and \sat{} if a counterexample is found in any subproblem. Input splitting avoids BaB search (\autoref{chap:bab})---which performs \emph{neuron splitting}---and is often used to quickly eliminate easy cases.
 
 Moreover, each subproblem now has a smaller input region, thus the verifier can often verify them more quickly than the original problem.
-Finally, because each task can be solved independently, the verifier can solve them in parallel to further speed UB the verification process.
+Finally, because each task can be solved independently, the verifier can solve them in parallel to further speed up the verification process.
 
 
 \begin{example}
@@ -5743,7 +5743,7 @@ We can apply the same approach to tighten the lower bounds of $x_1$ using a mini
 Note that, this approach works well for networks with small inputs, e.g., the ACAS Xu benchmark~\autoref{sec:acasxu} with 5 inputs, and is adopted by many modern DNN verification tools, including \marabou{} and \nnenum{}.
 For larger input dimensions networkswe, it will take much time as we need to run $2 \times$ the number of inputs to tighten all the input bounds (for each input, we need to tighten the upper and lower bounds individually).
 
-To reduce the time complexity, we can prioritize the input variables to tighten first, e.g., deciding the variable with the largest bounds first, and only tighten UB to a maxinum number of inputs, e.g., 10 inputs.
+To reduce the time complexity, we can prioritize the input variables to tighten first, e.g., deciding the variable with the largest bounds first, and only tighten up to a maxinum number of inputs, e.g., 10 inputs.
 
 \subsection{Neuron (Hidden) Bounds Tightening}\label{sec:neuronboundstigthten}
 
@@ -5937,7 +5937,7 @@ We can verify these results by computing each subproblem individually using the 
 
 
 
-By using matrix operations, we can leverage using GPUs natively to speed UB the computation.
+By using matrix operations, we can leverage using GPUs natively to speed up the computation.
 As expected, the computation time is reduced significantly using GPUs when the size of matrices (weights, bias, inputs, etc.) becomes larger~\autoref{fig:gpu-benchmarking}.
 
 \begin{figure}[t]
@@ -6663,7 +6663,7 @@ Thus, the property in~\autoref{eq:prop1} is \emph{not valid} for the DNN in~\aut
 % \subsection{VGGNET16}
 % \paragraph*{Proposed by} Stanley Bak, Stony Brook University
 
-% \paragraph*{Motivation} This benchmark tries to scale UB the size of networks being analyzed by using the well-studied VGGNET-16 architecture~\cite{simonyan2014very} that runs on ImageNet. Input-output properties are proposed on pixel-level perturbations that can lead to image misclassification.
+% \paragraph*{Motivation} This benchmark tries to scale up the size of networks being analyzed by using the well-studied VGGNET-16 architecture~\cite{simonyan2014very} that runs on ImageNet. Input-output properties are proposed on pixel-level perturbations that can lead to image misclassification.
 
 % \paragraph*{Networks} All properties are run on the same network, which includes 138 million parameters. The network features convolution layers, ReLU activation functions, as well as max pooling layers.
 
@@ -9290,7 +9290,7 @@ Running an LP solver with objective $\min 0$ will return a point, e.g., (x=0,y=0
 
 % Currently, \tool{} uses the standard \emph{conflict-drive backtracking} strategy~\cite{barrett2013decision}, which sets the backtracking level to the \emph{second most recent} decision level in the clause.
 % Intuitively, by backtracking to the second most recent level, which means erasing assignments made \emph{after} that level, this strategy encourages trying new assignments for more recently decided variables.
-% %\hd{Other backtracking scheme in Chaff~\cite{moskewicz2001chaff}: always stop clause learning at the first UIP --- This form of clause learning, and associated backtracking procedure, is referred to as first UIP clause learning. Existing results indicate that the first UIP clause learning procedure may end UB doing more backtracking than the original clause learning of GRASP~\cite{zhang2001efficient}. However, Chaff creates significantly fewer clauses and is significantly more effective at backtracking. As a result, the first UIP learning scheme is now commonly used by the majority of CDCL SAT solvers.}
+% %\hd{Other backtracking scheme in Chaff~\cite{moskewicz2001chaff}: always stop clause learning at the first UIP --- This form of clause learning, and associated backtracking procedure, is referred to as first UIP clause learning. Existing results indicate that the first UIP clause learning procedure may end up doing more backtracking than the original clause learning of GRASP~\cite{zhang2001efficient}. However, Chaff creates significantly fewer clauses and is significantly more effective at backtracking. As a result, the first UIP learning scheme is now commonly used by the majority of CDCL SAT solvers.}
 
 % %\tvn{Intuitively this is because} \hd{Intuitively, backtracking to 2nd most recent $dl$ in $cl$ to flip the assignment of the most recent decided literal (True to False or False to True). For example, \{$\neg x_5@3, x_1@6$\} causes the conflict, the most recent decided literal is $x_1$, then we need to flip $x_1$ from True to False. But now $x_1$ is associated with decision level 3 (dl 3 is decision level of $x_5$ --- the literal which has 2nd most recent decision level in the learned conflict clause.)}.
 
@@ -9631,7 +9631,7 @@ Running an LP solver with objective $\min 0$ will return a point, e.g., (x=0,y=0
 
 % The DPLL(T) process in \tool{} is designed as a tree-search problem where each internal node encodes an \textit{activation pattern} defined by the variable assignments from the root.
 % To parallelize DPLL(T), we adopt a beam search-like strategy which combines distributed search from Distributed Tree Search (DTS) algorithm~\cite{ferguson1988distributed} and Divide and Conquer (DNC)~\cite{le2017painless} paradigms for splitting the search space into disjoint subspaces that can be solved independently.
-% At every step of the search algorithm, we select UB to $n$ nodes  of the DPLL(T) search tree to create a beam of width $n$.
+% At every step of the search algorithm, we select up to $n$ nodes  of the DPLL(T) search tree to create a beam of width $n$.
 % This splits (like DNC) the search into $n$ subproblems that are independently processed.  Each subproblem extends the tree by a depth of 1.
 
 % Our approach simplifies the more general DNC scheme since the $n$ bodies of the \textbf{parfor} on line~\ref{line:parfor} of~\autoref{fig:alg} are roughly load balanced.
