@@ -1966,7 +1966,7 @@ If~\autoref{eq:nnv2} is unsatisfiable, then $\phi$ is a valid property of $N$. O
 
 \begin{problem}[Validity Formulation]\label{ex:negation-trick}
 Show that $\alpha \implies (\phi_{in} \implies \phi_{out})$ (\autoref{eq:nnv}) is valid if and only if $\alpha \land \phi_{in} \land \neg \phi_{out}$ (\autoref{eq:nnv2}) is unsatisfiable.
-First, do this by hand by explicitly writing out the logical equivalences step by step. Then, verify your result using Z3, i.e., show that the negation of the first formula is equivalent to the second formula.
+First, do this by hand (on paper) by explicitly writing out the logical equivalences step by step. Then, verify your result using Z3, i.e., show that the negation of the first formula is equivalent to the second formula.
 \end{problem}
 
 \begin{example}\label{ex:dnn-sat}
@@ -6563,7 +6563,7 @@ Thus, the property in~\autoref{eq:prop1} is \emph{not valid} for the DNN in~\aut
     \begin{itemize}
       \item Rewrite the steps in~\autoref{ex:reluplex} on paper, showing all the calculations for each step. The goal of handwriting the steps is to help you understand how \reluplex{} works in detail.
 
-    \item Provide feedback on this example.  Is it clear?  Are there any steps or terminologies that are confusing?  How can we improve the explanation?  For this part you can type directly on a text file and submit.
+    \item Provide feedback on this example.  Is it clear?  Are there any steps or terminologies that are confusing?  How can we improve the explanation? 
     \end{itemize}
 \end{problem}
 
@@ -7411,7 +7411,49 @@ For example, for \code{sqrt(x)} we can have a weak precondition that \code{x} is
 
 \begin{problem}[Duplicate]\label{problem:duplicate-specs}
     Give a specification for a function \code{l2=remove\_duplicates(l)} that takes a list of integers \code{l} and returns a list of integers \code{l2} that contains the same integers as \code{l} but with all duplicates removed.  Clearly state the precondition and postcondition for the function.
-\end{problem}    
+\end{problem}
+\begin{solution}
+
+~
+
+\vspace{0.5\baselineskip}
+
+\textbf{Precondition:}
+
+\begin{itemize}
+    \item \code{l} is a list of integers.
+\end{itemize}
+
+\vspace{0.5\baselineskip}
+
+\textbf{Postcondition:}
+~
+
+Let \code{l2 = remove\_duplicates(l)}. Then:
+
+\begin{enumerate}
+    \item For all $x \in \code{l2}$, we have $x \in \code{l}$ (all elements of \code{l2} appear in \code{l}).
+
+    \item For all $x \in \code{l}$, we have $x \in \code{l2}$ (all unique elements of \code{l} appear in \code{l2}).
+
+    \item All elements in \code{l2} are distinct. Formally, for all indices $i, j$ such that
+    \[
+        0 \le i < j < |\code{l2}|,
+    \]
+    we have
+    \[
+        \code{l2}[i] \ne \code{l2}[j].
+    \]
+\end{enumerate}
+
+Equivalently,
+\[
+    \text{set}(\code{l2}) = \text{set}(\code{l}).
+\]
+
+For example, if \code{l = [1, 2, 3, 2, 4, 1, 5]}, then a valid output is \code{l2 = [1, 2, 3, 4, 5]}.
+
+\end{solution} 
 
 
 %\paragraph{What to Blame?} 
@@ -7769,6 +7811,71 @@ Show that $(\phi \implies \psi)$ is equivalent to $(\lnot \phi \lor \psi)$.
         \item Let $\phi$ be a formula over $p,q$, if $\phi$ is valid, how many assignments satisfy it?
     \end{enumerate}
 \end{problem}
+\begin{solution}
+
+~
+
+\noindent\textbf{1. Satisfiable but not valid:}
+
+\noindent Yes, a formula can be satisfiable but not valid. By definition, a formula is satisfiable if \emph{some} assignment makes it true, while a formula is valid if \emph{all} assignments make it true.
+
+\noindent Example: $p$ is satisfiable (true when $p = \texttt{True}$) but not valid (false when $p = \texttt{False}$).
+
+\noindent Another example: $p \land q$ is true when $p = \texttt{True}$ and $q = \texttt{True}$, but false under all other assignments.
+
+\vspace{0.5\baselineskip}
+
+\noindent\textbf{2. Valid but not satisfiable:}
+
+\noindent No, a formula cannot be valid but not satisfiable. If a formula is valid, it is true under all assignments, which means it is certainly true under \emph{some} assignment (in fact, under every assignment). Thus, every valid formula is also satisfiable.
+
+\vspace{0.5\baselineskip}
+
+\noindent\textbf{3. Formula satisfiable under exactly 1 assignment:}
+
+\noindent Example: $p \land \lnot q$ is satisfiable only when $p = \texttt{True}$ and $q = \texttt{False}$. We can verify this by checking all four possible assignments:
+
+\begin{itemize}
+    \item $p = \texttt{True}, \; q = \texttt{True}$:
+    \[
+        (p \land \lnot q)
+        = (\texttt{True} \land \texttt{False})
+        = \texttt{False}
+    \]
+
+    \item $p = \texttt{True}, \; q = \texttt{False}$:
+    \[
+        (p \land \lnot q)
+        = (\texttt{True} \land \texttt{True})
+        = \texttt{True}
+    \]
+
+    \item $p = \texttt{False}, \; q = \texttt{True}$:
+    \[
+        (p \land \lnot q)
+        = (\texttt{False} \land \texttt{False})
+        = \texttt{False}
+    \]
+
+    \item $p = \texttt{False}, \; q = \texttt{False}$:
+    \[
+        (p \land \lnot q)
+        = (\texttt{False} \land \texttt{True})
+        = \texttt{False}
+    \]
+\end{itemize}
+
+\noindent Another example: $p \land q$ is satisfiable only when both $p = \texttt{True}$ and $q = \texttt{True}$.
+
+\vspace{0.5\baselineskip}
+
+\noindent\textbf{4. Number of satisfying assignments for valid formula:}
+
+\noindent If $\phi$ is a valid formula over $p, q$, then by definition it is true under all possible assignments. Since there are $2$ variables, there are $2^2 = 4$ total assignments, and all $4$ assignments satisfy $\phi$.
+
+\noindent Therefore, the answer is \textbf{4}.
+
+\end{solution}
 \subsection{SAT Checking}\label{sec:sat-solving}
 
 \emph{A SAT solver} takes a propositional formula, typically in CNF (\autoref{sec:syntax}), as input and determines its satisfiability by searching for a satisfying assignment $\sigma$ that makes the formula true. If one exists, it returns \sat{} (and optionally $\sigma$); otherwise, it reports \unsat{}.
@@ -8710,6 +8817,55 @@ Minimize $z = x + y$ subject to:
     \item The objective value at each corner point.
     \item The optimal solution.
 \end{enumerate}
+
+\begin{solution}
+\textbf{1. Constraints and Objective Function:}
+
+Minimize $z = x + y$ subject to:
+\[
+\begin{aligned}
+& x + 2y \geq 3, \\
+& 3x + y \geq 3, \\
+& x, y \geq 0.
+\end{aligned}
+\]
+
+\textbf{2. Corner Points:}
+
+We find the corner points by solving the systems of equations formed by the constraint boundaries:
+
+\begin{itemize}
+\item If $x = 0$ and $x + 2y = 3$: $(0, 1.5)$. Check: $3(0) + 1.5 = 1.5 < 3$, not feasible.
+\item If $y = 0$ and $x + 2y = 3$: $(3, 0)$. Check: $3(3) + 0 = 9 \geq 3$, feasible.
+\item If $x = 0$ and $3x + y = 3$: $(0, 3)$. Check: $0 + 2(3) = 6 \geq 3$, feasible.
+\item If $y = 0$ and $3x + y = 3$: $(1, 0)$. Check: $1 + 0 = 1 < 3$, not feasible.
+\item Intersection of $x + 2y = 3$ and $3x + y = 3$: Solving gives $x = \frac{3}{5}$, $y = \frac{6}{5}$, so $\left(\frac{3}{5}, \frac{6}{5}\right)$, feasible.
+\end{itemize}
+
+Feasible corner points: $(3,0)$, $(0,3)$, and $\left(\frac{3}{5}, \frac{6}{5}\right)$.
+
+\textbf{3. Objective Values:}
+
+We evaluate the objective function $z$ at each corner point:
+
+\begin{center}
+\begin{tabular}{ccc}
+\hline
+x & y & z = x + y \\
+\hline
+3 & 0 & 3 \\
+0 & 3 & 3 \\
+$\frac{3}{5}$ & $\frac{6}{5}$ & 1.8 \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{4. Optimal Solution:}
+
+The minimum value of $z$ is $\frac{9}{5}$ (or 1.8), achieved at $\left(\frac{3}{5}, \frac{6}{5}\right)$.
+
+Both constraints are binding (active) at this optimal point.
+\end{solution}
 \end{problem}
 
 
