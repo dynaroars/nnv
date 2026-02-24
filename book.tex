@@ -8907,7 +8907,7 @@ For this problem, you will find some interesting MILP problem online, formulate 
 Note: Interesting here means the problem has a non-trivial structure, resembles real-world applications (like the table and chair example in~\autoref{ex:lp-example3}), or involves complex constraints.
 \item For each problem:
 \begin{itemize}
-    \item Write down the problem and \emph{cite} the sources (e.g., exact URL or Author(s)/Title/Year if from a paper).
+    \item Write down the problem and \emph{cite} the source (e.g., exact URL or Author(s)/Title/Year if from a paper).
     \item Formulate the problem as a MILP (clearly indicate the objective and constraints).
     \item Solve them by hand (show all the steps, and if possible, draw the graph showing the feasible region).
     \item Implement the formulation in Z3 and solve it (also document the steps as comments). Use~\autoref{ex:lp-z3} as example.
@@ -8991,10 +8991,11 @@ Both constraints are binding (active) at this optimal point.
 
 In addition to optimization, LP can be used for satisfiability or \emph{feasibility} checking of linear constraints, i.e.,
 are there any values for the variables that satisfy all the constraints?
-This is achieved by running an LP solver with a constant objective (e.g., ``minimize 0''), in which case it simply tries to find \emph{any} point in the feasible region or shows that none exists (unsatisfiable or infeasible). This thus makes it useful for property checking and verification (e.g., showing that no counterexample exists).
+This is achieved by running the LP solver with a constant objective (e.g., ``minimize 0''), in which case it would try to find \emph{any} point in the feasible region or show that \emph{none} exists (unsatisfiable or infeasible). This thus makes LP solving useful for property checking and verification (e.g., showing that no counterexample exists).
 
 
-The main difference between LP feasibility and SMT satisfiability is the type of constraints they can handle. SMT satisfiability can handle richer logics involving booleans, integers, nonlinear arithmetic, and other theories while LP feasibility is limited to linear equalities/inequalities over real numbers. For problems involving more complex logic or theories, SMT solvers are necessary.
+The main difference between LP feasibility and SMT satisfiability checking is the type of constraints and logic they can handle.
+SMT satisfiability can handle richer logics involving booleans, integers, nonlinear arithmetic, and other theories while LP feasibility is limited to linear equalities/inequalities over real numbers. For problems involving more complex logic or theories, SMT solvers are necessary.
 But for NNV problems that involve only linear real arithmetic, LP feasibility is sufficient and often more efficient. 
 
 
