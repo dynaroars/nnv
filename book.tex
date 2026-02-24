@@ -219,10 +219,10 @@
 \newcommand{\proofgen}{\texttt{BaB$_{\text{ProofGen}}$}}
 \newcommand{\prooflang}{\texttt{BaB$_{\text{ProofLang}}$}}
 \newcommand{\proofcheck}{\texttt{BaB$_{\text{ProofCheck}}$}}
-
 \newcommand{\veristable}{\texttt{VeriStable}}
 \newcommand{\crown}{\texttt{$\alpha\beta$-CROWN}}
 \newcommand{\nnenum}{\texttt{nnenum}}
+\newcommand{\sobolbox}{\texttt{SobolBox}}
 \newcommand{\marabou}{\texttt{Marabou}}
 \newcommand{\eran}{\texttt{ERAN}}
 \newcommand{\reluplex}{\texttt{Reluplex}}
@@ -238,6 +238,8 @@
 \newcommand{\bab}{\texttt{BaB$_{\text{NNV}}$}}
 \newcommand{\neuralsat}{\texttt{NeuralSAT}}
 \newcommand{\tool}{\texttt{NeuralSAT}}
+\newcommand{\pyrat}{\texttt{PyRAT}}
+\newcommand{\cora}{\texttt{CORA}}
 \newcommand{\mipverify}{\texttt{MIPVerify}}
 \newcommand{\crowndefault}{\texttt{$\alpha\beta$-CROWN} (default)}
 
@@ -1538,7 +1540,7 @@ f(x) \neq f(x') \land \|x - x'\| \leq \epsilon \implies x' \text{ is a counterex
 \]
 \end{example}
 
-The goal of DNN verification (\autoref{sec:nnv-problem}) is to either prove that a property holds---no cex exist---or find a cex that violates the property.
+The goal of NNV (\autoref{sec:nnv-problem}) is to either prove that a property holds---no cex exist---or find a cex that violates the property.
 
 
 
@@ -1874,13 +1876,13 @@ Consider the NN in~\autoref{fig:proofnet}. Recall that in this network the hidde
 \chapter{Verification of Neural Networks}\label{sec:verification}
 
 This chapter discusses the problem of verifying neural networks, i.e., checking if a given property holds for a neural network.
-We define the NN verification (NNV) problem in~\autoref{sec:nnv-problem} and its satisfiability formulation, which is commonly used by DNN verifiers.
+We define the NN verification problem in~\autoref{sec:nnv-problem} and its satisfiability formulation, which is commonly used by DNN verifiers.
 
 
 \section{The Neural Network Verification (NNV) Problem}\label{sec:nnv-problem}
 
 \begin{definition}[NNV]\label{def:nnv}
-Given a DNN \(N\) and a property $\phi$, the \emph{NN verification} (NNV) problem asks if $\phi$ is a valid property\footnote{\autoref{chap:properties} provides various examples of properties.} of $N$.
+Given a NN \(N\) and a property $\phi$, the NNV problem asks if $\phi$ is a valid property\footnote{\autoref{chap:properties} provides various examples of properties.} of $N$.
 
 Typically, $\phi$ is a formula of the form
 
@@ -1889,7 +1891,7 @@ Typically, $\phi$ is a formula of the form
 \]
 where $\phi_{in}$ is the \emph{precondition}, i.e., a condition over the inputs of $N$, and $\phi_{out}$ is the \emph{postcondition}, i.e., a condition over the outputs of $N$.
 
-A DNN verifier attempts to find a \emph{counterexample} input to $N$ that satisfies $\phi_{in}$ but violates $\phi_{out}$.  If no such counterexample exists, $\phi$ is a valid property of $N$. Otherwise, $\phi$ is not valid and the counterexample can be used to retrain or debug the DNN~\cite{huang2017safety}.
+An NNV tool attempts to find a \emph{counterexample} input to $N$ that satisfies $\phi_{in}$ but violates $\phi_{out}$.  If no such counterexample exists, $\phi$ is a valid property of $N$. Otherwise, $\phi$ is not valid and the counterexample can be used to retrain or debug the DNN~\cite{huang2017safety}.
 \end{definition}
 
 
@@ -1931,7 +1933,7 @@ A counterexample showing this property violation is $\{x_1=-1, x_2=2\}$, from wh
 
 \section{Satisfiability Formulation and Checking}\label{sec:satisfiability-and-activation-pattern-search}
 
-As with traditional software verification, DNN verification is often represented as a satisfiability problem, which can be solved using an SMT solver (e.g., Z3~\cite{de2008z3}) or a MILP solver (e.g., Gurobi~\cite{gurobi}).
+As with traditional software verification, NNV is often represented as a satisfiability problem, which can be solved using an SMT solver (e.g., Z3~\cite{de2008z3}) or a MILP solver (e.g., Gurobi~\cite{gurobi}).
 
 \paragraph{Formulation} To formulate the problem, we first define a formula $\alpha$ to represent the network.
 Typically $\alpha$ is a conjunction ($\bigwedge$) of constraints representing the affine transformation (\autoref{sec:affine}) and activation function (\autoref{sec:activation}) of each neuron in the network.
@@ -2039,7 +2041,7 @@ ReLU-based NNV is \NP{}-complete as shown in~\cite{katz2017reluplex,salzer2023re
 
 
 
-\part{Constraint Solving and Abstraction}
+\part{Constraint Solving and Abstraction}\label{part:constraint-solving-abstraction}
 
 \chapter{Constraint Solving}\label{chap:constraint-solving}
 
@@ -2222,7 +2224,7 @@ Note that because $l_3 = -0.5$ and $u_3 = 2.5$, $a_3$ can be either 0 or 1, depe
 \end{example}
 
 
-\subsection{DNN encoding} More generally, we can encode the DNN as a set of MILP linear constraints as follows:
+\subsection{Neural Network Encoding} We can encode a neural network as a set of MILP linear constraints as follows:
 
 \begin{equation}\label{eq:mip}
     \begin{aligned}
@@ -2257,8 +2259,7 @@ Deactivating a neuron, $a_j^{(i)} = 0$, simplifies the first of the (e) constrai
 \neg \phi_{out} &: x_5 \le 0
 \end{align*}
 
-\item Encoding the DNN
-Hidden layer (pre- and post-activation):
+\item Encoding the hidden layer (pre- and post-activation):
 \begin{align*}
 z_3 &= -0.5x_1 + 0.5x_2 + 1.0 \\
 z_4 &= 0.5x_1 - 0.5x_2 - 1.0 \\
@@ -2359,9 +2360,9 @@ As shown in~\autoref{ex:relu_milp1}, the upper and lower bounds of neuron $x_3$ 
 
     %\item \textbf{Generic branch-and-bound algorithms:} While MILP solvers employ branch-and-bound (BaB) algorithms, these are generic and not tailored to DNNs. In contrast, specialized DNN verification algorithms leverage DNN-specific BaB strategies, such as layer-wise branching, abstract domain propagation, and neuron-specific heuristics, enabling greater efficiency.
 
-    \item \textbf{Advanced Abstraction and Heuristics} Interval analysis is efficient and commonly used for computing neuron bounds, but cannot capture dependencies between neurons, leading to precision loss in deeper networks. SOTA DNN verification tools use more advanced abstract domains such as zonotopes  and polytopes to improve precision (\autoref{chap:abstractions}).
+    \item \textbf{Advanced Abstraction and Heuristics} Interval analysis is efficient and commonly used for computing neuron bounds, but cannot capture dependencies between neurons, leading to precision loss in deeper networks. SOTA NNV tools use more advanced abstract domains such as zonotopes  and polytopes to improve precision (\autoref{chap:abstractions}).
 
-    Modern DNN verification tools also employ heuristics to decide which neurons to branch on and to determine stable neurons to avoid unnecessary branching. These heuristics are not available in general MILP solvers.
+    Modern NNV tools also employ heuristics to decide which neurons to branch on and to determine stable neurons to avoid unnecessary branching. These heuristics are not available in general MILP solvers.
 \end{itemize}
 
 
@@ -2390,7 +2391,7 @@ As shown in~\autoref{ex:relu_milp1}, the upper and lower bounds of neuron $x_3$ 
 \chapter{Abstractions}\label{chap:abstractions}
 
 
-As mentioned in~\autoref{sec:relu-encoding} the computation of upper and lower bounds of the neuron values help determine neuron stability and therefore can significantly reduce the complexity of verification. Modern DNN verifiers explore different \emph{abstraction} techniques to compute these bounds more precisely while balancing computational efficiency.
+As mentioned in~\autoref{sec:relu-encoding} the computation of upper and lower bounds of the neuron values help determine neuron stability and therefore can significantly reduce the complexity of verification. Modern NNV tools explore different \emph{abstraction} techniques to compute these bounds more precisely while balancing computational efficiency.
 
 This chapter discusses the interval, zonotope, and polytope abstract domains commonly used in verification. Each domain provides a different way to represent and compute the bounds of neurons, with its own trade-offs in terms of precision and computational complexity.
 
@@ -2936,7 +2937,7 @@ f^a([a, b]) = [a+1, b+1]
 
 \section{Abstract Domains}\label{sec:abstract-domains}
 
-We now introduce several abstract domains that are commonly used in DNN verification. Each domain has its own abstract transformer functions  to compute the bounds of neurons.
+We now introduce several abstract domains that are commonly used in NNV. Each domain has its own abstract transformer functions  to compute the bounds of neurons.
 
 Note that the input to the transformer functions (\autoref{sec:transformer-functions}) are the abstract values and the output is also an abstract value.  For example, for interval transformers, the input is an interval $[l, u]$ and the output is also an interval $[l', u']$. Similarly for zonotope transformers, the input is a zonotope defined by center and generators, and the output is also a zonotope.
 
@@ -3314,7 +3315,7 @@ In contrast, the rectangle zonotope on the left, which represents an interval ab
 \end{example}
 
 \subsection{Computing Bounds of a Zonotope}\label{sec:zonotope-bounds}
-In DNN verification, we often need to compute the bounds of each variable represented by a zonotope. This allows us to determine stable neurons, which in turn helps optimize the verification process.
+In NNV, we often need to compute the bounds of each variable represented by a zonotope. This allows us to determine stable neurons, which in turn helps optimize the verification process.
 
 For each coordinate (dimension) of the zonotope, we compute its lower and upper bounds as follows:
 \[
@@ -3770,8 +3771,8 @@ Thus, the final bounds after ReLU are \([0, 2.0]\).
 
 
 
-\section{Polytope}
-\tvn{not yet done, skip}
+% \subsection{Polytope}
+% \tvn{not yet done, skip}
 % In the previous section, we have seen the abstract domain of zonotopes, which is more expressive than the interval domain. Specifically, instead of approximating functions using a hyper-rectangle, the zonotope domain allows us to approximate functions using a zonotope, e.g., a parallelogram, capturing relations between different dimensions. In this section, we look at an even more expressive abstract domain, the polyhedron (or polytope) domain.
 
 % Unlike the zonotope domain, the polyhedron domain allows us to approximate functions using arbitrary convex polyhedra. A polyhedron in \(\mathbb{R}^n\) is a region made of straight (as opposed to curved) faces; a convex shape is one where the line between any two points in the shape is completely contained in the shape. Convex polyhedra can be specified as a set of linear inequalities of the form:
@@ -3995,7 +3996,7 @@ Thus, the final bounds after ReLU are \([0, 2.0]\).
 \part{The Branch and Bound Approach}\label{part:bab}
 \chapter{The Branch and Bound Search Algorithm}\label{chap:bab}
 
-As shown in~\autoref{chap:constraint-solving}, the NNV verification problem can be formulated as a satisfiability problem, solvable using a constraint solver,  e.g., SMT and MILP solvers.  However, such solvers not scale to large DNNs due to the complexity of the underlying formulae. Thus, modern DNN verification techniques reframe the problem to search for \emph{activation patterns} that satisfy the constraints, and use the \emph{Branch-and-Bound} algorithm to explore the space of possible activation patterns.
+As shown in~\autoref{chap:constraint-solving}, NNV can be formulated as a satisfiability problem, solvable using a constraint solver,  e.g., SMT and MILP solvers.  However, such solvers not scale to large DNNs due to the complexity of the underlying formulae. Thus, modern NNV techniques reframe the problem to search for \emph{activation patterns} that satisfy the constraints, and use the \emph{Branch-and-Bound} algorithm to explore the space of possible activation patterns.
 
 %These activation patterns fix the activation status (active/inactive) of each neuron, allowing us to simplify involved constraints to linear constraints that are easier to solve.
 
@@ -4005,22 +4006,22 @@ As shown in~\autoref{chap:constraint-solving}, the NNV verification problem can 
 
 \section{Activation Pattern Search}\label{sec:activation-patterns}
 
-DNNs with piecewise linear activation functions have a special structure that can be exploited for verification.
+Neural networks with piecewise linear activation functions have a special structure that can be exploited for verification.
 For example, each ReLU (\autoref{sec:relu}) function
 has two \emph{activation statuses}: active (identity function) and inactive (zero function). Each status
 partitions the input space into two regions---active and inactive.
 Within each region, the DNN behavior can be encoded as \emph{a linear constraint}, which can be efficiently analyzed.
 
-Thus, verifying a DNN reduces to checking that none of these linear regions contains a counterexample. More specifically, we can rewrite the satisfiability formulation in~\autoref{eq:nnv2} as a disjunction:
+Thus, NNV reduces to checking that none of these linear regions contains a counterexample. More specifically, we can rewrite the satisfiability formulation in~\autoref{eq:nnv2} as a disjunction:
 \begin{equation}\label{eq:nnv3}
   \bigvee_{p \in P} \left( \alpha_p \land \phi_{in} \land \neg \phi_{out} \right)
 \end{equation}
-where $P$ is the set of all possible \emph{activation patterns}---boolean assignments of activation statuses of all neurons-- of the DNN, and $\alpha_p$ is the formula $\alpha$ restricted to the linear region defined by the activation pattern $p$. This means that $\alpha_p$ includes additional constraints that fix the activation status of each neuron according to $p$. For example, if $p$ specifies that neuron $n_i$ is active, then $\alpha_p$ includes the constraint $z_i \ge 0$, indicating that the pre-activation value $z_i$ of neuron $n_i$ is non-negative. Similarly, if $n_i$ is inactive, then $\alpha_p$ includes $z_i < 0$.
+where $P$ is the set of all possible \emph{activation patterns}---boolean assignments of activation statuses of all neurons-- of the network, and $\alpha_p$ is the formula $\alpha$ restricted to the linear region defined by the activation pattern $p$. This means that $\alpha_p$ includes additional constraints that fix the activation status of each neuron according to $p$. For example, if $p$ specifies that neuron $n_i$ is active, then $\alpha_p$ includes the constraint $z_i \ge 0$, indicating that the pre-activation value $z_i$ of neuron $n_i$ is non-negative. Similarly, if $n_i$ is inactive, then $\alpha_p$ includes $z_i < 0$.
 
 As long as one of the disjuncts in~\autoref{eq:nnv3} is satisfiable, i.e., we could find a counterexample in one of the linear regions, the entire formula is satisfiable, indicating that the property is invalid. Conversely, if all disjuncts are unsatisfiable, the property is valid.
 
 This allows us to break down the verification problem into smaller subproblems, each searches for an activation pattern that satisfies the formula in~\autoref{eq:nnv2}.
-Modern DNN verification techniques~\cite{bunel2020branch,wang2021beta,ferrari2022complete,duong2024harnessing,duong2023dpllt,ovalbab,katz2019marabou,bak2021nnenum} all adopt this idea and search for a satisfying activation pattern to find a counterexample.
+Modern NNV techniques~\cite{bunel2020branch,wang2021beta,ferrari2022complete,duong2024harnessing,duong2023dpllt,ovalbab,katz2019marabou,bak2021nnenum} all adopt this idea and search for a satisfying activation pattern to find a counterexample.
 
 \subsection{Activation Patterns}
 \begin{definition}[Activation Pattern]\label{def:activation-pattern}
@@ -4239,7 +4240,7 @@ Consider the DNN in \autoref{fig:dnn-b}. Suppose we fix the activation pattern $
 
 \section{The Branch and Bound Algorithm}\label{sec:bab-alg}
 
-Many modern DNN verifiers adopt the Branch-and-Bound (BaB) approach to explore the space of possible neuron activation patterns (\autoref{sec:activation-patterns}). BaB splits (\emph{branch}) the verification problem into smaller subproblems by fixing activation statuses of neurons, and uses abstraction (\emph{bound}) techniques to compute upper and lower bounds on the output values for these subproblems. If the bounds, computed using abstraction (\autoref{chap:abstractions}), indicate infeasible (cannot contain a counterexample), the subproblem is pruned from the search space. This process continues until either a counterexample is found or all subproblems are exhausted, proving the property holds.
+Many modern NNV tools adopt the Branch-and-Bound (BaB) approach to explore the space of possible neuron activation patterns (\autoref{sec:activation-patterns}). BaB splits (\emph{branch}) the verification problem into smaller subproblems by fixing activation statuses of neurons, and uses abstraction (\emph{bound}) techniques to compute upper and lower bounds on the output values for these subproblems. If the bounds, computed using abstraction (\autoref{chap:abstractions}), indicate infeasible (cannot contain a counterexample), the subproblem is pruned from the search space. This process continues until either a counterexample is found or all subproblems are exhausted, proving the property holds.
 
 Note that because BaB splits ReLU neurons into active/inactive cases, it is also called \emph{``neuron-splitting''}, which contrasts with \emph{``input-splitting''} techniques (\autoref{sec:input-splitting}) that partition the input space.
 
@@ -4352,7 +4353,7 @@ Note that because BaB splits ReLU neurons into active/inactive cases, it is also
 \SetKwData{problems}{ActPatterns}
 \begin{algorithm}[t]
     \small
-    \Input{DNN $\mathcal{N}$, property $\phi_{in} \Rightarrow \phi_{out}$}
+    \Input{Network $\mathcal{N}$, property $\phi_{in} \Rightarrow \phi_{out}$}
     \Output{$\myunsat$ if property is valid, otherwise ($\mysat, \counterexample$)}
     \BlankLine
 
@@ -4378,7 +4379,7 @@ Note that because BaB splits ReLU neurons into active/inactive cases, it is also
 \end{algorithm}
 
 
-\paragraph{Reference Alg} \autoref{alg:bab} shows \bab{}, a reference~\cite{nakagawa2014consolidating} BaB architecture for DNN verification. \bab{} takes as input a ReLU-based DNN $\mathcal{N}$ and a formulae $\phi_{in}\Rightarrow \phi_{out}$ representing the property of interest.
+\paragraph{Reference Alg} \autoref{alg:bab} shows \bab{}, a reference~\cite{nakagawa2014consolidating} BaB architecture for NNV. \bab{} takes as input a ReLU-based network $\mathcal{N}$ and a formulae $\phi_{in}\Rightarrow \phi_{out}$ representing the property of interest.
 \bab{} maintains a set of activation patterns (\problems) that represent the current activation pattern of the network. Initially, \problems is initialized with an empty activation pattern (\autoref{line:babinit}).
 
 
@@ -4421,7 +4422,7 @@ Abstraction is (very) quick but may yield false positives (declaring feasible wh
 
 
 \begin{example}\label{ex:bab}
-\autoref{fig:bab-example}a illustrates a DNN and how \bab{} verifies that this DNN has the property
+\autoref{fig:bab-example}a illustrates a network and how \bab{} verifies that this network has the property
 \[
 (x_1, x_2) \in [-2.0, 2.0] \times [-1.0, 1,0] \Rightarrow (y_1 > y_2),
 \]
@@ -4505,10 +4506,10 @@ Test your understanding of BaB and activation patterns by answering the followin
 \end{enumerate}
 \end{problem}
 
-\subsection{Beyond the Basic} What described above is the basic and minimal BaB algorithm. Modern DNN verifiers implement many optimizations and strategies to improve the performance of the search. For example, they apply various engineering tricks to eliminate easy cases or find easy counterexamples (\autoref{chap:adversarial-attacks}) before running the full BaB search.
+\subsection{Beyond the Basic} What described above is the basic and minimal BaB algorithm. Modern NNV tools implement many optimizations and strategies to improve the performance of the search. For example, they apply various engineering tricks to eliminate easy cases or find easy counterexamples (\autoref{chap:adversarial-attacks}) before running the full BaB search.
 
 
-Even the BaB search itself is optimized to avoid exploring the entire search space. For example, if \Deduce step determines infeasibility, a smarter \bab{} variant (e.g., the \neuralsat{} tool) can analyze the conflict and add a new clause to the set of clauses (\texttt{clauses}) to prevent the same activation pattern from being selected again. This is similar to conflict-driven clause learning (CDCL) in modern SAT solvers and is implemented in the \neuralsat{} DNN verification tool~\cite{duong2025neuralsat}. In addition, heuristics are also used to select, e.g., which neuron to split next (\Decide). We explore these optimizations and strategies in later chapters (e.g.,~\autoref{chap:neuralsat}).
+Even the BaB search itself is optimized to avoid exploring the entire search space. For example, if \Deduce step determines infeasibility, a smarter \bab{} variant (e.g., the \neuralsat{} tool) can analyze the conflict and add a new clause to the set of clauses (\texttt{clauses}) to prevent the same activation pattern from being selected again. This is similar to conflict-driven clause learning (CDCL) in modern SAT solvers and is implemented in the \neuralsat{} NNV tool~\cite{duong2025neuralsat}. In addition, heuristics are also used to select, e.g., which neuron to split next (\Decide). We explore these optimizations and strategies in later chapters (e.g.,~\autoref{chap:neuralsat}).
 
 % \tvn{TODO: this basic BaB is also used to create a proof tree, which is used to generate a proof in the \prooflang{} format. We will discuss this in~\autoref{chapter:proof-gen-check}.}
 
@@ -4747,7 +4748,7 @@ Depend on your choice of step size $\eta$, PGD might have one or more iterations
 As DNN tools become more complex (e.g., state-of-the-art tools have 20K+ LoCs), they are more prone to bugs. VNN-COMP'23~\cite{brix2023fourth} showed that 3 of the top 7 participants produced unsound results by claiming unsafe DNNs are safe, i.e., they produce \unsat{} on problems that are actually \sat{}.
 
 While checking counterexamples is relatively straightforward (we can just evaluate the DNN on the input), checking \unsat{} results---proving no counterexample exists---is more challenging as it requires tracing the reasoning steps of the verifier.
-In this chapter, we discuss work~\cite{duong2025generating} on generating and checking proofs of \unsat{} results generated by BaB-based DNN verifiers.
+In this chapter, we discuss work~\cite{duong2025generating} on generating and checking proofs of \unsat{} results generated by BaB-based NNV tools.
 
 \section{Proof Generation for Branch and Bound Algorithms}\label{sec:proofgen}
 
@@ -4780,12 +4781,12 @@ $\counterexample \leftarrow \LP(\mathcal{N}, \phi_{in}, \phi_{out}, \sigma_i)$ \
             }
     }
     \Return{$(\unsat, \blue{\prooftree})$}
-    \caption{The \proofgen{} DNN verification with proof generation.}\label{alg:bab-proof}
+    \caption{The \proofgen{} NNV tool with proof generation.}\label{alg:bab-proof}
 \end{algorithm}
 
-Recall that the BaB algorithm, shown in~~\autoref{alg:bab}, splits the problem into smaller subproblems and use abstraction to compute bounds to prune the search space. This structure allows us to bring proof generation capabilities with minimal overhead to existing DNN verification tools that use BaB.
+Recall that the BaB algorithm, shown in~~\autoref{alg:bab}, splits the problem into smaller subproblems and use abstraction to compute bounds to prune the search space. This structure allows us to bring proof generation capabilities with minimal overhead to existing NNV tools that use BaB.
 
-\autoref{alg:bab-proof} extends~\autoref{alg:bab} to show \proofgen, a BaB-based DNN verification algorithm with proof generation capability. The key idea is to introduce a \textbf{proof tree} (\autoref{line:prooftree}) and recording the branching decisions to it (\autoref{line:record_proof}).
+\autoref{alg:bab-proof} extends~\autoref{alg:bab} to show \proofgen, a BaB-based NNV algorithm with proof generation capability. The key idea is to introduce a \textbf{proof tree} (\autoref{line:prooftree}) and recording the branching decisions to it (\autoref{line:record_proof}).
 Thus, the proof tree has a binary structure, where each node represents a neuron and its left and right edges represent its activation decision (active or inactive).
 At the end of the verification process, the proof tree is returned as the proof of \unsat{} result.
 
@@ -4813,7 +4814,7 @@ At the end of the verification process, the proof tree is returned as the proof 
 \end{figure}
 
 
-We reuse the example in~\autoref{ex:bab} to illustrate \proofgen{}. Recall the goal is to verify that the DNN in~\autoref{fig:proof-example}(a) has the property $(x_1, x_2) \in [-2.0, 2.0] \times [-1.0, 1,0] \Rightarrow (y_1 > y_2)$.
+We reuse the example in~\autoref{ex:bab} to illustrate \proofgen{}. Recall the goal is to verify that the network in~\autoref{fig:proof-example}(a) has the property $(x_1, x_2) \in [-2.0, 2.0] \times [-1.0, 1,0] \Rightarrow (y_1 > y_2)$.
 
 For this problem \proofgen{} generates the proof tree in~\autoref{fig:proof-example}(b) to show unsatisfiability, i.e., the property is valid. \proofgen{} first splits neuron $v_4$, creating two subproblems: one with $v_4$ active and the other with $v_4$ inactive (split node 1). The inactive $v_4$ subproblem is determined to be unsatisfiable (leaf node 3). The active $v_4$ subproblem is further split on $v_2$ (split node 2). The inactive $v_2$ subproblem is determined to be unsatisfiable (leaf node 5). The active $v_2$ subproblem is further split on $v_1$ (split node 4). Both the active and inactive $v_1$ subproblems are determined to be unsatisfiable (leaf nodes 6 and 7). Since all branches lead to unsatisfiability, the property is valid.
 
@@ -4952,7 +4953,7 @@ that is human-readable, is compact, can be efficiently generated by verification
 be efficiently and independently processed by proof checkers.
 
 The proof language \prooflang{} is designed to meet these requirements.
-\prooflang{} is inspired by the SMTLIB format~\cite{barrett2010smt} used for SMT solving, which has also been adopted by the  VNNLIB language~\cite{vnnlib} to specify DNNs and their properties for verification (see~\autoref{sec:vnnlib} for examples).
+\prooflang{} is inspired by the SMTLIB format~\cite{barrett2010smt} used for SMT solving, which has also been adopted by the  VNNLIB language~\cite{vnnlib} to specify neural networks and their properties for verification (see~\autoref{sec:vnnlib} for examples).
 
 %accepted by our proof check algorithm (\autoref{sec:proof-checker}
 
@@ -4973,23 +4974,23 @@ The hidden constraints represent the activation patterns of the hidden neurons i
 \end{example}
 
 The \prooflang{} language is intentionally designed to (a) not explicitly include weights/bias terms to minimize size of the proof structure, and (b) explicitly reflect a DNF structure to enable easy parallelization.
-The DNN weight and bias terms are readily available in the standard ONNX~\cite{onnx} format, which is typically used to represent the DNN input to a \proofgen{}-based DNN verification tool and can be accessed by any \prooflang{} checker like the one described next in~\autoref{sec:proofchecking}.
+The network weights and bias terms are readily available in the standard ONNX~\cite{onnx} format, which is typically used to represent the network input to a \proofgen{}-based NNV tool and can be accessed by any \prooflang{} checker like the one described next in~\autoref{sec:proofchecking}.
 
 
 \section{Proof Checker}\label{sec:proofchecking}
-We present \proofcheck{}, a proof checker for \prooflang{} proofs generated by BaB-based DNN verifiers.
+We present \proofcheck{}, a proof checker for \prooflang{} proofs generated by BaB-based NNV tools.
 %Finally, we need to check that the generated proof is correct and proves that the original DNN verification problem is indeed \unsat{}. %The checker must be efficient to handle large proofs and trusted of its results (if it verifies the proof, then the original NNV problem is proved).
 \proofcheck{} is verifier-independent and support \prooflang{} proofs generated by different verification tools. \proofcheck{} also has several optimizations to handle large proofs efficiently.
 
 \subsection{The Core \proofcheck{} Algorithm}
 
-The goal of \proofcheck{} is to verify that the \prooflang{} tree generated by a DNN verification tool is correct (i.e., the proof tree is a proof of unsatisfiability of the DNN verification problem).
-\proofcheck{} thus must verify that the constraint represented by each \emph{leaf} node in the proof tree is unsatisfiable. To check each node, \proofcheck{} forms an MILP problem (\autoref{sec:using-milp}) consisting of the constraint in~\autoref{eq:nnv2} (the DNN, the input condition, and the negation of the output) with the constraints representing the activation pattern encoded by the tree path to the leaf node. \proofcheck{} then invokes an LP solver to check that the MILP problem is infeasible, which indicates unsatisfiability of the leaf node.
+The goal of \proofcheck{} is to verify that the \prooflang{} tree generated by an NNV tool is correct (i.e., the proof tree is a proof of unsatisfiability of the NNV problem).
+\proofcheck{} thus must verify that the constraint represented by each \emph{leaf} node in the proof tree is unsatisfiable. To check each node, \proofcheck{} forms an MILP problem (\autoref{sec:using-milp}) consisting of the constraint in~\autoref{eq:nnv2} (the network, the input condition, and the negation of the output) with the constraints representing the activation pattern encoded by the tree path to the leaf node. \proofcheck{} then invokes an LP solver to check that the MILP problem is infeasible, which indicates unsatisfiability of the leaf node.
 
 \begin{algorithm}[t]
     \small
 
-    \Input{DNN $\mathcal{N}$, property $\phi_{in} \Rightarrow \phi_{out}$, $\prooftree$}
+    \Input{Network $\mathcal{N}$, property $\phi_{in} \Rightarrow \phi_{out}$, $\prooftree$}
     \Output{\certified if proof is valid, otherwise \uncertified}
     \BlankLine
 
@@ -5049,7 +5050,7 @@ The goal of \proofcheck{} is to verify that the \prooflang{} tree generated by a
 \end{algorithm}
 
 
-\autoref{fig:algorithm} shows a minimal (core)  \proofcheck{} algorithm, which takes as input a DNN $\mathcal{N}$, a property $\phi_{in} \Rightarrow \phi_{out}$, a proof tree $\prooftree$, and returns \certified if the proof tree is valid and \uncertified otherwise.
+\autoref{fig:algorithm} shows a minimal (core)  \proofcheck{} algorithm, which takes as input a network $\mathcal{N}$, a property $\phi_{in} \Rightarrow \phi_{out}$, a proof tree $\prooftree$, and returns \certified if the proof tree is valid and \uncertified otherwise.
 \proofcheck{} first checks the validity of the proof tree (\autoref{line:build_model}), i.e., the input must represent a proper \prooflang{} proof tree (\autoref{sec:prooflang}).
 If the proof tree is invalid, \proofcheck{} raises an error.
 \proofcheck{} next creates a MILP model (\autoref{line:build_model}) representing the input. % (\autoref{sec:neuron-stabelization}).
@@ -5060,7 +5061,7 @@ If the proof tree is invalid, \proofcheck{} raises an error.
 
 \begin{example}
     For the \prooflang{} proof in~\autoref{fig:proof_example}, we check that the four leaf nodes 3, 5, 6, and 7 of the proof tree in~\autoref{fig:proof-example}b are unsatisfiability. Assume \proofcheck{} first selects node 3, it forms the MILP problem for leaf node 3 by conjoining the constraint representing $0.6v_1 + 0.9v_2 - 0.1 \le 0$ (i.e., $\overline{v_4}$) %\tvn{Hai check}\hd{by setting $a_1^{(2)}=0$ representing that $\hat{z}_1^{(2)} \le 0$ (see~\autoref{eq:mip}e) or \emph{implicitly} conjoining the inequality $0.6\hat{z}^{(1)}_0 + 0.9\hat{z}^{(1)}_1 - 0.1 \le 0$ (or ${z}_1^{(2)} \le 0$), where $\hat{z}^{(1)}_0$, $\hat{z}^{(1)}_1$ represent the outputs of $v_1$ and $v_2$, respectively.}
-with the constraints in~\autoref{eq:nnv2} representing the input ranges and the DNN with the objective of optimizing the output. \proofcheck{} then invokes an LP solver, which determines that this MILP is infeasible, i.e., leaf node 3 indeed leads to unsatisfiability.
+with the constraints in~\autoref{eq:nnv2} representing the input ranges and the network with the objective of optimizing the output. \proofcheck{} then invokes an LP solver, which determines that this MILP is infeasible, i.e., leaf node 3 indeed leads to unsatisfiability.
 
 \proofcheck{} continues this process for the other three leaf nodes and returns \certified as all leaf nodes are unsatisfiable.
 \end{example}
@@ -5099,7 +5100,7 @@ with the constraints in~\autoref{eq:nnv2} representing the input ranges and the 
 
 \subsection{Optimizations}
 While the core \proofcheck{} algorithm in~\autoref{fig:algorithm} is minimal, it can be inefficicient for large proofs.
-\proofcheck{} employs several optimizations to improve its efficiency. These are crucial for checking large proof trees generated by DNN verification tools for challenging problems.
+\proofcheck{} employs several optimizations to improve its efficiency. These are crucial for checking large proof trees generated by NNV tools for challenging problems.
 
 \paragraph{Neuron Stabilization}
 
@@ -5161,7 +5162,7 @@ While the core \proofcheck{} algorithm in~\autoref{fig:algorithm} is minimal, it
 %     % \Description{}
 % \end{algorithm}
 
-A primary challenge in DNN analysis is the presence of large numbers of piecewise-linear constraints (e.g., ReLU) which generate a large number of branches and yield large proof trees. In the MILP formulation, this creates many disjunctions which are hard to solve. To reduce the number of disjunctions, \proofcheck{} uses \emph{neuron stabilization}~\cite{duong2024harnessing}
+A primary challenge in NNV is the presence of large numbers of piecewise-linear constraints (e.g., ReLU) which generate a large number of branches and yield large proof trees. In the MILP formulation, this creates many disjunctions which are hard to solve. To reduce the number of disjunctions, \proofcheck{} uses \emph{neuron stabilization}~\cite{duong2024harnessing}
 to determine neurons that are \emph{stable}, either active or inactive, for all inputs defined by the property pre-condition.
 For all stable neurons, the disjunctive ReLU constraint is replaced with a linear constraint that represents the neuron's value.   This simplifies the MILP problem.
 
@@ -5664,13 +5665,13 @@ while being close enough to a proven unsatisfiable node that it has a reasonable
 
 \chapter{Common Engineerings and Optimizations}\label{chap:common-engineering}
 
-In addition to adversarial attacks (\autoref{chap:adversarial-attacks}), DNN verifiers often employ a range of optimizations and engineering techniques to improve performance. This chapter discusses some of the common techniques used in modern DNN verifiers.
+In addition to adversarial attacks (\autoref{chap:adversarial-attacks}), NNV tools often employ a range of optimizations and engineering techniques to improve performance. This chapter discusses some of those common techniques.
 
 \section{Input Splitting}\label{sec:input-splitting}
 
 Many verifiers, e.g.,~\cite{katz2019marabou,wang2018formal,wang2021beta,duong2025neuralsat}, use a technique called \emph{input splitting} to quickly deal with networks with verification problems involving low-dimensional networks, such as those in the ACAS Xu benchmark~\autoref{sec:acasxu} where the networks have a small number of inputs (e.g., $\le 50$).
 
-The idea is to split the original verification problem into subproblems, each checking whether the DNN produces the desired output from a smaller input region and returns \unsat{} if all subproblems are verified and \sat{} if a counterexample is found in any subproblem. Input splitting avoids BaB search (\autoref{chap:bab})---which performs \emph{neuron splitting}---and is often used to quickly eliminate easy cases.
+The idea is to split the original verification problem into subproblems, each checking whether the network produces the desired output from a smaller input region and returns \unsat{} if all subproblems are verified and \sat{} if a counterexample is found in any subproblem. Input splitting avoids BaB search (\autoref{chap:bab})---which performs \emph{neuron splitting}---and is often used to quickly eliminate easy cases.
 
 Moreover, each subproblem now has a smaller input region, thus the verifier can often verify them more quickly than the original problem.
 Finally, because each task can be solved independently, the verifier can solve them in parallel to further speed up the verification process.
@@ -5682,7 +5683,7 @@ $\{x_1 \in [-1,0] , x_2 \in [-2,0]\}$,
 $\{x_1 \in [-1,0] , x_2 \in [0,2]\}$ ,
 $\{x_1 \in [0,1] , x_2 \in [-2,0]\}$, and
 $\{x_1 \in [0,1], x_2 \in [0,2]\}$.
-The verifier then checks if the DNN produces the desired output from each of these subregions.
+The verifier then checks if the network produces the desired output from each of these subregions.
 
 Note that the formula $-1 \le x_1 \le 1 \land -2 \le x_2 \le 2$ representing the original input region is equivalent to the formula $(-1 \le x_1 \le 0 \lor 0 \le x \le 1) \land (-2 \le x_2 \le 0 \lor 0 \le x_2 \le 2)$ representing the combination of the created subregions.
 \end{example}
@@ -5700,7 +5701,7 @@ These tighter input bounds propagate through the network and yield tighter neuro
 prune subproblems earlier.
 
 \begin{example}\label{ex:inputboundstigthten}
-Recall the DNN from~\autoref{fig:dnn-b} can be represented as:
+Recall the NN from~\autoref{fig:dnn-b} can be represented as:
 \[
 \begin{aligned}
 & \hat{x}_3 = -0.5x_1 + 0.5x_2 + 1.0 ~\land\\
@@ -5740,7 +5741,7 @@ We can apply the same approach to tighten the lower bounds of $x_1$ using a mini
 
 \end{example}
 
-Note that, this approach works well for networks with small inputs, e.g., the ACAS Xu benchmark~\autoref{sec:acasxu} with 5 inputs, and is adopted by many modern DNN verification tools, including \marabou{} and \nnenum{}.
+Note that, this approach works well for networks with small inputs, e.g., the ACAS Xu benchmark~\autoref{sec:acasxu} with 5 inputs, and is adopted by many modern NNV tools, including \marabou{} and \nnenum{}.
 For larger input dimensions networkswe, it will take much time as we need to run $2 \times$ the number of inputs to tighten all the input bounds (for each input, we need to tighten the upper and lower bounds individually).
 
 To reduce the time complexity, we can prioritize the input variables to tighten first, e.g., deciding the variable with the largest bounds first, and only tighten up to a maxinum number of inputs, e.g., 10 inputs.
@@ -5988,10 +5989,10 @@ O_U = U @ W_plus.T + L @ W_minus.T + b
 %Otherwise, they split that current subregion into multiple instances, and continue at the aforementioned abstraction step.
 %In the other hand, in \tool{}, each CDCL instance takes input of a subregion and run for verifying it with iterations as in~\autoref{fig:alg}.
 
-\part{Modern DNN Verification Tools}\label{part:modern-tools}
+\part{Modern NNV Tools}\label{part:modern-tools}
 \chapter{The \neuralsat{} Algorithm}\label{chap:neuralsat}
 
-\neuralsat{}~\cite{duong2025neuralsat,duong2024harnessing} is a relatively new competitor in the DNN verification space, but it has quickly become a strong contender, consistently placed among the top tools at DNN verification competitions~\autoref{chap:vnncomps}.
+\neuralsat{}~\cite{duong2025neuralsat,duong2024harnessing} is a relatively new competitor in the DNN verification space, but  it has quickly become a strong contender, consistently placed among the top tools at DNN verification competitions~\autoref{chap:vnncomps}.
 
 At its core, \neuralsat{} is BaB, but follows a DPLL(T) framework~\cite{davis1962machine} and includes specialized optimizations and heuristics to improve its search.
 Thus, \neuralsat{} is essentially an SMT solver (\autoref{sec:smt-solvers}) with respect to a theory, in this case, the theory of DNNs.
@@ -7214,9 +7215,125 @@ Thus, the property in~\autoref{eq:prop1} is \emph{not valid} for the DNN in~\aut
 
 \chapter{VNN-COMPs}\label{chap:vnncomps}
 
-As the NNV field matured, it became increasingly difficult to compare approaches. Papers often evaluated tools on different benchmarks, under different hardware assumptions, and using different specification languages. This fragmentation made it hard to assess the true state of the art, identify open challenges, and drive progress.
 
-Inspired by the success of other formal methods competitions (e.g., SAT, SMT, model checking), the International Verification of Neural Networks Competition (\textbf{VNN-COMP}) was created to address these issues by providing a standardized, reproducible, an automated evaluation framework for neural network verification tools. VNN-COMP has been held annually since 2020, with each edition refining rules, benchmarks, and infrastructure based on community feedback and lessons learned.
+As NNV matured, it became increasingly difficult to compare approaches. Papers often evaluated tools on different benchmarks, under different hardware assumptions, and using different specification languages. This fragmentation made it hard to assess the true state of the art, identify open challenges, and drive progress. This chapter describes the VNN-COMPs, which were created to address this problem by providing a common platform for evaluating and comparing NNV tools, and discusses common features of SOTA tools.
+
+
+\section{VNN-COMPs}
+Inspired by the success of other formal methods competitions (e.g., SAT, SMT, model checking), the International Verification of Neural Networks Competition (\textbf{VNN-COMP}~\cite{kaulen20256thinternationalverificationneural,brix2024fifth,brix2023fourth}) is to encourage the standardization of tool interfaces, and bring together the NNV community.
+To this end, VNN-COMP uses standardized formats for networks (ONNX~\cite{onnx}) and specification (VNN-LIB~\cite{vnnlib}), and evaluates tools 
+using a common set of benchmarks (collected from various sources including previous papers and contributions from the community) on a common platform (AWS instances).
+
+
+
+\paragraph{VNN-COMP'25 Results} In the latest 2025 VNN-COMP iteration~\cite{kaulen20256thinternationalverificationneural}, 7 teams participated on a diverse set of 16 regular and 6 extended benchmarks. 
+The table in the~\autoref{fig:vnn-comp25}, corresponding to Tab. 6~\cite{kaulen20256thinternationalverificationneural},  presents the overall scores and rankings of the tools. 
+The cactus plot corresponds to Fig. 6~\cite{kaulen20256thinternationalverificationneural} and shows tool performance on all benchmark instances. 
+In summary, our \neuralsat{} tool ranks 2nd overall, behind \crown{}, a regular winner of VNN-COMPs, and ahead of \texttt{PyRAT}.
+
+\begin{figure}
+\begin{minipage}{0.24\linewidth}
+    \footnotesize    
+    \centering
+    \begin{tabular}{cll}
+        \toprule
+    \# & Tool & Score\\
+    \midrule
+    1 & \crown{} & 1566.9\\
+    2 & \neuralsat{} & 1430.2\\
+    3 & \pyrat{} & 1228.4\\
+    4 & \cora{} & 987.2\\
+    5 & \nnv{} & 796.4\\
+    6 & \nnenum{} & 740.3\\
+    7 & \sobolbox{} & 593.3\\
+    \bottomrule
+    \end{tabular}
+\end{minipage}
+\begin{minipage}{0.72\linewidth}
+    \centerline{\includegraphics[width=\textwidth]{figure/all_scored.pdf}}
+\end{minipage}
+\caption{VNN-COMP'25 results~\cite{kaulen20256thinternationalverificationneural}\tvn{keep the $\alpha\beta$ instead of AB}}\label{fig:vnn-comp25}    
+\end{figure}
+
+
+\section{Common Features of SOTA Tools}
+\begin{table}
+    \caption{Common features of SOTA NNV tools.} \label{tab:features}
+    \centering
+    \small
+    \begin{tabular}{c|c}
+        \toprule
+        \textbf{Feature} & \textbf{Supported} \\
+        \midrule
+        Network Type           & Acyclic computation graphs, e.g., Feed-forward, Residual\\
+        Layer Type             & FC, CNN, MaxPool, BatchNorm, Softmax \\
+        Activation Function    & ReLU, Sigmoid, Tanh, Sign, Exp \\
+        Abstract Domain        & Polytope, Interval\\
+        Search Algorithm       & Parallel DPLL(T)\\
+        Hardware               & Multi-core CPU, GPU\\
+        Optimization           & Adv. Attacks, Input splitting, Large Output Opt., MILP solving\\ 
+        Property    & Robustness, Safety\\
+        Input                  & Pytorch, ONNX, VNN-LIB\\
+        Output                 & (sat, unsat, timeout), counter-examples\\ %, unsat proof\\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+
+% From our experience evaluating tools and participating in competitions, we found that the
+% novelty described in research papers often does not translate to competitive performance or practical usability.
+% Instead, the implementation details, such as being versatile, easy to use, and employing ``engineering'' optimizations to improve performance matter perhaps just as much.
+% ~\autoref{tab:features} shows features of \toolu{}, many of which are often overlooked in research papers (e.g., absent in~\cite{duong2024harnessing}) but are critical for building a long-term and high-performance tool.
+
+\paragraph{Nework Types and Activation Functions} Currently, most NNV tools work with fully connected (FC), convolutional (CNN), residual (ResNet), batch normalization (BatchNorm) networks, etc.
+Some also support mixtures of different types, e.g., VAEs which are large residual CNN-based networks~\cite{duong2025compositional}.
+%\tvn{citations and add some more examples on uncommon networks supported by existing tools}\hd{done}
+In addition to ReLU, SOTA tools support other major activation functions including sigmoid, tanh, and power~\cite{kaulen20256thinternationalverificationneural}. %Briefly,  for these non-ReLU activation functions, we split a neuron at the center of its interval. Unlike ReLU where it becomes linear after splitting, non-ReLU does not, so \toolu{} splits a single neuron multiple times, if needed, until the problem is verified or timed out.
+
+% Note that these are also supported by other DNN verification tools such as \crown{} though the LiRPA library~\cite{xu2020automatic}.  However, it is straight-forward to extend \toolu{} to support new layer or activation functions, by modifying the abstractions used in the T-solver to compute the approximation bounds of activation functions over different network layers. 
+% % For example, VNN-COMP'24 has networks with ``Exponential'' and ``Reciprocal'' layers that were not supported by existing work and so we just extend our abstraction to compute the lower and upperbounds for these types of layers to allow \toolu{} to verify them.
+
+% %The main idea is extending the lower and upper bound computations over different layers and computing heuristic scores through these layers used in the decision heuristics in DPLL.
+
+% %Non-ReLU activation functions are continuous, and to handle them, we compute their lower and upper bounds and split their values in the middle of their bounds.
+% %\matt{I'm not sure what this means and it seems like it should be described in more detail if it is a valuable engineering optimization.  We have space so we might want to add more here.}
+   
+\paragraph{Standard Input and Output Formats.} VNN-COMPs and major NNV tools support input networks in the standard ONNX format~\cite{onnx} and properties in VNNLIB format~\cite{vnnlib}. 
+Some of SOTA tools, e.g., \neuralsat{}, also work directly with networks in Pytorch, a common format for neural networks.
+The output is reported as \texttt{unsat} (property proved), \texttt{sat} (property disproved), or \texttt{unknown} and \texttt{timeout} (property cannot be proved). NNV tools also generate counterexamples for \texttt{sat} results in text format supported by VNN-COMPs. However, few tools generate unsat proofs, a topic of ongoing research as discussed in~\autoref{chap:proof-gen-check}.
+
+    
+% \subsubsection*{Fully Automatic, but Configurable.} An important decision in designing \toolu{} is to make it fully automatic and so that for end-users it \emph{``just works''}, perhaps even at the cost of some runtime. Users can simply apply \toolu{} to check their networks and desired properties without any parameter configuration. For example, \toolu{} runs on all VNN-COMP benchmarks with \emph{zero} tuning. In contrast, top tools, such as \crown{}, require significant tuning to perform effectively (more details in~\autoref{sec:eval}).
+
+% However, \toolu{} has many settings that can be configured by the users, such as the number of threads, number of restarts,  timeout, etc. These options are useful for experts who want to explore different settings and optimize the performance of \toolu{} for their specific problems.
+
+\paragraph{Engineering Optimizations.}
+As with most high-performance analysis tools, engineering matters! SOTA NNV tools use various engineering optimizations to improve performance.  For example, they often employ adversarial attack techniques such as derivative-free sampling-based~\cite{yu2016derivative} and gradient-based~\cite{madry2017towards} methods to quickly find counterexamples indicating property violation. They also preprocess and apply heuristics that automatically select appropriate abstractions and algorithms based on input network structures and properties~\cite{duong2025neuralsat,duong2024harnessing}. They use input splitting~\cite{duong2025neuralsat,wang2021beta,bak2021nnenum,zhang2022general} for networks with low input dimension and neuron splitting for other networks.
+
+\paragraph{Commodity Hardware.} NNV tools heavily leverages the power of modern hardware, including multi-core CPUs and GPUs. For example, the parallel search in \neuralsat{} uses multi-threading, allowing multiple search subspaces to be processed simultaneously on different CPU cores. Abstraction techniques, e.g., the LiRPA library~\cite{xu2020automatic},
+%\tvn{citation, correct?}\hd{correct}, 
+are often implemented to run on GPUs, which significantly speeds up the computation of neuron bounds. However, real-world networks are growing rapidly in size, and we need to explore new paradigms beyond simply leveraging commodity hardware to scale verification.
+
+\paragraph{Parameter Tuning and Extensibility.} NNV tools are powerful and flexible and have many parameters that can be tuned to further optimize performance for specific problems. Common parameters include decision heuristics, restart strategies, timeouts, CPU threads for parallelism, etc. 
+The \tool{}, in contrast to most other SOTA tools, is designed to be fully automatic and so that for end-users it \emph{``just works''}, \tool{} runs on all VNN-COMP benchmarks with \emph{zero} tuning.
+
+Some tools are designed in a modular and extensible way, which allows users to easily add new heuristics, optimizations, or new search algorithms.
+For example, \tool{} consists of a small core BnB/DPLL search algorithm and other 
+heuristics and optimizations are implemented as independent functions and can be easily replaced or extended (e.g., in current implementation decision heuristics or restart functionalities are less than 50 SLOC). 
+
+
+
+
+%For example, \neuralsat{} allows users to configure the number of threads, restart strategies, decision heuristics, timeout, etc. These options are useful for experts who want to explore different settings and optimize the performance of \neuralsat{} for their specific problems.
+
+%While leveraging hardware is common in DNN verification, the implementation is highly specific to the tool and requires careful engineering to achieve high performance. In VNN-COMP'24\footnote{VNN-COMP'24 no longer measures verification runtime and instead uses timeout.}, \toolu{} was one of the fastest tools, often outperforming other top competitors.
+
+
+
+
+% \subsubsection*{Extensibility.} As mentioned, \toolu{} has many optimizations, and 
+% their addition was facilitated by the use of DPLL(T). The DPLL(T) framework in \toolu{} is modular and extensible, consisting of a small core search algorithm and allows users to: add new decision or restart heuristics for DPLL, add new adversarial attacks in preprocessing, or extend the T-solver with additional abstraction or optimizations for DNN analysis. For example, the neuron stabilization optimization described in~\autoref{sec:overview} is an independent function with fewer than 100 SLOCs and integrated via a hook method call into the core DPLL search. Similarly, heuristics are implemented as independent functions and can be easily replaced or extended (e.g., in current implementation decisions and restarts are less than 50 SLOC). 
+% \toolu{} also uses the Gurobi LP solver as a black box and thus can switch to different solvers, e.g, Xpress~\cite{xpress}, dReal~\cite{dreal}.
 
 
 
@@ -8867,7 +8984,7 @@ Running an LP solver with objective $\min 0$ will return a point, e.g., (x=0,y=0
 
 % \paragraph{Constructions} Software is typically \emph{designed} and \emph{written} by humans using programming languages and code editors. In constrast, NNs are largely \emph{constructed} and \emph{trained} by machines using training data and optimization algorithms. This leads to different types of errors: software errors often arise from bugs in logic or implementation, while NN errors often arise from insufficient training data and overfitting.
 
-\part{Appendices\label{part:appendices}}
+%\part{Appendices\label{part:appendices}}
 % \renewcommand{\appendixname}{Advanced Topics}
 % \appendix
 
