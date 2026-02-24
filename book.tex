@@ -1704,7 +1704,7 @@ The VNN-LIB code for this property is as follows:
 \section{Problems}
 
 \begin{problem}[Robustness + Safety: Drone Controller]\label{problem:drone}
-An autonomous drone computes its thrust level using  a network controller $f(w,d)$, where $w$ is winds speed and $d$ the distance to nearest obstacle. We want two properties:
+An autonomous drone computes its thrust level using  a network controller $f(w,d)$, where $w$ is winds speed and $d$ the distance to nearest obstacle. State the following properties in formal logic (remember to use quantifers, e.g., $\forall$ and $\exists$):
 \begin{enumerate}
 \item Robustness: If the wind speed reading changes by at most 1 unit ($|w-w'|\leq 1$) and distance remains the same,
    the thrust decision should remain the same.
@@ -1729,7 +1729,7 @@ An NN answers two related questions:
 Q1: ``What is the temperature in Celsius?'' (input $t_C$)
 Q2: ``What is the temperature in Fahrenheit?'' (input $t_F$)
 
-We want consistency: If Q1 outputs $y$, then Q2 must output $1.8y+32$.
+State the following consistency property in formal logic (remember to use quantifers, e.g., $\forall$ and $\exists$): If Q1 outputs $y$, then Q2 must output $1.8y+32$.
 
 \begin{solution}
 \[
@@ -1822,14 +1822,14 @@ We want consistency: If Q1 outputs $y$, then Q2 must output $1.8y+32$.
 % \end{problem}
 
 \begin{problem}[Counterexample: Safety in Vehicles]
-A NN computes car acceleration $a$. We want a safety property: if distance to obstacle $d<10$, then $a\leq 0$. But we observe a scenario where $d=5$ but $a=+2$.
+A NN computes car acceleration $a$. State a safety property in formal logic (remember to use quantifiers, e.g., $\forall$ and $\exists$): if distance to obstacle $d<10$, then $a\leq 0$. But we observe a scenario where $d=5$ but $a=+2$.
 
 Write the safety requirement and show how this is a counterexample.
 
 \begin{solution}
 Safety requirement:
 \[
-d < 10 \implies a \leq 0
+\forall d, a, \quad d < 10 \implies a \leq 0
 \]
 
 Counterexample:
@@ -10083,6 +10083,7 @@ Running an LP solver with objective $\min 0$ will return a point, e.g., (x=0,y=0
         \item Topics: DNN and Properties and their formal representation (\autoref{chap:nn-basics} and~\autoref{chap:properties})
         \item In class exercise: Using Z3 to check satisfiability of DNNs and properties~\autoref{prob:z3-dnn}
         \item HW: Neural Networks and Properties~\autoref{problem:z3-properties}
+        \item Quiz:~\autoref{problem:drone}
     \end{itemize}
 
 %     \begin{itemize}
@@ -10093,7 +10094,6 @@ Running an LP solver with objective $\min 0$ will return a point, e.g., (x=0,y=0
 %     \begin{itemize}
 
 %         \item Topics: DNN Verification (\autoref{sec:verification})
-%         \item Quiz:~\autoref{problem:drone}
 %     \end{itemize}
        
 %     \item Week 5 (Sept 24): No class this week (prof not available). No quiz or HW due.
