@@ -131,7 +131,7 @@ z3.prove(z3.Implies(symbolic_states, g))
 \subsection{TIPS}
 
 \begin{enumerate}[label=\arabic*.]
-\item You should apply symbolic execution on this DNN example \textbf{by hand} first before attempt any coding.  This example is small enough that you can work out step by step.  For example, you can do these two steps
+\item You should apply symbolic execution on this DNN example \textbf{by hand} first before attempting any coding.  This example is small enough that you can work out step by step.  For example, you can do these two steps
     \begin{enumerate}[label=(\alph*)]
     \item First, obtain the symbolic states by hand (e.g., on a paper) for the given DNN
     \item Then, put what you have in code but also for the given DNN. Use Z3 format (e.g.,  you would declare the inputs as symbolic values \texttt{i0 = z3.Real("i0")}, then compute the neurons and outputs, etc)
@@ -286,10 +286,9 @@ Your program must have the following:
     \item takes as input the DNN, whose specifications are given as example above.
     % \item takes as input the DNN, whose specifications are given as example above (or using \texttt{tensorflow} or \texttt{pytorch})
         \begin{itemize}
-        \item This goes without saying: do not hard-code the DNN in your program (e.g., do not hardcode the example given above in your code).  Your program should work with any DNN input.
+        \item This goes without saying: do not hard-code the DNN in your program (e.g., do not hardcode the example given above in your code or hard-code the weight values). This function should work with any DNN input (though it could be slow for big DNNs).
         \end{itemize}
     \item returns \textit{symbolic states} of the DNN represented as a Z3 expression (a formula) as shown above
-    \item this goes without saying but do NOT write this function only to work with the given example, i.e., do not hard-code the weight values etc in your program. This function should work with any DNN input (though it could be slow for big DNN's).
     \end{itemize}
 \item in your resulting formula, you must name 
     \begin{itemize}
@@ -318,7 +317,7 @@ Your program must have the following:
         \end{itemize}
     \item then on this DNN, do every single tasks you did in \texttt{test()}  (run SE on it, output results, apply Z3 etc).  You will need to have 2 assertions that are true and 1 assertion that is false (just like above).
         \begin{itemize}
-        \item Initially you might randomly generate weights and bias values, but it is likley that you will need to manually adjust them so that you can prove some correct assertions (randomly generated values probably will not give you a meaningful DNN with any asserted properties).
+        \item Initially you might randomly generate weights and bias values, but it is likley that you will need to manually adjust the weights/bias values (i.e., tweak/change them by hand) so that you can prove some correct assertions (randomly generated values probably will not give you a meaningful DNN with any asserted properties).
         \end{itemize}
     \end{itemize}
 \end{enumerate}
@@ -333,7 +332,7 @@ You can be as creative as you want, but your SE must not run for too long and mu
     \item takes as input the list \code{sizes} and returns a DNN of that size as descibed above.
 \end{itemize}
 \item a testing function \code{test3()} that runs \code{create\_random} on various sizes of DNNs, runs \code{my\_symbolic\_execution} on them as you did with \code{test()} and \code{test2()} above, and time the execution.
-\item a plot (in pdf, png, or jpeg) showing the scalability of \code{my\_symbolic\_execution} on various DNNs. You need to use \textbf{at least 25 DNNs of different sizes} to generate the plot, a plot with very few datapoints will not be sufficient to show the scalability trend.
+\item a plot (in pdf, png, or jpeg) showing the scalability of \code{my\_symbolic\_execution} on various DNNs. You need to use \textbf{at least 25 DNNs of different sizes} to generate the plot. Use incrementally sized DNNs (e.g., gradually increasing the number of neurons/layers) or a good random distribution of sizes. A plot with very few datapoints will not be sufficient to show the scalability trend.
 % Moved to README template
 % \item in the \code{README}, write your observation and conclusion about the scalability of symbolic execution.  You must refer to the plot and describe it to support your conclusion.
 % \item \textbf{BONUS}: as you will see, SE does not scale. Come up with ways to improve it and implement it in a new function \code{my\_symbolic\_execution\_optimize(dnn)}. Then compare its scalability with \code{my\_symbolic\_execution(dnn)} using the same DNNs created in \code{test3()}.  Discuss your new SE and result findings in the \code{README} file (see below for details).
@@ -345,7 +344,7 @@ You can be as creative as you want, but your SE must not run for too long and mu
 You must submit a \textbf{zip file} containing the following files. Use the following names:
 
 \begin{enumerate}
-\item The zip file must be named \code{pa1-[yourname/groupname].zip} (1 submission per group)
+\item The zip file must be named \code{pa1-[yourname].zip} 
 \item One single main source file \code{se.py}. Indicate in the \code{README} file on how I can run it.
     \begin{itemize}
     \item Your file should include at least a \code{my\_symbolic\_execution} function and the test functions \code{test()}, \code{test2()}, and \code{test3()} as indicated above
@@ -389,7 +388,7 @@ You must submit a \textbf{zip file} containing the following files. Use the foll
 \item 12 points — for complete SE implementation.
     \begin{itemize}
         \item 4 points for \texttt{my\_symbolic\_execution}
-        \item 2 points for \texttt{test1}
+        \item 2 points for \texttt{test}
         \item 2 points for \texttt{test2}
         \item 4 points for \texttt{create\_random} and \texttt{test3}
     \end{itemize}
