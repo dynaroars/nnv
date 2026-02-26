@@ -10,7 +10,7 @@ on:
       - "**"
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -52,6 +52,11 @@ jobs:
             exit 1
           fi
           echo "book.pdf built successfully."
+
+      - name: Copy PDF to docs folder
+        run: |
+          cp book.pdf docs/
+          echo "PDF copied to docs/book.pdf"
 
       # - name: Upload artifact
       #   if: success()
