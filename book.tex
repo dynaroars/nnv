@@ -1704,10 +1704,9 @@ The VNN-LIB code for this property is as follows:
 \section{Problems}
 
 \begin{problem}[Robustness + Safety: Drone Controller]\label{problem:drone}
-An autonomous drone computes its thrust level using  a network controller $f(w,d)$, where $w$ is winds speed and $d$ the distance to nearest obstacle. State the following properties in formal logic (remember to use quantifers, e.g., $\forall$ and $\exists$):
+An autonomous drone computes its thrust level using a (neural) network controller $f(w,d)$, where $w$ is wind speed and $d$ the distance to nearest obstacle. State the following properties in formal logic (remember to use quantifiers, e.g., $\forall$ and $\exists$):
 \begin{enumerate}
-\item Robustness: If the wind speed reading changes by at most 1 unit ($|w-w'|\leq 1$) and distance remains the same,
-   the thrust decision should remain the same.
+\item Robustness: If the wind speed reading changes by at most 1 unit ($|w-w'|\leq 1$) and distance remains the same, then thrust decision should remain the same.
 \item Safety: If the obstacle distance is less than 5 meters, then thrust must not be greater than 2.
 \end{enumerate}
 
@@ -1729,7 +1728,7 @@ An NN answers two related questions:
 Q1: ``What is the temperature in Celsius?'' (input $t_C$)
 Q2: ``What is the temperature in Fahrenheit?'' (input $t_F$)
 
-State the following consistency property in formal logic (remember to use quantifers, e.g., $\forall$ and $\exists$): If Q1 outputs $y$, then Q2 must output $1.8y+32$.
+State the following consistency property in formal logic (remember to use quantifiers, e.g., $\forall$ and $\exists$): If Q1 outputs $y$, then Q2 must output $1.8y+32$.
 
 \begin{solution}
 \[
@@ -1822,7 +1821,7 @@ State the following consistency property in formal logic (remember to use quanti
 % \end{problem}
 
 \begin{problem}[Counterexample: Safety in Vehicles]
-A NN computes car acceleration $a$. State a safety property in formal logic (remember to use quantifiers, e.g., $\forall$ and $\exists$): if distance to obstacle $d<10$, then $a\leq 0$. But we observe a scenario where $d=5$ but $a=+2$.
+A neural network computes car acceleration $a$. State a safety property in formal logic (remember to use quantifiers, e.g., $\forall$ and $\exists$): if distance to obstacle $d<10$, then $a\leq 0$. But we observe a scenario where $d=5$ but $a=+2$.
 
 Write the safety requirement and show how this is a counterexample.
 
@@ -1840,7 +1839,6 @@ d=5, \quad f(d)=a=+2 \quad \text{violates property.}
 \end{problem}
 
 
-
 \begin{problem}\label{problem:z3-properties}
 
 \begin{figure}
@@ -1851,20 +1849,20 @@ d=5, \quad f(d)=a=+2 \quad \text{violates property.}
 
 
 
-Consider the NN in~\autoref{fig:proofnet}. Recall that in this network the hidden neurons ($v_1 \ldots v_4$) use ReLU activation, but the output neurons ($y_1,y_2$) does not.
+Consider the neural network in~\autoref{fig:proofnet}. Recall that in this network the hidden neurons ($v_1 \ldots v_4$) use ReLU activation, but the output neurons ($y_1,y_2$) does not.
 
 
 \begin{itemize}
     \item Encode this network using Z3.
     \begin{itemize}
-        \item Try to use Z3 to evaluate the network on various inputs.u
+        \item Try to use Z3 to evaluate the network on various inputs.
     \end{itemize}
-\item Come up with \textbf{three} properties that this network \emph{does not} have.  Recall that a property often has the form in~\autoref{sec:properties-def}.
+\item Come up with \emph{three} properties that this network \emph{does not} have.  Recall that a property often has the form shown in~\autoref{sec:properties-def}.
 \begin{itemize}
     \item Argue why each property does not hold by providing a counterexample (\autoref{sec:properties-counterexamples}).
     \item (Optional, Easy) Try to use Z3 to show that the properties you came up with do not hold by asking Z3 to find counterexamples (one for each property).
 \end{itemize}
-\item Come up with \textbf{three} properties that that this network has (i.e., as long as the precondition holds, the postcondition holds).
+\item Come up with \emph{three} properties that that this network has (i.e., as long as the precondition holds, the postcondition holds).
 \begin{itemize}
     \item Argue why each property always holds (e.g., for any input satisfying the range X, the first layer outputs values in range Y, etc).
     \item (Optional) Show that the properties you came up will always hold by using Z3 to prove that no counterexample exists (i.e., \unsat{}).
@@ -1958,12 +1956,12 @@ Formula~\autoref{eq:nnv} checks if network $N$ satisfies (implies) the property 
 If~\autoref{eq:nnv2} is unsatisfiable, then $\phi$ is a valid property of $N$. Otherwise, $\phi$ is not valid.  Moreover, we can extract a counterexample for the original problem from the satisfying assignment of~\autoref{eq:nnv2}.
 
 \begin{problem}\label{ex:prop-neg1}
-  Let $\alpha$ represent our network and the robustness property $| x - x | \le \epsilon \implies  f(x) = f(y)$. Form the satisfiability formula (\autoref{eq:nnv2}) that we need to check. Check them using Z3.
+  Let $\alpha$ represent our network and the robustness property $| x - x | \le \epsilon \implies  f(x) = f(y)$. Form the satisfiability formula (\autoref{eq:nnv2}) that we need to check.
 \end{problem}
 
 
 \begin{problem}\label{ex:prop-neg2}
-  Let $\alpha$ represent our network and the property $y>0$ for any input $x_1 \in [r_1,r_2], x_2 \in [r_3,r_4]$. Form the satisfiability formula (\autoref{eq:nnv2}) that we need to check. Check them using Z3.
+  Let $\alpha$ represent our network and the property $y>0$ for any input $x_1 \in [r_1,r_2], x_2 \in [r_3,r_4]$. Form the satisfiability formula (\autoref{eq:nnv2}) that we need to check.
 \end{problem}
 
 \begin{problem}[Validity Formulation]\label{ex:negation-trick}
@@ -1984,7 +1982,7 @@ We represent the network in~\autoref{fig:dnn-b} as a formula $\alpha$:
 \phi_{out} = (x_5 > 0)
 \end{equation*}
 
-\paragraph{Satisfiability Solving} We can check the satisfiability of $\alpha \land \phi_{in} \land \neg \phi_{out}$ using constraint solving.~\autoref{sec:se-smt} shows how to perform symbolic execution and an SMT solver (e.g., Z3) to automatically generate this formula from a given DNN and property, and check its satisfiability.~\autoref{sec:using-milp} shows how to encode the problem as a MILP constraints, solvable using a MILP solver (e.g., Gurobi).
+\paragraph{Satisfiability Solving} We can check the satisfiability of $\alpha \land \phi_{in} \land \neg \phi_{out}$ using constraint solving, e.g., the Z3 SMT solver.~\autoref{sec:se-smt} shows how to perform symbolic execution and an SMT solver to automatically generate this formula from a given network and property, and check its satisfiability.~\autoref{sec:using-milp} shows how to encode the problem as a MILP constraints, solvable using a MILP solver (e.g., Gurobi).
 
 For~\autoref{ex:dnn-sat}, the formula is satisfiable, i.e., the property is invalid, and the solver returns \sat{}.  Any satisfying assignment, e.g., $x_1=-1$ and $x_2=2$, is a counterexample (\autoref{sec:properties-counterexamples}) to the property, as it satisfies the precondition $\phi_{in}$ but violates the postcondition $\phi_{out}$, i.e., $x_5 = -3.5$, which is  $< 0$.
 \end{example}
@@ -1996,22 +1994,24 @@ Use Z3 to do~\autoref{ex:dnn-sat}. You might find~\autoref{ex:z3-dnn} useful.  M
 \begin{problem}\label{problem:mydnntwo}
 \begin{figure}
     \centering
-\mydnntwo{1.0}
+    \mydnntwo{1.0}
     \caption{A simple DNN with 2 inputs, 2 hidden ReLU neurons, and 2 outputs.}
     \label{fig:mydnntwo}
 \end{figure}
-Consider the DNN in~\autoref{fig:mydnntwo}.  Do the following:
-\begin{itemize}
+
+Consider the neural network in~\autoref{fig:mydnntwo}.  Do the following:
+\begin{enumerate}
     \item Write the formula $\alpha$ representing the network.
     \item Create the property $\phi$ that the output $x_5 \ge x_6$ for any inputs $x_1 \in [-1,1], x_2\in[-1,1]$.
-    \item Generate the satisfiability formula (\autoref{eq:nnv2}).   You do not need to use Z3 to check it.
-\end{itemize}
+    \item Generate the satisfiability formula $\alpha \land \overline{\phi}$ as shown in (\autoref{eq:nnv2}).
+    \item Use Z3 to check the satisfiability of the formula. If it is satisfiable, extract a counterexample input that violates the property.   
+\end{enumerate}
 \end{problem}
 
 
 \section{Complexity}\label{sec:complexity}
 
-ReLU-based NNV is \NP{}-complete as shown in~\cite{katz2017reluplex,salzer2023reachability} by reducing the 3-SAT problem to it. This means that the problem of checking whether a given ReLu-based DNN satisfies a property is computationally hard, and no polynomial-time algorithm is known to solve it in the general case.
+ReLU-based NNV is \NP{}-complete as shown in~\cite{katz2017reluplex,salzer2023reachability} by reducing the 3-SAT problem to it. This means that the problem of checking whether a given ReLu-based network satisfies a property is computationally hard, and no polynomial-time algorithm is known to solve it in the general case.
 
 % \section{Challenges} %TODO
 
@@ -2075,7 +2075,9 @@ x_4 &= \max(0.5x_1 - 0.5x_2 - 1.0, 0)
 \end{example}
 
 \subsection{SMT Solving}\label{sec:smt}
-After obtaining the symbolic representation of the DNN, we can use an SMT solver~\cite{barrett2010smt} to check the satisfiability of the formula $\alpha \land \phi_{in} \land \neg \phi_{out} $, where $\alpha$ is the symbolic representation of the DNN, $\phi_{in}$ is the precondition on the inputs, and $\phi_{out}$ is the postcondition on the outputs. The solver checks if there exists an assignment to the symbolic inputs that satisfies the formula. If such an assignment exists, it means that the property is violated, and we can extract a counterexample from the satisfying assignment. Otherwise, if no such assignment exists, the property is valid
+After obtaining the symbolic representation of the DNN, we can use an SMT solver~\cite{barrett2010smt} to check the satisfiability of the formula $\alpha \land \phi_{in} \land \neg \phi_{out} $ as shown in~\autoref{eq:nnv2}, where $\alpha$ is the symbolic representation of the DNN, $\phi_{in}$ is the precondition on the inputs, and $\phi_{out}$ is the postcondition on the outputs. 
+
+The solver checks if there exists an assignment to the symbolic inputs that satisfies the formula. If such an assignment exists, it means that the property is violated, and we can extract a counterexample from the satisfying assignment. Otherwise, if no such assignment exists, the property is valid.
 
 
 
@@ -6289,14 +6291,11 @@ However, because $v_4$ was assigned at decision level 0, \neuralsat{} can no lon
 Note that this process of selecting and assigning (guessing) values to variables representing neurons is the \emph{branching} phase in BaB. It is also commonly called \emph{neuron splitting} because  it splits the search tree into subtrees corresponding into the assigned values (e.g., see~\autoref{sec:restart-tree}).
 
 
-
-
-
-As mentioned in~\autoref{sec:complexity}, ReLU-based DNN verification is NP-complete, and for difficult problem instances DNN verification tools often have to exhaustively search a very large space, making scalability a main concern for modern DNN verification.
+As mentioned in~\autoref{sec:complexity}, ReLU-based NNV is \NP-complete, and for difficult problem instances NNV tools often have to exhaustively search a very large space, making scalability a main concern for modern NNV approaches.
 
 %One major difference that sets \tool{} apart from other DNN approaches is how it tackles and prunes such large search space.
 
-\autoref{fig:tree} shows the difference between \tool{} and another DNN verification tool (e.g., using the popular Branch-and-Bound (BaB) approach) in how they navigate the search space.  We assume both tools employ similar abstraction and neuron splitting.
+\autoref{fig:tree} shows the difference between \tool{} and another NNV tool (e.g., using the popular Branch-and-Bound (BaB) approach) in how they navigate the search space.  We assume both tools employ similar abstraction and neuron splitting.
 \autoref{fig:tree}b shows that the other tool performs splitting to explore different parts of the tree (e.g., splitting $v_1$ and explore the branches with $v_1=T$ and $v_1=F$ and so on). Note that the other tool needs to consider the tree shown regardless if it runs sequentially or in parallel.
 
 % \tvn{Hai, could you change the LaTeX neg to overline?}\hd{yes}
@@ -6320,7 +6319,7 @@ Thus, \tool{} was able to generate non-chronological backtracks and use BCP to p
 non-linear ReLU constraints $\hat{x} = \max(x,0)$.
 Like simplex, \reluplex{} maintains a set of \emph{basic} variables whose values are determined by other (non-basic) variables, and updates them through pivot operations.
 
-\textbf{Initialization}~ The constraints representing the DNN are first rewritten into a basic form by introducing basic or \emph{slack} variables.   reluplex{} also forms the lower and upper bounds for each variable based the input constraints and semantics of ReLU functions, e.g., for a ReLU variable $\hat{x}_i$, the lower bound is 0.
+\textbf{Initialization}~ The constraints representing the network are first rewritten into a basic form by introducing basic or \emph{slack} variables.   reluplex{} also forms the lower and upper bounds for each variable based the input constraints and semantics of ReLU functions, e.g., for a ReLU variable $\hat{x}_i$, the lower bound is 0.
 
 All variable values are then initially set to some guess, such as $0$, even if these values violate bounds.  This initial configuration acts as the starting point for \reluplex{} to iteratively refine the variable values to satisfy all constraints.
 
@@ -6387,7 +6386,7 @@ If \reluplex{} explores all possible pivoting options without finding any feasib
 
 \begin{example}\label{ex:reluplex}
 
-  We demonstrate \reluplex{} using the DNN in~\autoref{fig:dnn-replux}. This network can be represented by the following equations:
+  We demonstrate \reluplex{} using the network in~\autoref{fig:dnn-replux}. This network can be represented by the following equations:
 
 \begin{gather*}%\label{eq:reluplex1}
     x_3 = x_1 - x_2,\quad \hat{x_3} = \relu{x_3},\\
@@ -6395,7 +6394,7 @@ If \reluplex{} explores all possible pivoting options without finding any feasib
     x_5 = 0.5\hat{x_3} - 0.2\hat{x_4}
 \end{gather*}
 
-We want to check that the DNN has the property
+We want to check that the network has the property
 \begin{equation}\label{eq:prop1}
   (0 \le x_1 \le 0.5 \land -2 \le x_2 \le -1) \implies ( x_5< 0 \lor x_5 > 0.5).
 \end{equation}
@@ -6410,7 +6409,7 @@ and checking whether there exists a counterexample satisfying the negated proper
 
 
 We now use \reluplex{} to check whether there exists an assignment satisfying the negated property in~\autoref{eq:negprop1}.
-We start by introducing three \emph{basic} (auxilliary or slack) variables to represent the relationships between the variables in the DNN:
+We start by introducing three \emph{basic} (auxilliary or slack) variables to represent the relationships between the variables in the network:
 
 \begin{gather}
   a_1 = x_1 - x_2 - x_3\label{eq:reluplex2a},\\
@@ -6555,7 +6554,7 @@ Now, $a_3$ becomes non-basic and we update it to 0 through $a_3+=-0.5=0$.  As $x
 \autoref{tab:reluplex6} shows the new configuration.
 At this point, \reluplex{} no longer sees any out-of-bound or inconsinstent values, and thus stops and returns \sat{} with the values in the \textbf{Val} row in ~\autoref{tab:reluplex6} as the satisfying assignment for the formula in Eq~\ref{eq:negprop1}.
 
-Thus, the property in~\autoref{eq:prop1} is \emph{not valid} for the DNN in~\autoref{fig:dnn-replux} because for inputs $x_1=0,x_2=-1$, the network gives the output $x_5=0.5$, violating the property.
+Thus, the property in~\autoref{eq:prop1} is \emph{not valid} for the network in~\autoref{fig:dnn-replux} because for inputs $x_1=0,x_2=-1$, the network gives the output $x_5=0.5$, violating the property.
 \end{example}
 
 
@@ -9012,8 +9011,6 @@ Running an LP solver with objective $\min 0$ will return a point, e.g., (x=0,y=0
 \end{example}
 
 
-
-
 % \chapter{Software vs DNN Verification}\label{app:software-vs-dnn}
 
 
@@ -10041,60 +10038,58 @@ Running an LP solver with objective $\min 0$ will return a point, e.g., (x=0,y=0
 \chapter{Schedule}\label{chap:schedule}
 
 \begin{itemize}
-    \item Week 1: 
+    \item Week 1 (1/20): 
     \begin{itemize}
         \item Introduction / Syllabus Overview
         \item Formal Methods and Specifications Overview (\autoref{chap:formal-methods})
         \item HW: Post a short introduction about yourself on Canvas
     \end{itemize}
-    \item Week 2:
+    
+    \item Week 2 (2/3):
     \begin{itemize}
-    \item Topics: 
-    \begin{itemize}
-    \item  Background on Logic and Satisfiability~\autoref{chap:logics}
-    \end{itemize}
+    \item Topics: Background on Logic and Satisfiability~\autoref{chap:logics}
     \item Quiz:~\autoref{problem:duplicate-specs}
     \item HW: Using Z3 SMT Solver to check satisfiability.
     \begin{itemize}
         \item Familiarize yourself with Z3 and install it on your machine (\autoref{sec:z3}). Try a few examples as given in~\autoref{ex:z3-propositional} and~\autoref{ex:z3-linear-constraints}.
       \item Do~\autoref{prob:z3-0},~\autoref{prob:z3-1},~\autoref{prob:z3-2},~\autoref{prob:z3-3}
     \end{itemize}
-      \item Quiz:~\autoref{problem:short-questions}             
+      
             
     \end{itemize}
 
-    \item Week 3:
+    \item Week 3 (2/10):
     \begin{itemize}
-        \item  Backgrounds on Linear Programming (\autoref{chap:lp})
-        \item Topics: DNN and Properties and their formal representation (\autoref{chap:nn-basics} and~\autoref{chap:properties})
+        \item Backgrounds on Linear Programming (\autoref{chap:lp})
+        \item Topics: NNV and Properties and their formal representation (\autoref{chap:nn-basics} and~\autoref{chap:properties})
         \item Short Videos
         \begin{itemize}
             %\item Formal Verification: A Quick Primer~\cite{axiomise2020formal}
             \item But what is a neural network?~\cite{3blue1brown2017neuralnetworks}
             %\item Large Language Models~\cite{3blue1brown2017llms}
         \end{itemize}
-            \item HW: MILP problem~\autoref{ex:milp-online}
-            \item Quiz:~\autoref{problem:milp-hand}
+        \item Quiz:~\autoref{problem:short-questions}             
+        \item HW: MILP problem~\autoref{ex:milp-online}
+            
     \end{itemize}
 
 
-    \item Week 4:
+    \item Week 4 (2/17):
     \begin{itemize}
-        \item Topics: DNN and Properties and their formal representation (\autoref{chap:nn-basics} and~\autoref{chap:properties})
+        \item Topics: NN Properties~\autoref{chap:properties} 
         \item In class exercise: Using Z3 to check satisfiability of DNNs and properties~\autoref{prob:z3-dnn}
+        \item Quiz:~\autoref{problem:milp-hand}
         \item HW: Neural Networks and Properties~\autoref{problem:z3-properties}
-        \item Quiz:~\autoref{problem:drone}
+
     \end{itemize}
 
-%     \begin{itemize}
-%         
-
-%     \end{itemize}
-%     \item Week 4 (Sept 17):
-%     \begin{itemize}
-
-%         \item Topics: DNN Verification (\autoref{sec:verification})
-%     \end{itemize}
+    \item Week 4 (2/24):
+    \begin{itemize}
+        \item Topics: DNN Verification (\autoref{sec:verification}) and Symbolic Execution~\autoref{sec:se-smt}
+        \item In class exercise:~\autoref{ex:dnn-b} and~\autoref{problem:z3-dnn}
+        \item Quiz:~\autoref{problem:drone}
+        \item HW:~\autoref{ex:negation-trick}
+    \end{itemize}
        
 %     \item Week 5 (Sept 24): No class this week (prof not available). No quiz or HW due.
 
