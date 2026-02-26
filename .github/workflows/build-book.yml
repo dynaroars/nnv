@@ -10,7 +10,7 @@ on:
       - "**"
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
@@ -37,18 +37,21 @@ jobs:
             poppler-utils
 
       - name: Build book
-        run: make
-
+        run: |
+          echo "Building book..."
+          latexmk -pdf -interaction=nonstopmode -halt-on-error book.tex
+          bibtex book || true
+          latexmk -pdf -interaction=nonstopmode -halt-on-error book.tex
       - name: Verify PDF
         run: |
-          if [ ! -f docs/book.pdf ]; then
+          if [ ! -f book.pdf ]; then
             echo "No PDF produced!"
             exit 1
-          elif ! pdfinfo docs/book.pdf >/dev/null 2>&1; then
+          elif ! pdfinfo book.pdf >/dev/null 2>&1; then
             echo "PDF seems corrupted!"
             exit 1
           fi
-          echo "book.pdf built successfully in docs/."
+          echo "book.pdf built successfully."
 
       # - name: Upload artifact
       #   if: success()
@@ -60,7 +63,7 @@ jobs:
       - name: Prep dir
         run: |
           mkdir -p _site
-          cp docs/book.pdf _site/
+          cp book.pdf _site/
 
       - name: Setup redirect
         run: |
