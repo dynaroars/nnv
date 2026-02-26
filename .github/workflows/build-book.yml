@@ -37,34 +37,18 @@ jobs:
             poppler-utils
 
       - name: Build book
-        run: |
-          echo "Building book..."
-          latexmk -pdf -interaction=nonstopmode -halt-on-error book.tex
-          bibtex book || true
-          latexmk -pdf -interaction=nonstopmode -halt-on-error book.tex
+        run: make
+
       - name: Verify PDF
         run: |
-          if [ ! -f book.pdf ]; then
+          if [ ! -f docs/book.pdf ]; then
             echo "No PDF produced!"
             exit 1
-          elif ! pdfinfo book.pdf >/dev/null 2>&1; then
+          elif ! pdfinfo docs/book.pdf >/dev/null 2>&1; then
             echo "PDF seems corrupted!"
             exit 1
           fi
-          echo "book.pdf built successfully."
-
-      - name: Copy PDF to docs folder
-        run: |
-          cp book.pdf docs/
-          echo "PDF copied to docs/book.pdf"
-
-      - name: Commit and push PDF to docs folder
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git add docs/book.pdf
-          git diff --staged --quiet || git commit -m "Auto-update book.pdf [skip ci]"
-          git push
+          echo "book.pdf built successfully in docs/."
 
       # - name: Upload artifact
       #   if: success()
@@ -76,7 +60,7 @@ jobs:
       - name: Prep dir
         run: |
           mkdir -p _site
-          cp book.pdf _site/
+          cp docs/book.pdf _site/
 
       - name: Setup redirect
         run: |
