@@ -36,23 +36,24 @@
 \newtheorem{definition}{Definition}[section]
 \newtheorem{example}{Example}[section]
 \newtheorem{problem}{Problem}[section]
-\newtheorem{solutione}{Solution}[section]
+%\newtheorem{solutione}{Solution}[section]
 \theoremstyle{remark}
 \newtheorem{remark}{Remark}
 
 
 \newbool{showsol}
-\setbool{showsol}{false}
+\setbool{showsol}{true} % set to false to hide solutions
 
 \newenvironment{solution}{%
   \ifbool{showsol}{%
-    \begin{solutione}%
+    \begin{mysolbox}%
+        {\small \textbf{Solution}: }
   }{%
     \comment % start ignoring
   }%
 }{%
   \ifbool{showsol}{%
-    \end{solutione}%
+    \end{mysolbox}%
   }{%
     \endcomment % stop ignoring
   }%
@@ -179,20 +180,12 @@
   \end{mybox}
 }
 
-\newtcolorbox{mydomesticbox}{
+\newtcolorbox{mysolbox}{
   enhanced,
   boxrule=0pt,frame hidden,
   borderline west={2pt}{0pt}{red!75!black},
   colback=blue!10!white,
   sharp corners
-}
-
-\newenvironment{domesticbox}[1][]{
-  \small
-  \begin{mydomesticbox}
-    {\small \textbf{#1}}
-  }{
-  \end{mydomesticbox}
 }
 
 \newcommand{\ignore}[1]{}
@@ -7741,7 +7734,6 @@ It would then check whether these constraints are satisfiable. In this case, the
 \end{example}
 
 
-
 \paragraph{Abstract Interpretation}
 Abstract interpretation (AbsInt) analyzes a program by automatically computing \emph{over-approximations} of its behavior. Instead of tracking exact values, AbsInt tracks abstract properties such as ranges or signs of variables, e.g., instead of saying ``x = 5'', AbsInt might say ``x is in [0, 10]'' or ``x is non-negative''. 
 
@@ -8791,19 +8783,19 @@ This means the company should produce 24 chairs and 4 tables per week, and get a
 
 
 \subsection{Encoding Binary Variables}\label{sec:milp-binary}
-MILP problems often involve disjunction or condition where the answer depends on some condition.  We can encode such condition using binary variables (0-1 integers), e.g., using  $z \in \{0,1\}$ to indicate whether a certain condition is met.  Moreover, we also use a ``trick'' with a large constant $M$, e.g., $\infty$, to encode logical implications.
+MILP problems often involve condition where the answer depends on some condition.  We can encode such condition using binary variables (0-1 integers), e.g., using  $z \in \{0,1\}$ to indicate whether a certain condition is met.  Moreover, we can use a ``trick'' with a large constant $M$, e.g., $\infty$, to encode logical implications.
 
 \begin{example}
-To encode ``if $z = \texttt{True}$ then $x \geq 5$'', use:
+To encode ``if $z = 1$ then $x \geq 5$'', use:
 \[
-x \geq 5 - M(1-z), \quad z \in \{0,1\}
+x ~ \geq~ 5 - M(1-z), \quad z \in \{0,1\}
 \]
 
 
 This works because
 \begin{itemize}
- \item $z=1 \implies x \ge 5 - M(0) \implies x \geq 5$.
- \item $z=0 \implies x \geq 5 - M \implies x \ge -\infty$ (because $M$ is large this is vacuously true and can be discarded).
+ \item $z=1 \implies x ~\ge~ 5 - M(0) \implies x \geq 5$.
+ \item $z=0 \implies x ~\geq~ 5 - M \implies x \ge -\infty$ (when $M$ is large this is vacuously true and can be discarded).
 \end{itemize}
 
 \end{example}
@@ -8848,7 +8840,7 @@ This works because
 Consider again the ReLU example in \autoref{ex:relu_milp} but now $x$ has the bounds $L \leq x \leq U$. Modify the MILP encoding so that $L$ and $U$ are used \emph{directly} instead of a large constant $M$.
 
 \begin{solution}
-To modify the MILP encoding for the ReLU function with bounds $L \leq x \leq U$, we add the following constraints:
+To modify the MILP encoding for the ReLU function with bounds $L \leq x \leq U$, we add the following constraints to those in~\autoref{eq:relu-milp}:
 \[
 \begin{aligned}
 & y \geq x, \\
@@ -10095,22 +10087,30 @@ Running an LP solver with objective $\min 0$ will return a point, e.g., (x=0,y=0
 
     \item Programming Assignment 1 (PA1)
     \begin{itemize}
-        \item Symbolic Execution of Neural Networks~\autoref{sec:pa1}
+        \item Topics: Symbolic Execution of Neural Networks~\autoref{sec:pa1}
         \item Due date \alert{Monday March 9, 2026 11:59pm}
+        
     \end{itemize}
 
 
 
-%     \item Week 6 (Oct 1):
-%     \begin{itemize}
-%         \item HW due:~\autoref{ex:negation-trick},~\autoref{problem:z3-dnn}, and~\autoref{problem:pattern-enumeration}. %, and ~\autoref{problem:nnv-pattern}
-%         \item Topics: Activation Pattern Search (\autoref{sec:activation-patterns}) and Symbolic Execution (\autoref{sec:se-smt})
-%         \item Quiz:~\autoref{problem:mydnntwo}
-%     \end{itemize}
+    \item Week 5 (3/3):
+    \begin{itemize}
+        \item Topics: MILP Enncoding of DNNs (\autoref{sec:using-milp})        
+        \item Quiz:~\autoref{problem:mydnntwo}. You don't need to do question 4 (Z3) for the quiz.
+        \item HW: Do~\autoref{prob:milp-dnn}
+    \end{itemize}
+
+    % \item Week 6 (3/17):
+    % \begin{itemize}
+    %     \item Topics: Activation Pattern Search (\autoref{sec:activation-patterns})
+    %     \item HW:~\autoref{problem:pattern-enumeration} and~\autoref{problem:nnv-pattern}
+    % \end{itemize}
+
 %     \item Week 7 (Oct 8):
 %     \begin{itemize}
 %         \item No HW because of PA1 due date
-%         \item Topics: MILP Enncoding of DNNs (\autoref{sec:using-milp})
+%         \item 
 %         \item Quiz: (Re)Do~\autoref{ex:milp-dnn} by hand
 %     \end{itemize}
 %     \item Programming Assignment 2 (PA2)
@@ -10120,7 +10120,7 @@ Running an LP solver with objective $\min 0$ will return a point, e.g., (x=0,y=0
 %     \end{itemize}
 %     \item Week 8 (Oct 15):
 %     \begin{itemize}
-%       \item HW: Do~\autoref{prob:milp-dnn}
+%       
 %        \item Topics: Abstraction (\autoref{chap:abstractions}), Interval and Zonotope (\autoref{sec:interval-abstraction},~\autoref{sec:zonotope-abstraction})
 %        \item Quiz:~\autoref{prob:stable-neuron}
 %     \end{itemize}
