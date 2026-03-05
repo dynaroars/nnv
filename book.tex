@@ -42,7 +42,7 @@
 
 
 \newbool{showsol}
-\setbool{showsol}{true} % set to false to hide solutions
+\setbool{showsol}{false} % set to false to hide solutions
 
 \newenvironment{solution}{%
   \ifbool{showsol}{%
@@ -8832,10 +8832,9 @@ This works because
 \item $z=1 \implies y=x$.
 \item $z=0 \implies y=0$.
 \end{itemize}
-
-
 \end{example}
-\begin{problem}
+
+\begin{problem}\label{problem:relu-milp-bounds}
 Consider again the ReLU example in \autoref{ex:relu_milp} but now $x$ has the bounds $L \leq x \leq U$. Modify the MILP encoding so that $L$ and $U$ are used \emph{directly} instead of a large constant $M$.
 
 \begin{solution}
@@ -10087,17 +10086,15 @@ Running an LP solver with objective $\min 0$ will return a point, e.g., (x=0,y=0
     \item Programming Assignment 1 (PA1)
     \begin{itemize}
         \item Topics: Symbolic Execution of Neural Networks~\autoref{sec:pa1}
-        \item Due date \alert{Monday March 9, 2026 11:59pm}
-        
+        \item Due date \alert{Monday March 17, 2026 11:59pm}         
     \end{itemize}
-
 
 
     \item Week 5 (3/3):
     \begin{itemize}
         \item Topics: MILP Enncoding of DNNs (\autoref{sec:using-milp})        
         \item Quiz:~\autoref{problem:mydnntwo}. You don't need to do question 4 (Z3) for the quiz.
-        \item HW: Do~\autoref{prob:milp-dnn}
+        \item HW:Do ~\autoref{problem:relu-milp-bounds} and ~\autoref{prob:milp-dnn}
     \end{itemize}
 
     % \item Week 6 (3/17):
