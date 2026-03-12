@@ -10,7 +10,7 @@ on:
       - "**"
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -32,26 +32,39 @@ jobs:
             texlive-science \
             texlive-lang-english \
             texlive-xetex \
-            latexmk \
+            bibtex \
             ghostscript \
             poppler-utils
 
       - name: Build book
         run: |
           echo "Building book..."
-          latexmk -pdf -interaction=nonstopmode -halt-on-error book.tex
+          pdflatex -interaction=nonstopmode book.tex
           bibtex book || true
-          latexmk -pdf -interaction=nonstopmode -halt-on-error book.tex
+          pdflatex -interaction=nonstopmode book.tex
+          pdflatex -interaction=nonstopmode book.tex
+          cp book.pdf docs/
+          echo "Cleaning up auxiliary files..."
+          rm -f book.aux book.bbl book.blg book.log book.out book.toc
+          
       - name: Verify PDF
         run: |
-          if [ ! -f book.pdf ]; then
+          if [ ! -f docs/book.pdf ]; then
             echo "No PDF produced!"
             exit 1
-          elif ! pdfinfo book.pdf >/dev/null 2>&1; then
+          elif ! pdfinfo docs/book.pdf >/dev/null 2>&1; then
             echo "PDF seems corrupted!"
             exit 1
           fi
-          echo "book.pdf built successfully."
+          echo "docs/book.pdf built successfully."
+
+      - name: Commit and push PDF
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add docs/book.pdf
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update book.pdf [skip ci]" && git push)
 
       # - name: Upload artifact
       #   if: success()
@@ -63,7 +76,7 @@ jobs:
       - name: Prep dir
         run: |
           mkdir -p _site
-          cp book.pdf _site/
+          cp docs/book.pdf _site/book.pdf
 
       - name: Setup redirect
         run: |
