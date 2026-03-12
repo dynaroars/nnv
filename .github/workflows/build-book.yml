@@ -32,7 +32,6 @@ jobs:
             texlive-science \
             texlive-lang-english \
             texlive-xetex \
-            bibtex \
             ghostscript \
             poppler-utils
 
