@@ -73,15 +73,18 @@ jobs:
       #     path: book.pdf
 
       - name: Prep dir
+        if: github.ref == 'refs/heads/main'
         run: |
           mkdir -p _site
           cp docs/book.pdf _site/book.pdf
 
       - name: Setup redirect
+        if: github.ref == 'refs/heads/main'
         run: |
           echo '<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=book.pdf"></head></html>' > ./_site/index.html
 
       - name: Upload to github page
+        if: github.ref == 'refs/heads/main'
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./_site
