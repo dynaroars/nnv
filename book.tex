@@ -1999,6 +1999,65 @@ Consider the neural network in~\autoref{fig:mydnntwo}.  Do the following:
     \item Generate the satisfiability formula $\alpha \land \overline{\phi}$ as shown in~\autoref{eq:nnv2}.
     \item Use Z3 to check the satisfiability of the formula. If it is satisfiable, extract a counterexample input that violates the property.   
 \end{enumerate}
+
+\begin{solution}
+\begin{enumerate}
+    \item The formula $\alpha$ representing the network in~\autoref{fig:mydnntwo} is:
+    \begin{align*}
+    & x_3 = \max(-0.7x_1 + 0.3x_2 + 0.8, 0) ~\land \\
+    & x_4 = \max(1.2x_1 - 0.5x_2 - 2.0, 0) ~\land \\
+    & x_5 = -2.0x_3 + 3.0x_4 - 1.2 ~\land \\
+    & x_6 = -1.8x_3 + 0.7x_4 - 0.3
+    \end{align*}
+
+    \item The property $\phi$ that the output $x_5 \ge x_6$ for any inputs $x_1 \in [-1,1], x_2\in[-1,1]$ is:
+    \begin{align*}
+    \phi_{in} &= (-1 \le x_1 \le 1) \land (-1 \le x_2 \le 1) \\
+    \phi_{out} &= (x_5 \ge x_6)
+    \end{align*}
+
+    \item The satisfiability formula $\alpha \land \phi_{in} \land \neg \phi_{out}$ (see~\autoref{eq:nnv2}) is:
+    \begin{align*}
+    & x_3 = \max(-0.7x_1 + 0.3x_2 + 0.8, 0) ~\land \\
+    & x_4 = \max(1.2x_1 - 0.5x_2 - 2.0, 0) ~\land \\
+    & x_5 = -2.0x_3 + 3.0x_4 - 1.2 ~\land \\
+    & x_6 = -1.8x_3 + 0.7x_4 - 0.3 ~\land \\
+    & (-1 \le x_1 \le 1) \land (-1 \le x_2 \le 1) ~\land \\
+    & (x_5 < x_6)
+    \end{align*}
+
+    \item Using Z3 to check satisfiability:
+\begin{lstlisting}[language=python,breaklines=true,basicstyle=\ttfamily\small]
+from z3 import Real, If, Solver, sat
+
+x1, x2 = Real('x1'), Real('x2')
+x3, x3_, x4, x4_ = Real('x3'), Real('x3_'), Real('x4'), Real('x4_')
+x5, x6 = Real('x5'), Real('x6')
+
+l2a = x3 == -0.7 * x1 + 0.3 * x2 + 0.8
+l2a_ = x3_ == If(x3 > 0, x3, 0)
+l2b = x4 == 1.2 * x1 - 0.5 * x2 - 2.0
+l2b_ = x4_ == If(x4 > 0, x4, 0)
+l3a = x5 == -2.0 * x3_ + 3.0 * x4_ - 1.2
+l3b = x6 == -1.8 * x3_ + 0.7 * x4_ - 0.3
+
+s = Solver()
+s.add(l2a, l2a_, l2b, l2b_, l3a, l3b)
+s.add(x1 >= -1, x1 <= 1, x2 >= -1, x2 <= 1)
+s.add(x5 < x6)
+
+if s.check() == sat:
+    m = s.model()
+    print("Satisfiable - counterexample found:")
+    print(f"x1 = {m[x1]}, x2 = {m[x2]}")
+    print(f"x5 = {m[x5]}, x6 = {m[x6]}")
+else:
+    print("Unsatisfiable - property holds")
+\end{lstlisting}
+
+The formula is \textbf{satisfiable}, meaning the property is invalid. A counterexample is $x_1 = -1, x_2 = -1$, which gives $x_5 = -1.2$ and $x_6 \approx 0.14$, violating the property since $x_5 < x_6$.
+\end{enumerate}
+\end{solution}
 \end{problem}
 
 \section{Complexity}\label{sec:complexity}
