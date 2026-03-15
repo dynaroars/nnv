@@ -7468,11 +7468,9 @@ For \code{clip}, an AbsInt tool might reason:
 
 For neural network verification, AbsInt is often used to compute bounds on the outputs of neural network layers given bounds on the inputs. AbsInt is necessarily because neural networksare are very large and have complex nonlinear functions such as ReLU that are difficult to analyze exactly.
 
-
-
 \section{Soundness and Completeness}
 
-Two core concepts in formal methods are \emph{soundness} and \emph{completeness}. These describe the correctness and power of an FM algorithm\footnote{Mike Hicks also wrote a good blog post on this topic: \url{http://www.pl-enthusiast.net/2017/10/23/what-is-soundness-in-static-analysis/}.}.  
+Two core concepts in formal methods are \emph{soundness} and \emph{completeness}. These describe the correctness and power of an FM algorithm\footnote{Mike Hicks also wrote a good blog post on this topic: \url{http://www.pl-enthusiast.net/2017/10/23/what-is-soundness-in-static-analysis/}.}.
 
 \begin{definition}
 An FM algorithm is \textbf{sound} if every property it claims to prove is actually true. In other words, if it says \emph{``this property holds in this system,''} then the property truly holds. Conversely, an FM algorithm is \textbf{unsound} if it can claim that a false property is true.
