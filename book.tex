@@ -2038,7 +2038,6 @@ ReLU-based NNV is \NP{}-complete as shown in~\cite{katz2017reluplex,salzer2023re
 \chapter{Constraint Solving}\label{chap:constraint-solving}
 
 \section{Symbolic Execution and SMT Solving}\label{sec:se-smt}
-
 As described in~\autoref{sec:satisfiability-and-activation-pattern-search} the Neural Network Verification (NNV) problem can be formulated as a satisfiability problem. Specifically, we encode the network as a logical formula, and use a constraint solver to check that formula satisfies the property of interest.
 
 A straightforward and automated way to do this encoding is using \emph{symbolic execution} (SE)~\cite{baldoni2018survey,king1976symbolic}, a well-known software testing technique for finding bugs.  SE executes a program on symbolic inputs, i.e., inputs represented as symbols rather than concrete values, and tracks the reachability of program state as symbolic expressions, i.e., logical formulae over symbolic inputs. The satisfiability of these formulae is then checked using an SMT solver, and satisfying assignments represent inputs leading to the undesirable (buggy) program state.
@@ -2385,9 +2384,9 @@ As shown in~\autoref{ex:relu_milp1}, the upper and lower bounds of neuron $x_3$ 
 \chapter{Abstractions}\label{chap:abstractions}
 
 
-As mentioned in~\autoref{sec:relu-encoding} the computation of upper and lower bounds of the neuron values help determine neuron stability and therefore can significantly reduce the complexity of verification. Modern NNV tools explore different \emph{abstraction} techniques to compute these bounds more precisely while balancing computational efficiency.
+As mentioned in~\autoref{sec:relu-encoding} the computation of upper and lower bounds of the neuron values help determine neuron stability and therefore can help scale NNV. Modern NNV tools explore different \emph{abstraction} techniques to compute these bounds more precisely while balancing computational efficiency.
 
-This chapter discusses the interval, zonotope, and polytope abstract domains commonly used in verification. Each domain provides a different way to represent and compute the bounds of neurons, with its own trade-offs in terms of precision and computational complexity.
+This chapter discusses the interval, zonotope, and polytope abstract domains commonly used in NNV. Each domain provides a different way to represent and compute the bounds of neurons, with its own trade-offs in terms of precision and computational complexity.
 
 \section{Overview and Background}
 
@@ -2502,9 +2501,9 @@ This chapter discusses the interval, zonotope, and polytope abstract domains com
     \label{fig:relu-all-abstractions}
 \end{figure}
 
-\paragraph{Common Abstractions for ReLU}
+\paragraph{Abstractions for ReLU}
 We use ReLU to illustrate different abstractions.
-Our goal is to approximate the bounds of the post-ReLU value of a neuron given the bounds of its pre-ReLU value. For example, for a ReLU neuron $y = \max(0, x)$, we want to compute the bounds $[l_y(x), u_y(x)]$ of $y$ given the bounds $[l_x, u_x]$ on $x$.
+Our goal is to approximate the bounds of the post-ReLU value of a neuron given the bounds of its pre-ReLU value. For example, for a ReLU neuron $y = \max(0, x)$, we want to compute the bounds $[l_y(x), u_y(x)]$ of $y$ given the bounds $[l_x, u_x]$ of $x$.
 
 \autoref{fig:relu-all-abstractions} illustrates common abstractions (or \emph{over-approximations}) for the ReLU function $y = \max(0, x)$, where $x \in [l_x, u_x]$ and $y \in [l_y(x), u_y(x)]$. The values of ReLU are shown as points on the \colorbox{myred}{red line}, which is non-convex and consists of two linear segments: one for $x < 0$ (where $y = 0$) and another for $x \geq 0$ (where $y = x$).
 To compute the bounds $l_y(x)$ and $u_y(x)$, we can use different abstractions:
@@ -3990,7 +3989,7 @@ Thus, the final bounds after ReLU are \([0, 2.0]\).
 \part{The Branch and Bound Approach}\label{part:bab}
 \chapter{The Branch and Bound Search Algorithm}\label{chap:bab}
 
-As shown in~\autoref{chap:constraint-solving}, NNV can be formulated as a satisfiability problem, solvable using a constraint solver,  e.g., SMT and MILP solvers.  However, such solvers not scale to large DNNs due to the complexity of the underlying formulae. Thus, modern NNV techniques reframe the problem to search for \emph{activation patterns} that satisfy the constraints, and use the \emph{Branch-and-Bound} algorithm to explore the space of possible activation patterns.
+As shown in~\autoref{chap:constraint-solving}, NNV can be formulated as a satisfiability problem, solvable using a constraint solver,  e.g., SMT and MILP solvers.  However, such solvers do not scale to large networks due to the complexity of the underlying formulae. Thus, modern NNV techniques reframe the problem to search for \emph{activation patterns} that satisfy the constraints, and use the \emph{Branch-and-Bound} algorithm to explore the space of possible activation patterns.
 
 %These activation patterns fix the activation status (active/inactive) of each neuron, allowing us to simplify involved constraints to linear constraints that are easier to solve.
 
@@ -10020,7 +10019,7 @@ Running an LP solver with objective $\min 0$ will return a point, e.g., (x=0,y=0
 \chapter{Programming Assignments}\label{chap:pa}
 
 \input{pa/pa1.tex}
-% \input{pa/pa2.tex}
+\input{pa/pa2.tex}
 % \input{pa/pa3.tex}
 % \input{pa/pa4.tex}
 
@@ -10075,7 +10074,7 @@ Running an LP solver with objective $\min 0$ will return a point, e.g., (x=0,y=0
 
     \item Week 4 (2/24):
     \begin{itemize}
-        \item Topics: DNN Verification (\autoref{sec:verification}) and Symbolic Execution~\autoref{sec:se-smt}
+        \item Topics: Neural Network Verification (NNV) (\autoref{sec:verification}) and Symbolic Execution~\autoref{sec:se-smt}
         \item In class exercise:~\autoref{ex:dnn-b} and~\autoref{problem:z3-dnn}
         \item Quiz:~\autoref{problem:drone}
         \item HW:~\autoref{ex:negation-trick}
@@ -10092,22 +10091,23 @@ Running an LP solver with objective $\min 0$ will return a point, e.g., (x=0,y=0
 
     \item Week 5 (3/3):
     \begin{itemize}
-        \item Topics: MILP Enncoding of DNNs (\autoref{sec:using-milp})        
+        \item Topics: MILP Enncoding of NNVs (\autoref{sec:using-milp})        
         \item Quiz:~\autoref{problem:mydnntwo}. You don't need to do question 4 (Z3) for the quiz.
         \item HW: Do~\autoref{problem:relu-milp-bounds} and~\autoref{prob:milp-dnn}
     \end{itemize}
 
-    % \item Week 6 (3/17):
-    % \begin{itemize}
-    %     \item Topics: Activation Pattern Search (\autoref{sec:activation-patterns})
-    %     \item HW:~\autoref{problem:pattern-enumeration} and~\autoref{problem:nnv-pattern}
-    % \end{itemize}
+    \item Week 6 (3/17):
+    \begin{itemize}
+        \item Topics: Activation Pattern Search (\autoref{sec:activation-patterns})
+        \item HW:~\autoref{problem:pattern-enumeration} and~\autoref{problem:nnv-pattern}
+        \item Quiz: (Re)Do~\autoref{ex:milp-dnn} by hand
+    \end{itemize}
 
 %     \item Week 7 (Oct 8):
 %     \begin{itemize}
 %         \item No HW because of PA1 due date
 %         \item 
-%         \item Quiz: (Re)Do~\autoref{ex:milp-dnn} by hand
+%         
 %     \end{itemize}
 %     \item Programming Assignment 2 (PA2)
 %     \begin{itemize}
