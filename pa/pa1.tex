@@ -315,7 +315,7 @@ Your program must have the following:
         \item the same number of 2 inputs and 2 outputs, but 3 hidden layers where each layer  has 4  neurons, i.e., a 2x4x4x4x2 network.
         \item non-0.0 bias values.
         \end{itemize}
-    \item then on this network, do every single tasks you did in \code{test()}  (run SE on it, output results, apply Z3 etc).  You will need to have 2 assertions that are true and 1 assertion that is false (just like above).
+    \item then on this network, do every single tasks you did in \code{test()}  (run SE on it, output results, apply Z3, etc).  You will need to have 2 assertions that are true and 1 assertion that is false (just like above).
         \begin{itemize}
         \item Initially you might randomly generate weights and bias values, but you will likely need to manually adjust the weights/bias values (i.e., tweak/change them by hand) so that you can prove some correct assertions (randomly generated values probably will not give you a meaningful network with any asserted properties).
         \end{itemize}
@@ -331,7 +331,7 @@ You can be as creative as you want, but your SE must not run for too long and mu
 \begin{itemize}
     \item takes as input the list \code{sizes} and returns a network of that size as descibed above.
 \end{itemize}
-\item a testing function \code{test3()} that runs \code{create\_random} on various sizes of networks, runs \code{my\_symbolic\_execution} on them as you did with \code{test()} and \code{test2()} above, and time the execution.
+\item a testing function \code{test3()} that runs \code{create\_random} on various sizes of networks, runs \code{my\_symbolic\_execution} on them as you did with \code{test()} and \code{test2()} above (remember to also apply Z3 to the symbolic states), and time the execution.
 \item a plot (in pdf, png, or jpeg) showing the scalability of \code{my\_symbolic\_execution} on various networks. You need to use \textbf{at least 25 networks of different sizes} to generate the plot. Use incrementally sized networks (e.g., gradually increasing the number of neurons/layers) or a good random distribution of sizes. A plot with very few datapoints will not be sufficient to show the scalability trend.
 % Moved to README template
 % \item in the \code{README}, write your observation and conclusion about the scalability of symbolic execution.  You must refer to the plot and describe it to support your conclusion.
