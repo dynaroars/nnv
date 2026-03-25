@@ -3153,9 +3153,8 @@ For~\autoref{ex:transformer-affine1}, applying ReLU$^a$ to neuron $x_3$ gives:
 \]
 \end{example}
 
-
 \begin{problem}\label{prob:int-abs}
-  Apply interval abstraction to the DNN in~\autoref{fig:dnn-abs} with inputs \(x_1 \in [1, 2]\) and \(x_2 \in [-1, 3]\). Compute the bounds for all neurons.  Clearly indicate the steps (e.g., results after affine and ReLU transformers).
+  Apply interval abstraction to the network in~\autoref{fig:dnn-abs} with inputs \(x_1 \in [1, 2]\) and \(x_2 \in [-1, 3]\). Compute the bounds for all neurons.  Clearly indicate the steps (e.g., results after affine and ReLU transformers).
 \end{problem}
 
 \subsubsection{Efficiency and Precision}
@@ -3347,7 +3346,7 @@ Right: correlated generators tilt the shape into a parallelogram, capturing depe
 
 
 \begin{example}
-    A common zonotope in 2D is a parallelogram. It can be defined by its center point and two generator vectors that define its sides. For instance, parallelogram on the left side of~\autoref{fig:zonotope-correlated-generators} has the center \(c = (1, 1)\) and the generators \(g_1 = (1, 0.25)\) and \(g_2 = (0.5, 1)\). This zonotope represents all points that can be reached by moving along these generators within the range \([-1, 1]\):
+    A common zonotope in 2D is a parallelogram. It can be defined by its center point and two generator vectors that define its sides. For instance, parallelogram on the right side of~\autoref{fig:zonotope-correlated-generators} has the center \(c = (1, 1)\) and the generators \(g_1 = (1, 0.25)\) and \(g_2 = (0.5, 1)\). This zonotope represents all points that can be reached by moving along these generators within the range \([-1, 1]\):
   \[
     \mathcal{Z} = \left\{ (1, 1) + \epsilon_1 (1, 0.25) + \epsilon_2 (0.5, 1) \mid \epsilon_1, \epsilon_2 \in [-1, 1] \right\}
   \]
@@ -3416,7 +3415,7 @@ Then for each coordinate:
 \[
 \begin{aligned}
 l_1 &= 1 - (|0.5| + |{-0.3}|) = 0.2, &
-u_1 &= 1 + (|0.5| + |{-0.3}|) = 1.8,\\
+u_1 &= 1 + (|0.5| + |{-0.3}|) = 1.2,\\
 l_2 &= 2 - (|1.0| + |0.2|) = 0.8, &
 u_2 &= 2 + (|1.0| + |0.2|) = 3.2.
 \end{aligned}
@@ -3730,7 +3729,7 @@ We can distinguish three possible cases of ReLU depending on the bounds $[l,r]$ 
 
 \paragraph{Building parallelogram}
 % Given the input zonotope  $x = \{(c + \sum_{i=1}^m \epsilon_i g_i) \mid \epsilon_i \in [-1,1]\}$ with $x$ ranging over \([l, u]\) where \(l < 0 < u\) (i.e., the unstable case), we construct a parallelogram that bounds the ReLU function over this interval. We capture the parallelogram using two linear constraints representing its upper and lower edges as shown in~\autoref{fig:relu-parallelogram}.
-Given the input zonotope  $x = \{(c + \sum_{i=1}^n \epsilon_i g_i) \mid \epsilon_i \in [-1,1]\}$ with $x$ ranging over \([l, u]\) where \(l < 0 < u\) (i.e., the unstable case), we construct a parallelogram that bounds the ReLU function over this interval. We capture the parallelogram using two linear constraints representing its upper and lower edges as shown in~\autoref{fig:relu-parallelogram}.
+Given the input zonotope  $x = \{(c + \sum_{i=1}^n \epsilon_i g_i) \mid \epsilon_i \in [-1,1]\}$ with $x$ ranging over \([l, u]\) where \(l < 0 < u\) (i.e., the unstable case), we construct a parallelogram that bounds  ReLU over this interval. We capture the parallelogram using two linear constraints representing its upper and lower edges as shown in~\autoref{fig:relu-parallelogram}.
 
 \begin{figure}
     \centering
@@ -3744,7 +3743,7 @@ Given the input zonotope  $x = \{(c + \sum_{i=1}^n \epsilon_i g_i) \mid \epsilon
     \item \textbf{Lower bound constraint:} \(y \geq \lambda x\) is the line with the same slope \(\lambda\) passing through \((0, 0)\).
 \end{itemize}
 
-Mergining these two constraints, we get the following equation describing all points \((x, y)\) within the parallelogram:
+Merging these two constraints, we get the following equation describing all points \((x, y)\) within the parallelogram:
 \begin{align*}
     \lambda x \leq \quad &y \quad \leq \lambda x - \lambda l \\
     \Leftrightarrow \quad &y = \lambda x - \alpha \lambda l, \quad \alpha \in [0, 1]
@@ -10154,12 +10153,17 @@ Running an LP solver with objective $\min 0$ will return a point, e.g., (x=0,y=0
 
     \item Week 6 (3/17):
     \begin{itemize}
-        \item Topics: Abstraction (\autoref{chap:abstractions}), Interval and Zonotope (\autoref{sec:interval-abstraction})        
+        \item Topics: Abstraction (\autoref{chap:abstractions}), Interval Abstraction  (\autoref{sec:interval-abstraction})        
         \item Quiz: (Re)Do~\autoref{ex:milp-dnn} by hand
         \item HW: No HW because we didn't get a chance to cover the material in class.
     \end{itemize}
 
-
+    \item Week 7 (3/24):
+    \begin{itemize}
+        \item Topics: Abstraction (\autoref{chap:abstractions}), Interval and Zonotope (\autoref{sec:interval-abstraction},~\autoref{sec:zonotope-abstraction})
+        \item Quiz: No Quiz because no HW due this week.
+        \item HW: Do~\autoref{prob:int-abs} and~\autoref{ex:zonotope_linear_example} (this is a complete example so just rewrite it by hand and submit it as HW)      
+    \end{itemize}
 
 % \item Week 6 (3/17):
 %     \begin{itemize}
