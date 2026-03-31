@@ -3526,7 +3526,7 @@ The abstract transformer \(f^a\) for the affine function \(f\):
     \begin{aligned}
     f^a(v_1, v_2, \ldots, v_n) &= \sum_{i=1}^{n} w_i v_i + b \\
     &= \sum_{i=1}^{n} w_i \underbrace{\left(c_i + \sum_{j=1}^{m} \epsilon_{j} g_{ij}\right)}_{v_i} + b \\
-    &= \left(\sum_{i=1}^{n} w_i c_i + b\right) + \sum_{i=1}^{n} w_i \sum_{j=1}^{m} \epsilon_{j} g_{ij} \\
+    &= \sum_{i=1}^{n} w_i c_i + \sum_{i=1}^{n} w_i \sum_{j=1}^{m} \epsilon_{j} g_{ij}  + b\\
     &= \underbrace{\left(\sum_{i=1}^{n} w_i c_i + b\right)}_{\text{new center}} + \sum_{j=1}^{m} \epsilon_{j} \underbrace{\left(\sum_{i=1}^{n} w_i g_{ij}\right)}_{\text{new generators}}
     \end{aligned}
 \end{equation}
