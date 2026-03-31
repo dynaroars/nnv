@@ -3366,7 +3366,7 @@ In contrast, the rectangle zonotope on the left, which represents an interval ab
 \end{example}
 
 \subsection{Computing Bounds of a Zonotope}\label{sec:zonotope-bounds}
-In NNV, we often need to compute the bounds of each variable represented by a zonotope. This allows us to determine stable neurons, which in turn helps optimize the verification process.
+In NNV, we often need to compute the bounds of each variable represented by a zonotope. This allows us to determine stable neurons, which in turms helps optimize the verification process.
 
 For each coordinate (dimension) of the zonotope, we compute its lower and upper bounds as follows:
 \[
@@ -3651,7 +3651,6 @@ f(x_1,x_2) = 0.5x_1 + -0.5x_2 + 1
 
 Activation functions like ReLU are non-affine and do not preserve zonotope structure.
 For \(\text{ReLU}(x) = \max(0, x)\), the shape of the input region changes at \(x = 0\): $x < 0$ maps to $0$ (a flat line), while $x \ge 0$ maps to $x$ (a slanted line). Thus, we will over-approximate these shapes with a new zonotope---a parallelogram---that contains the entire ReLU output region.
-
 
 We can distinguish three possible cases of ReLU depending on the bounds $[l,r]$ of the input zonotope.
 
@@ -4000,30 +3999,30 @@ As shown in~\autoref{chap:constraint-solving}, NNV can be formulated as a satisf
 
 Neural networks with piecewise linear activation functions have a special structure that can be exploited for verification.
 For example, each ReLU (\autoref{sec:relu}) function
-has two \emph{activation statuses}: active (identity function) and inactive (zero function). Each status
-partitions the input space into two regions---active and inactive.
-Within each region, the DNN behavior can be encoded as \emph{a linear constraint}, which can be efficiently analyzed.
+has two \emph{activation statuses}: active and inactive. Each status
+partitions the input space into two regions---one where the neuron is active and one where it is inactive.
+Within each region, the network behavior can be encoded as \emph{a linear constraint}, which can be efficiently analyzed.
 
-Thus, NNV reduces to checking that none of these linear regions contains a counterexample. More specifically, we can rewrite the satisfiability formulation in~\autoref{eq:nnv2} as a disjunction:
+Thus, the NNV problem (\autoref{def:nnv}) reduces to checking that none of these linear regions contains a counterexample. More specifically, we can rewrite the satisfiability formulation in~\autoref{eq:nnv2} as a disjunction:
 \begin{equation}\label{eq:nnv3}
   \bigvee_{p \in P} \left( \alpha_p \land \phi_{in} \land \neg \phi_{out} \right)
 \end{equation}
 where $P$ is the set of all possible \emph{activation patterns}---boolean assignments of activation statuses of all neurons-- of the network, and $\alpha_p$ is the formula $\alpha$ restricted to the linear region defined by the activation pattern $p$. This means that $\alpha_p$ includes additional constraints that fix the activation status of each neuron according to $p$. For example, if $p$ specifies that neuron $n_i$ is active, then $\alpha_p$ includes the constraint $z_i \ge 0$, indicating that the pre-activation value $z_i$ of neuron $n_i$ is non-negative. Similarly, if $n_i$ is inactive, then $\alpha_p$ includes $z_i < 0$.
 
-As long as one of the disjuncts in~\autoref{eq:nnv3} is satisfiable, i.e., we could find a counterexample in one of the linear regions, the entire formula is satisfiable, indicating that the property is invalid. Conversely, if all disjuncts are unsatisfiable, the property is valid.
+As long as one of the disjuncts in~\autoref{eq:nnv3} is satisfiable, i.e., a counterexample exists in one of the linear regions, the entire formula is satisfiable, indicating that the property is invalid. Conversely, if all disjuncts are unsatisfiable, the property is valid because no counterexample exists.
 
 This allows us to break down the verification problem into smaller subproblems, each searches for an activation pattern that satisfies the formula in~\autoref{eq:nnv2}.
 Modern NNV techniques~\cite{bunel2020branch,wang2021beta,ferrari2022complete,duong2024harnessing,duong2023dpllt,ovalbab,katz2019marabou,bak2021nnenum} all adopt this idea and search for a satisfying activation pattern to find a counterexample.
 
 \subsection{Activation Patterns}
 \begin{definition}[Activation Pattern]\label{def:activation-pattern}
-Let $N$ be a DNN with ReLU neurons $n_1,\dots,n_m$.
+Let $N$ be a neural network with ReLU neurons $n_1,\dots,n_m$.
 An \emph{activation pattern} is a Boolean assignment of the activation status of a subset (or all) of the neurons.
 If a neuron $n_i$ is active, we set $b_i = \texttt{true}$ (meaning $z_i \geq 0$); if it is inactive, $b_i = \texttt{false}$ (meaning $z_i < 0$).
 \end{definition}
 
 \begin{definition}[Complete Activation Pattern]\label{def:complete-pattern}
-A \emph{complete activation pattern} assigns an activation status to \emph{every} neuron in the DNN:
+A \emph{complete activation pattern} assigns an activation status to \emph{every} neuron in the network:
 \[
 p = \langle b_1, b_2, \dots, b_m \rangle \in \{\texttt{true},\texttt{false}\}^m .
 \]
