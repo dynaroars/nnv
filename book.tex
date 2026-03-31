@@ -42,7 +42,7 @@
 
 
 \newbool{showsol}
-\setbool{showsol}{true} % set to false to hide solutions
+\setbool{showsol}{false} % set to false to hide solutions
 
 \newenvironment{solution}{%
   \ifbool{showsol}{%
@@ -1869,7 +1869,6 @@ Consider the neural network in~\autoref{fig:proofnet}. Recall that in this netwo
 This chapter discusses the problem of verifying neural networks, i.e., checking if a given property holds for a neural network.
 We define the NN verification problem in~\autoref{sec:nnv-problem} and its satisfiability formulation, which is commonly used by DNN verifiers.
 
-
 \section{The Neural Network Verification (NNV) Problem}\label{sec:nnv-problem}
 
 \begin{definition}[NNV]\label{def:nnv}
@@ -3158,9 +3157,8 @@ For~\autoref{ex:transformer-affine1}, applying ReLU$^a$ to neuron $x_3$ gives:
 \end{problem}
 
 \subsubsection{Efficiency and Precision}
-
 Intervals is very efficient and scales  well to large networks. The affine transformer only requires a linear number of multiplications and min/max operations, and ReLU reduces to only three matching cases.
-However, the cost of efficiency is precision.
+However, the cost of efficiency is \emph{precision}.
 
 \begin{example}\label{ex:interval-overapproximation}
 
@@ -3184,112 +3182,7 @@ Nonetheless, interval domain remains popular due to its simplicity and efficienc
 
 
 Interval abstraction (\autoref{sec:interval-abstraction}) treats each variable independently. For example, if \(x_1 \in [1,2]\) and \(x_2 \in [3,4]\), interval assumes any combination of \(x_1\) and \(x_2\) is possible. But variables can correlate: e.g., when \(x_1\) increases, \(x_2\) also increases\tvn{but this doesn't happens in DNN, so why do we need zonotope? does it help with ReLU abstraction?}.  Zonotopes can capture such correlations and therefore  provide a tighter abstraction.
-% A \emph{zonotope} captures this correlation by encoding both variables as linear combinations of a few shared ``uncertainty sources’’ (\(\epsilon_i\)’s).
-%In geometric terms while intervals form axis-aligned boxes, zonotopes form \emph{tilted boxes} (parallelograms or higher-dimensional analogues) that can stretch, rotate, and capture relationships between variables (like ``when $x_1$ goes up, $x_2$ also goes up'').
 
-% \begin{figure}[h!]
-% \centering
-% \begin{tikzpicture}[scale=0.90,>=stealth]
-% \tikzstyle{shp}=[thick]
-% \tikzstyle{cent}=[blue!80!black]
-% \tikzstyle{gen}=[->, blue!70!black, thick]
-% \tikzstyle{lab}=[font=\small]
-
-% % =========================
-% % Panel A: m = 1 (line)
-% % =========================
-% \begin{scope}[shift={(-6,0)}]
-%   % center
-%   \coordinate (cA) at (0,0);
-%   \filldraw[cent] (cA) circle (1.6pt) node[below left,lab] {$c$};
-
-%   % generator g1
-%   \coordinate (g1A) at (2,0.5);
-%   % endpoints of the segment: c +/- g1
-%   \coordinate (A1) at (-2,-0.5);
-%   \coordinate (A2) at ( 2, 0.5);
-
-%   % shape (line segment)
-%   \draw[blue!15, line width=5pt] (A1) -- (A2); % thick faint band
-%   \draw[shp, blue!70!black] (A1) -- (A2);
-
-%   % generator arrow
-%   \draw[gen] (cA) -- (g1A) node[right,lab] {$g_1$};
-
-%   % labels
-%   \node[lab] at (0,2.0) {1 generator ($m{=}1$): line segment};
-%   \node[lab] at (0,-1.6) {$x = c + \epsilon_1 g_1,\ \epsilon_1\in[-1,1]$};
-% \end{scope}
-
-% % =========================
-% % Panel B: m = 2 (parallelogram)
-% % =========================
-% \begin{scope}[shift={(0,0)}]
-%   \coordinate (cB) at (0,0);
-%   \filldraw[cent] (cB) circle (1.6pt) node[below left,lab] {$c$};
-
-%   % generators
-%   \coordinate (g1B) at (2,0.5);
-%   \coordinate (g2B) at (0.5,1.6);
-
-%   % corners: c ± g1 ± g2  (center at origin)
-%   \coordinate (B1) at (-2.5,-2.1);
-%   \coordinate (B2) at (-1.5, 1.1);
-%   \coordinate (B3) at ( 2.5, 2.1);
-%   \coordinate (B4) at ( 1.5,-1.1);
-
-%   % shape
-%   \fill[orange!15] (B1)--(B2)--(B3)--(B4)--cycle;
-%   \draw[shp, orange!80!black] (B1)--(B2)--(B3)--(B4)--cycle;
-
-%   % generator arrows
-%   \draw[gen] (cB) -- (g1B) node[right,lab] {$g_1$};
-%   \draw[gen] (cB) -- (g2B) node[above right,lab] {$g_2$};
-
-%   % labels
-%   \node[lab] at (0,2.6) {2 generators ($m{=}2$): parallelogram};
-%   \node[lab] at (0,-2.6) {$x = c + \epsilon_1 g_1 + \epsilon_2 g_2$};
-% \end{scope}
-
-% % =========================
-% % Panel C: m = 3 (hexagon)
-% % =========================
-% \begin{scope}[shift={(6,0)}]
-%   \coordinate (cC) at (0,0);
-%   \filldraw[cent] (cC) circle (1.6pt) node[below left,lab] {$c$};
-
-%   % generators
-%   \coordinate (g1C) at (2,0.5);
-%   \coordinate (g2C) at (0.5,1.6);
-%   \coordinate (g3C) at (-0.7,0.8);
-
-%   % hexagon vertices = convex hull of c + sum eps_i g_i, eps_i in {-1,1}
-%   \coordinate (C1) at (-3.2,-1.3);
-%   \coordinate (C2) at (-1.8,-2.9);
-%   \coordinate (C3) at ( 2.2,-1.9);
-%   \coordinate (C4) at ( 3.2, 1.3);
-%   \coordinate (C5) at ( 1.8, 2.9);
-%   \coordinate (C6) at (-2.2, 1.9);
-
-%   % shape
-%   \fill[green!15] (C1)--(C2)--(C3)--(C4)--(C5)--(C6)--cycle;
-%   \draw[shp, green!50!black] (C1)--(C2)--(C3)--(C4)--(C5)--(C6)--cycle;
-
-%   % generator arrows
-%   \draw[gen] (cC) -- (g1C) node[right,lab] {$g_1$};
-%   \draw[gen] (cC) -- (g2C) node[above right,lab] {$g_2$};
-%   \draw[gen] (cC) -- (g3C) node[above left,lab] {$g_3$};
-
-%   % labels
-%   \node[lab] at (0,3.1) {3 generators ($m{=}3$): hexagon (richer shape)};
-%   \node[lab] at (0,-3.2) {$x = c + \epsilon_1 g_1 + \epsilon_2 g_2 + \epsilon_3 g_3$};
-% \end{scope}
-
-% \end{tikzpicture}
-% \caption{Zonotopes in 2D with $m=1,2,3$ generators (center $c$ at the origin for clarity).
-% More generators $\Rightarrow$ more directions of variability $\Rightarrow$ a richer convex polygon.}
-% \label{fig:zonotope-1-2-3-generators}
-% \end{figure}
 
 
 \paragraph{Definition}
@@ -3506,9 +3399,9 @@ u_2 &= 2 + (|1.0| + |0.2|) = 3.2.
 
 \subsubsection{Affine Transformer}
 
-For the affine function \(f\) in~\autoref{sec:affine}
+Recall that the affine function \(f\) in~\autoref{sec:affine} is
 \[
-f(v_1, v_2, \ldots, v_n) = \sum_{i=1}^{n} w_i v_i + b
+f(v_1, v_2, \ldots, v_n) = \sum_{i=1}^{n} w_i v_i + b, 
 \]
 where \(w_i\) is the weight associated with input \(v_i\), \(n\) is the number of inputs, and \(b\) is the bias term.
 
@@ -3595,7 +3488,7 @@ Thus, the input zonotope is
 \]
 }
 
-\paragraph{Apply the affine transformation} We apply the affine function \(f(x_1, x_2) = -0.5\,x_1 + 0.5\,x_2 + 1.0\),
+\paragraph{Apply the affine transformation} We apply the affine function \(f(x_1, x_2) = -0.5\,x_1 + 0.5\,x_2 + 1.0\) of neuron \(x_3\)
 to the input zonotope $\mathcal{Z}$:
 
 \begin{equation}
@@ -3638,7 +3531,8 @@ For this simple example, both interval (\autoref{sec:interval-affine-transformer
 The benefit of zonotopes becomes clear in deeper layers, where they preserve linear correlations that interval abstractions lose.
 \end{example}
 
-\begin{problem} Compute the bounds for \(x_4\) in~\autoref{fig:dnn-abs} using zonotope abstraction, with inputs \(x_1 \in [1, 2]\) and \(x_2 \in [-1, 3]\), and the affine function for \(x_4\) is:
+\begin{problem}\label{prob:zonotope_linear_example_x4}
+     Compute the bounds for \(x_4\) in~\autoref{fig:dnn-abs} using zonotope abstraction, with inputs \(x_1 \in [1, 2]\) and \(x_2 \in [-1, 3]\), and the affine function for \(x_4\) is:
 \[
 f(x_1,x_2) = 0.5x_1 + -0.5x_2 + 1
 \]
@@ -3669,7 +3563,7 @@ We can distinguish three possible cases of ReLU depending on the bounds $[l,r]$ 
 
 \paragraph{Building parallelogram}
 % Given the input zonotope  $x = \{(c + \sum_{i=1}^m \epsilon_i g_i) \mid \epsilon_i \in [-1,1]\}$ with $x$ ranging over \([l, u]\) where \(l < 0 < u\) (i.e., the unstable case), we construct a parallelogram that bounds the ReLU function over this interval. We capture the parallelogram using two linear constraints representing its upper and lower edges as shown in~\autoref{fig:relu-parallelogram}.
-Given the input zonotope  $x = \{(c + \sum_{i=1}^n \epsilon_i g_i) \mid \epsilon_i \in [-1,1]\}$ with $x$ ranging over \([l, u]\) where \(l < 0 < u\) (i.e., the unstable case), we construct a parallelogram that bounds  ReLU over this interval. We capture the parallelogram using two linear constraints representing its upper and lower edges as shown in~\autoref{fig:relu-parallelogram}.
+Given the input zonotope  $x = \{(c + \sum_{i=1}^n \epsilon_i g_i) \mid \epsilon_i \in [-1,1]\}$ with $x$ ranging over \([l, u]\) where \(l < 0 < u\) (i.e., the unstable case), we construct a parallelogram that bounds  ReLU over this interval. We construct the parallelogram using two linear constraints representing its upper and lower edges as shown in~\autoref{fig:relu-parallelogram}.
 
 \begin{figure}
     \centering
@@ -4442,22 +4336,22 @@ First, \bab{} initializes \problems{}\footnote{\mycode{Queue} is often used to i
 Then \bab{} enters its main loop.
 
 \begin{enumerate}
-\item \textbf{First iteration}~\bab{} selects the only available activation pattern $\emptyset$, i.e., $\sigma_i = \emptyset$,
+\item \textbf{First iteration.}~\bab{} selects the only available activation pattern $\emptyset$, i.e., $\sigma_i = \emptyset$,
 and  calls \Deduce to check the feasibility of the problem based $\sigma_i$.
 
-Here, \Deduce determines that the problem is feasible, e.g., the bounds of $y_1$ and $y_2$ indicate that $y_1 \le y_2$ can be satisfied. Thus, \bab{} calls \mycode{LP} to check the satisfiability of the problem using an LP solver. The LP solver returns unsatisfiable (or unknown)--meaning no counterexample is found in this activation pattern.  \bab{} then randomly selects a neuron to split (\Decide). Assume that it chooses $v_4$ to split, i.e., the problem spawns two independent subproblems: one with $v_4$ active and the other with $v_4$ inactive.
+Here, \Deduce determines that the problem is feasible, e.g., the bounds of $y_1$ and $y_2$ indicate that $y_1 \le y_2$ can be satisfied. Thus, \bab{} calls \mycode{LP} to check the satisfiability of the problem using an LP solver. The LP solver returns unsatisfiable (or unknown)--meaning no counterexample is found using this activation pattern.  \bab{} then randomly selects a neuron to split (\Decide). Assume that it chooses $v_4$ to split, i.e., the problem spawns two independent subproblems: one with $v_4$ active and the other with $v_4$ inactive.
 It does so by unioning $\{v_4\}$ and $\{\overline{v_4}\}$ with $\sigma_i$ and adds both new activation patterns to \problems. Next, \bab{} loops back to process the next activation pattern.
 
 
-\item \textbf{Second iteration}~\bab{} has two subproblems. For the subproblem with activation pattern $\{v_4\}$, \Deduce decides feasibility but \mycode{LP} returns unsatisfiable (or unknown),
+\item \textbf{Second iteration.}~\bab{} has two subproblems. For the subproblem with activation pattern $\{v_4\}$, \Deduce decides feasibility but \mycode{LP} returns unsatisfiable (or unknown),
 so it selects $v_2$ to split by adding $\{v_4, v_2\}$ and $\{v_4, \overline{v_2}\}$ to \texttt{ActPatterns}.
 For the other subproblem with $\overline{v_4}$ inactive, \Deduce determines infeasibility and thus discards this subproblem.
 
-\item \textbf{Third iteration}~\bab{} has two subproblems corresponding to activation patterns $\{v_4, v_2\}$ and $\{v_4, \overline{v_2}\}$. For the first subproblem, \bab{} selects $v_1$ to split by unioning $v_1$ and then $\overline{v_1}$ to the current activation pattern $v_4 \land v_2$ and adds them to \problems. For the second subproblem, \Deduce determines infeasibility and \bab{} discards this subproblem.
+\item \textbf{Third iteration.}~\bab{} has two subproblems corresponding to activation patterns $\{v_4, v_2\}$ and $\{v_4, \overline{v_2}\}$. For the first subproblem, \bab{} selects $v_1$ to split by unioning $v_1$ and then $\overline{v_1}$ to the current activation pattern $v_4 \land v_2$ and adds them to \problems. For the second subproblem, \Deduce determines infeasibility and \bab{} discards this subproblem.
 
-\item \textbf{Fourth iteration}~\bab{} has two subproblems corresponding to activation patterns $\{v_4, v_2, v_1\}$ and $\{v_4, v_2, \overline{v_1}\}$, both which are then determined infeasible and discarded.
+\item \textbf{Fourth iteration.}~\bab{} has two subproblems corresponding to activation patterns $\{v_4, v_2, v_1\}$ and $\{v_4, v_2, \overline{v_1}\}$, both which are then determined infeasible and discarded.
 
-\item \textbf{Fifth iteration}~Finally, \bab{} has no more activation patterns in \problems, stops the search, and returns \unsat{}, indicating that the property is valid.
+\item \textbf{Fifth iteration.}~Finally, \bab{} has no more activation patterns in \problems, stops the search, and returns \unsat{}, indicating that the property is valid.
 \end{enumerate}
 
 \autoref{fig:bab-example}b illustrates the BaB search tree corresponding to the above process. Each white node represents a branching decision where \bab{} splits a neuron, while each red node represents a leaf node where \Deduce determines infeasibility and prunes the branch. Notice that not all activation patterns are explored because some branches are pruned early due to infeasibility. In other words, while there are $2^4=16$ possible complete activation patterns for the three ReLU neurons, \bab{} only explores 6 of them in this example.
@@ -10115,7 +10009,7 @@ Running an LP solver with objective $\min 0$ will return a point, e.g., (x=0,y=0
     \begin{itemize}
         \item Topics: Branch and Bound (\autoref{chap:bab}), Activation Pattern Search (\autoref{sec:activation-patterns})
         \item HW:~\autoref{problem:pattern-enumeration} and~\autoref{problem:nnv-pattern}
-        \item Quiz:~\autoref{prob:correct-abs}
+        \item Quiz:~\autoref{prob:zonotope_linear_example_x4}
     \end{itemize}
 
 
@@ -10153,7 +10047,7 @@ Running an LP solver with objective $\min 0$ will return a point, e.g., (x=0,y=0
 %     \item Programming Assignment 3 (PA3)
 %     \begin{itemize}
 %         \item Branch and Bound~\autoref{sec:pa3}
-%         \item Due date \alert{Tuesday Nov 25, 2025 11:59pm}
+%         \item Due date \alert{Tuesday Nov 25, 2025 11:59pm}\label{
 %     \end{itemize}
 %     \item Week 12 (Nov 12):
 %     \begin{itemize}
