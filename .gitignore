@@ -1,6 +1,7 @@
 code/
 .DS_Store
 book.pdf
+!docs/book.pdf
 
 ## Core latex/pdflatex auxiliary files:
 *.aux
