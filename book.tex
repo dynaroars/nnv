@@ -3512,26 +3512,46 @@ f(v_1, v_2, \ldots, v_n) = \sum_{i=1}^{n} w_i v_i + b
 \]
 where \(w_i\) is the weight associated with input \(v_i\), \(n\) is the number of inputs, and \(b\) is the bias term.
 
-Applying an affine transformation to a zonotope transforms its center by the same affine rule (weights and bias) and transforms each generator by the linear part (weights only).
-In other words, affine operations \emph{preserve} the structure of zonotopes exactly: no approximation needed.  Imagine a %tilted box in space, then an affine transformation just stretches, rotates, and shifts it---the result is still a tilted box.
-
 
 More formally, given a zonotope
 \[
 % \mathcal{Z} = \left\{ c + \sum_{j=1}^{m} \epsilon_j g_j \mid \epsilon_j \in [-1, 1] \right\},
-\mathcal{Z} = \left\{ c + \sum_{j=1}^{n} \epsilon_j g_j \mid \epsilon_j \in [-1, 1] \right\},
+\mathcal{Z} = \left\{ c + \sum_{j=1}^{m} \epsilon_j g_j \mid \epsilon_j \in [-1, 1] \right\},
 \]
-the abstract transformer \(f^a\) for the affine function computes the new zonotope as:
-\[
-% f^a(\mathcal{Z}) = \left\{ f(c) + \sum_{j=1}^{m} \epsilon_j f(g_j) \mid \epsilon_j \in [-1, 1] \right\}
-f^a(\mathcal{Z}) = \left\{ f(c) + \sum_{j=1}^{n} \epsilon_j f(g_j) \mid \epsilon_j \in [-1, 1] \right\}
-\]
+
+% For simplicity, we use notation $v = c + \sum_{j=1}^{m} \epsilon_j g_j$ to represent a zonotope.
+
+The abstract transformer \(f^a\) for the affine function \(f\):
+\begin{equation}
+    \begin{aligned}
+    f^a(v_1, v_2, \ldots, v_n) &= \sum_{i=1}^{n} w_i v_i + b \\
+    &= \sum_{i=1}^{n} w_i \underbrace{\left(c_i + \sum_{j=1}^{m} \epsilon_{j} g_{ij}\right)}_{v_i} + b \\
+    &= \left(\sum_{i=1}^{n} w_i c_i + b\right) + \sum_{i=1}^{n} w_i \sum_{j=1}^{m} \epsilon_{j} g_{ij} \\
+    &= \underbrace{\left(\sum_{i=1}^{n} w_i c_i + b\right)}_{\text{new center}} + \sum_{j=1}^{m} \epsilon_{j} \underbrace{\left(\sum_{i=1}^{n} w_i g_{ij}\right)}_{\text{new generators}}
+    \end{aligned}
+\end{equation}
+
+% \(f^a\) 
+% \[
+% % f^a(\mathcal{Z}) = \left\{ f(c) + \sum_{j=1}^{m} \epsilon_j f(g_j) \mid \epsilon_j \in [-1, 1] \right\}
+% f^a(\mathcal{Z}) = \left\{ f(c) + \sum_{j=1}^{n} \epsilon_j f(g_j) \mid \epsilon_j \in [-1, 1] \right\}
+% \]
 
 That is, the new zonotope has:
 \begin{itemize}
-  \item \textbf{center:} \(f(c) = \sum_{i=1}^{n} w_i c_i + b\)
-  \item \textbf{generators:} each \(f(g_j) = \sum_{i=1}^{n} w_i (g_j)_i\)
+  \item \textbf{center:} \(f^c(c) = \sum_{i=1}^{n} w_i c_i + b\)
+  \item \textbf{generators:} each generator $g_j$, \(f^g(g_j) = \sum_{i=1}^{n} w_i g_{ij}\)
 \end{itemize}
+
+
+Applying an affine transformation to a zonotope transforms its center by the same affine rule (weights and bias) and transforms each generator by the linear part (weights only).
+In other words, affine operations \emph{preserve} the structure of zonotopes exactly: no approximation needed.  % Imagine a tilted box in space, then an affine transformation just stretches, rotates, and shifts it---the result is still a tilted box.
+
+% \(f^a\) 
+\[
+% f^a(\mathcal{Z}) = \left\{ f(c) + \sum_{j=1}^{m} \epsilon_j f(g_j) \mid \epsilon_j \in [-1, 1] \right\}
+f^a(\mathcal{Z}) = \left\{ f^c(c) + \sum_{j=1}^{m} \epsilon_j f^g(g_j) \mid \epsilon_j \in [-1, 1] \right\}
+\]
 
 % For the affine function \(f\) in~\autoref{sec:affine}
 % \[
@@ -3582,9 +3602,9 @@ to the input zonotope $\mathcal{Z}$:
 \small
 \begin{aligned}
 f^a(\mathcal{Z})
-  &= f(c_1, c_2)
-     + \epsilon_1\, f(g_1)
-     + \epsilon_2\, f(g_2) \\[4pt]
+  &= f^c(c_1, c_2)
+     + \epsilon_1\, f^g(g_1)
+     + \epsilon_2\, f^g(g_2) \\[4pt]
   &= \big(-0.5\,c_1 + 0.5\,c_2 + 1.0\big)
      + \epsilon_1\big(-0.5\,g_{1x} + 0.5\,g_{1y}\big)
      + \epsilon_2\big(-0.5\,g_{2x} + 0.5\,g_{2y}\big) \\[4pt]
