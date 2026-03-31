@@ -3614,9 +3614,18 @@ Thus, the output range of $x_3$ is \([-0.5, 2.0]\).
 
 Note that the reason for computing the bounds from the zonotope representation is to determine \emph{stable neurons} as described in~\autoref{sec:pre-relu-bounds}. If the lower bound is non-negative, ReLU will be active; if the upper bound is non-positive,  ReLU will be inactive. In these cases, ReLU can be simplified to either the identity function or zero, respectively, which helps reduce overapproximation in subsequent layers.
 
-Note that for this simple example, both interval (\autoref{sec:interval-affine-transformer}) and zonotope abstractions yield identical bounds \([-0.5, 2.0]\).
+For this simple example, both interval (\autoref{sec:interval-affine-transformer}) and zonotope abstractions yield identical bounds \([-0.5, 2.0]\).
 The benefit of zonotopes becomes clear in deeper layers, where they preserve linear correlations that interval abstractions lose.
 \end{example}
+
+\begin{problem} Compute the bounds for \(x_4\) in~\autoref{fig:dnn-abs} using zonotope abstraction, with inputs \(x_1 \in [1, 2]\) and \(x_2 \in [-1, 3]\), and the affine function for \(x_4\) is:
+\[
+f(x_1,x_2) = 0.5x_1 + -0.5x_2 + 1
+\]
+
+\begin{solution}
+\end{solution}
+\end{problem}
 
 \subsubsection{ReLU Transformer}
 
