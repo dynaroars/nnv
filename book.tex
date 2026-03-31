@@ -42,7 +42,7 @@
 
 
 \newbool{showsol}
-\setbool{showsol}{false} % set to false to hide solutions
+\setbool{showsol}{true} % set to false to hide solutions
 
 \newenvironment{solution}{%
   \ifbool{showsol}{%
@@ -3609,102 +3609,14 @@ f^a_L &= c' - (|g'_1| + |g'_2|) = 0.75 - (0.25 + 1.0) = -0.5, \\
 f^a_U &= c' + (|g'_1| + |g'_2|) = 0.75 + (0.25 + 1.0) = 2.0.
 \end{aligned}
 \end{equation}
-Thus, the output range is \(x_3 \in [-0.5, 2.0]\).
+Thus, the output range of $x_3$ is \([-0.5, 2.0]\).
 
-% \begin{figure}[h!]
-% \centering
-% \begin{tikzpicture}[scale=1.0, thick]
 
-% % (a) input intervals
-% \node at (1.5,4.2) {(a) Input intervals};
-% \draw[->,gray!70] (0,3.6)--(3.4,3.6) node[right]{$x_1$};
-% \draw[fill=green!20,draw=green!50!black] (1,3.5) rectangle (2,3.7);
-% \node at (1.5,3.9){$[1,2]$};
-% \draw[->,gray!70] (0,2.8)--(3.4,2.8) node[right]{$x_2$};
-% \draw[fill=green!20,draw=green!50!black] (0.5,2.7) rectangle (3,2.9);
-% \node at (1.75,3.1){$[-1,3]$};
-
-% % (b) input zonotope
-% \node at (8,4.2) {(b) Input zonotope};
-% \draw[->,gray!70] (5.5,2.0)--(10,2.0) node[right]{$x_1$};
-% \draw[->,gray!70] (6.0,1.5)--(6.0,5) node[left]{$x_2$};
-% \coordinate (A) at (7,1);
-% \coordinate (B) at (8,1);
-% \coordinate (C) at (8,5);
-% \coordinate (D) at (7,5);
-% \filldraw[fill=green!15,draw=green!60!black] (A)--(B)--(C)--(D)--cycle;
-% \coordinate (c) at (7.5,3);
-% \filldraw[red!70] (c) circle (1.5pt) node[below right]{$c=(1.5,1.0)$};
-% \draw[->,blue!70,thick] (c)--++(0.5,0) node[midway,below]{$g_1=(0.5,0)$};
-% \draw[->,orange!80,thick] (c)--++(0,2.0) node[midway,right]{$g_2=(0,2.0)$};
-
-% % (c) output zonotope (1-D range)
-% \node at (13.8,4.2) {(c) Output zonotope};
-% \draw[->,gray!70] (12,2.0)--(15.5,2.0) node[right]{$x_3$};
-% \draw[fill=green!15,draw=green!60!black] (13.0,1.9) rectangle (14.5,2.1);
-% \node at (13.75,2.4){$[-0.5,2.0]$};
-% \filldraw[red!70] (13.75,2.0) circle (1.5pt) node[below]{$c'=0.75$};
-% \draw[<->,blue!70,thick] (13.75,2.0)--++(-0.25,0) node[midway,below]{$g'_1$};
-% \draw[<->,orange!80,thick] (13.75,2.0)--++(1.0,0) node[midway,below]{$g'_2$};
-
-% \end{tikzpicture}
-% \caption{(a) Independent input intervals; (b) combined as a 2-D input zonotope; (c) 1-D output zonotope after affine transformation $f(x_1,x_2)=-0.5x_1+0.5x_2+1$.}
-% \end{figure}
-
-The reason for computing the bounds from the zonotope representation is to determine stable neurons as described in~\autoref{sec:pre-relu-bounds}. If the lower bound is non-negative, ReLU will be active; if the upper bound is non-positive,  ReLU will be inactive. In these cases, ReLU can be simplified to either the identity function or zero, respectively, which helps reduce overapproximation in subsequent layers.
+Note that the reason for computing the bounds from the zonotope representation is to determine \emph{stable neurons} as described in~\autoref{sec:pre-relu-bounds}. If the lower bound is non-negative, ReLU will be active; if the upper bound is non-positive,  ReLU will be inactive. In these cases, ReLU can be simplified to either the identity function or zero, respectively, which helps reduce overapproximation in subsequent layers.
 
 Note that for this simple example, both interval (\autoref{sec:interval-affine-transformer}) and zonotope abstractions yield identical bounds \([-0.5, 2.0]\).
 The benefit of zonotopes becomes clear in deeper layers, where they preserve linear correlations that interval abstractions lose.
 \end{example}
-
-% \begin{example}\label{ex:zonotope_linear_example}
-% Consider the DNN in~\autoref{fig:dnn-abs} with inputs \(x_1 \in [1, 2]\) and \(x_2 \in [-1, 3]\). The affine function for neuron \(x_3\) is $f(x_1,x_2) = -0.5\,x_1 + 0.5\,x_2 + 1.0$. We want to compute the bounds for \(x_3\) using zonotope abstraction.
-
-% First, we need to represent the bounds of \(x_1\) and \(x_2\) as a zonotope.
-% The center \(c\) represents the midpoint of each input interval:
-% {\small
-% \[
-% c_1 = \frac{1+2}{2} = 1.5, \quad c_2 = \frac{(-1)+3}{2} = 1.0
-% \]
-% }
-% The generator matrix \(G\) captures the half-widths of each interval as diagonal entries:
-% {\small
-% \[
-% G_{11} = \frac{2-1}{2} = 0.5, \quad G_{22} = \frac{3-(-1)}{2} = 2.0
-% \]
-% }
-% This construction creates the zonotope
-% {\small
-% \[
-% c = \begin{bmatrix}1.5 \\ 1.0\end{bmatrix}, \quad G = \begin{bmatrix}0.5 & 0 \\ 0 & 2.0\end{bmatrix},
-% \]
-% }
-% \noindent which represents exactly the input box: \(x_1 \in [1.5-0.5, 1.5+0.5] = [1,2]\) and \(x_2 \in [1.0-2.0, 1.0+2.0] = [-1,3]\).
-
-
-% Now we can apply the affine transformation to the input zonotope.  For the weight \(w = [-0.5, 0.5]^\top\) and bias \(b = 1.0\), applying the affine transformer:
-% \begin{equation}
-%     \small
-% \begin{aligned}
-% c' &= w^\top c + b = [-0.5, 0.5] \begin{bmatrix}1.5 \\ 1.0\end{bmatrix} + 1.0 = -0.75 + 0.5 + 1.0 = 0.75 \\
-% g'_1 &= w^\top g_1 = [-0.5, 0.5] \begin{bmatrix}0.5 \\ 0\end{bmatrix} = -0.25 \\
-% g'_2 &= w^\top g_2 = [-0.5, 0.5] \begin{bmatrix}0 \\ 2.0\end{bmatrix} = 1.0 \\
-% \end{aligned}
-% \end{equation}
-% This produces the output zonotope \((0.75, [-0.25, 1.0])\) for \(x_3\).
-
-% Finally, we compute the bounds of \(x_3\) from the zonotope representation:
-
-% \begin{equation}
-%     \small
-% \begin{aligned}
-%     f^a_L &= c' - |g'_1| - |g'_2| = 0.75 - 0.25 - 1.0 = -0.5 \\
-%     f^a_U &= c' + |g'_1| + |g'_2| = 0.75 + 0.25 + 1.0 = 2.0
-% \end{aligned}
-% \end{equation}
-
-%     Note that for this affine operation over a box input, both interval (\autoref{sec:interval-affine-transformer}) and zonotope abstractions yield identical bounds \([-0.5, 2.0]\). The advantage of zonotopes becomes apparent when propagating through multiple layers, where zonotopes preserve linear correlations that intervals lose.
-% \end{example}
 
 \subsubsection{ReLU Transformer}
 
