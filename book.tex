@@ -3983,7 +3983,8 @@ $\{n_1=\mathsf{true},n_2=\mathsf{false},n_3=\mathsf{false}\}$.
 \end{problem}
 
 
-\begin{problem}[Counting Complete Patterns Compatible with a Partial Pattern]
+\begin{problem}[Counting Complete Patterns Compatible with a Partial Pattern]\label{problem:counting-patterns}
+
 Suppose we have a network with $m=10$ ReLU neurons. Consider a partial pattern $p'$ that fixes 4 neurons.
 \begin{enumerate}
   \item How many complete patterns extend $p'$?
@@ -7322,7 +7323,7 @@ Neural network verification (NNV) is a rising topic that applies \emph{formal me
 
 \section{What Are Formal Methods (FM)?}
 
-FM are techniques for analyzing systems, e.g., computer software, using \emph{mathematically precise models and reasoning}. In FM the behavior of a program is described and analyzed using logic and mathematics rather than informal reasoning or empirical testing. This allows formal methods to provide \emph{guarantees} about system properties. For example, an FM might prove that a sorting algorithm always produces a correctly ordered list for any input list
+FM are techniques for analyzing systems, e.g., computer software, using \emph{mathematically precise models and reasoning}. In FM the behavior of a program is described and analyzed using logic and mathematics rather than informal reasoning or empirical testing. This allows FM to provide \emph{guarantees} about system properties. For example, an FM might prove that a sorting algorithm always produces a correctly ordered list for any input list
 
 \paragraph{Compared to Testing} To motivate the need for FM, consider a simple function that computes the absolute value of an integer, where the goal is to show that the function always returns a non-negative number.
 
@@ -10006,13 +10007,28 @@ Running an LP solver with objective $\min 0$ will return a point, e.g., (x=0,y=0
         \item Due date \alert{Monday April 13, 2026 11:59 PM}
     \end{itemize}
     
-    \item Week 6 (3/17):
+    \item Week 8 (3/31):
     \begin{itemize}
         \item Topics: Branch and Bound (\autoref{chap:bab}), Activation Pattern Search (\autoref{sec:activation-patterns})
-        \item HW:~\autoref{problem:pattern-enumeration} and~\autoref{problem:nnv-pattern}
         \item Quiz:~\autoref{prob:zonotope_linear_example_x4}
+        \item HW:~\autoref{problem:pattern-enumeration} and~\autoref{problem:nnv-pattern}
+
     \end{itemize}
 
+    \item Week 9 (April 7):
+    \begin{itemize}
+        \item Topics: Adversarial Attacks~\autoref{chap:adversarial-attacks} %and Proof Certificates~\autoref{chap:proof-gen-check}        
+        \item Quiz:~\autoref{problem:counting-patterns}
+        %~\autoref{prob:bab-understanding}
+        \item HW: Do~\autoref{prob:bab-detailed},~\autoref{prob:compute-gradients},~\autoref{prob:pgd-iterations}
+        % ~\autoref{prob:bab-counterexample}, and ~\autoref{prob:bab-interval}
+
+    \end{itemize}
+    % \item Programming Assignment 3 (PA3)
+    % \begin{itemize}
+    %     \item Branch and Bound~\autoref{sec:pa3}
+    %     \item Due date \alert{Tuesday Nov 25, 2025 11:59pm}\label{
+    % \end{itemize}
 
 
 %     \item Week 7 (Oct 8):
@@ -10038,17 +10054,6 @@ Running an LP solver with objective $\min 0$ will return a point, e.g., (x=0,y=0
 %         \item No HW because of PA2 due date
 %         \item Topics: Zonotope~\autoref{sec:zonotope-abstraction} and BaB Algorithm~\autoref{chap:bab}
 %         \item Quiz: attendance
-%     \end{itemize}
-%     \item Week 11 (Nov 5):
-%     \begin{itemize}
-%         \item HW: Do~\autoref{prob:bab-detailed},~\autoref{prob:bab-counterexample}, and ~\autoref{prob:bab-interval}
-%         \item Topics: Adversarial Attacks~\autoref{chap:adversarial-attacks} and Proof Certificates~\autoref{chap:proof-gen-check}
-%         \item Quiz:~\autoref{prob:bab-understanding}
-%     \end{itemize}
-%     \item Programming Assignment 3 (PA3)
-%     \begin{itemize}
-%         \item Branch and Bound~\autoref{sec:pa3}
-%         \item Due date \alert{Tuesday Nov 25, 2025 11:59pm}\label{
 %     \end{itemize}
 %     \item Week 12 (Nov 12):
 %     \begin{itemize}
