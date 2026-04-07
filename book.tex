@@ -607,7 +607,7 @@ where \(n\) is the number of input neurons and \(m\) is the number of output neu
 \begin{figure}
     \centering
     \mydnn{1}
-    \caption{\label{fig:dnn}A simple DNN with two inputs $x_1,x_2$, two hidden neurons $x_3,x_4$, and one output neuron $x_5$.}
+    \caption{\label{fig:dnn}A simple network with two inputs $x_1,x_2$, two hidden neurons $x_3,x_4$, and one output neuron $x_5$.}
 \end{figure}
 
 \begin{example}\label{ex:dnn}
@@ -806,7 +806,7 @@ In Z3, we can declare ReLU using \texttt{If()}
 In simpler terms, ReLU is nonlinear because it does not form a straight line.  It has a \textbf{kink} (a sharp bend) at $x = 0$, where the slope changes abruptly from $0$ to $1$. This discontinuity in the derivative prevents the function from being globally linear.
 
 
-This non-linearity makes DNN verification difficult. In fact, verifying DNNs with ReLU has the $\mathsf{NP}$-complete complexity as shown in~\autoref{sec:complexity}. We will use ReLU throughout this book as the default activation function for hidden neurons in an NN.
+This non-linearity makes NNV difficult. In fact, verifying networks with ReLU has the $\mathsf{NP}$-complete complexity as shown in~\autoref{sec:complexity}. We will use ReLU throughout this book as the default activation function for hidden neurons in an NN.
 
 \subsection{Sigmoid}\label{sec:sigmoid}
 
@@ -943,7 +943,7 @@ This means that softmax maps the input vector $x$ to a probability distribution 
 \end{example}
 
 \begin{example}\label{ex:z3-dnn}
-Use Z3 to encode the DNN in~\autoref{fig:dnn} and compute its output $x_5$ for the input $(x_1, x_2) = (2.0, 0.5)$ and find an input that maximizes the output $x_5$.
+Use Z3 to encode the network in~\autoref{fig:dnn} and compute its output $x_5$ for the input $(x_1, x_2) = (2.0, 0.5)$ and find an input that maximizes the output $x_5$.
 
 \begin{lstlisting}[language=python,multicols=2]
 from z3 import Real, If, Solver, sat
@@ -984,9 +984,9 @@ if o.check() == sat:
 \begin{problem}\label{prob:z3-dnn}
     Use~\autoref{ex:z3-dnn} as an example and try the following exercises:
     \begin{enumerate}
-    \item Use Z3 to encode the DNN in~\autoref{fig:dnn} and compute the outputs of \emph{all} neurons for the input $(x_1, x_2) = (-1.3, 3.5)$.
-    \item Use Z3 to find an input $(x_1, x_2)$ that \emph{maximizes} the output $x_5$ of the DNN in~\autoref{fig:dnn}.
-    \item Add another input $x_{new}$ and update the DNN accordingly. Then, use Z3 to find an input $(x_1, x_2, x_{new})$ that {minimizes} the output $x_5$ of the updated DNN.
+    \item Use Z3 to encode the network in~\autoref{fig:dnn} and compute the outputs of \emph{all} neurons for the input $(x_1, x_2) = (-1.3, 3.5)$.
+    \item Use Z3 to find an input $(x_1, x_2)$ that \emph{maximizes} the output $x_5$ of the network in~\autoref{fig:dnn}.
+    \item Add another input $x_{new}$ and update the network accordingly. Then, use Z3 to find an input $(x_1, x_2, x_{new})$ that {minimizes} the output $x_5$ of the updated network.
     \end{enumerate}
 \end{problem}
 \section{Neural Network Architectures and Layers}
@@ -1359,7 +1359,7 @@ graph example_nn {
 Similar to traditional software systems, neural networks (NNs) have desirable properties to ensure the network behaves as expected. These could be specific to the applications modeled by the network, e.g., safety properties for a network modelling a collision avoidance system, or general properties that are desired by all networks, e.g., robustness to small perturbations in the input data.
 
 Below we will discuss properties that are relevant to the verification of NNs. Specifically, these properties can be
-expressed in a formal language supported by a DNN verifier. Additional properties can be found in the literature~\cite{seshia2018formal}.
+expressed in a formal language supported by a NNV tool. Additional properties can be found in the literature~\cite{seshia2018formal}.
 
 \section{Definition}\label{sec:properties-def}
 
@@ -1867,7 +1867,7 @@ Consider the neural network in~\autoref{fig:proofnet}. Recall that in this netwo
 \chapter{Verification of Neural Networks}\label{sec:verification}
 
 This chapter discusses the problem of verifying neural networks, i.e., checking if a given property holds for a neural network.
-We define the NN verification problem in~\autoref{sec:nnv-problem} and its satisfiability formulation, which is commonly used by DNN verifiers.
+We define the NN verification problem in~\autoref{sec:nnv-problem} and its satisfiability formulation, which is commonly used by NNV tools.
 
 \section{The Neural Network Verification (NNV) Problem}\label{sec:nnv-problem}
 
@@ -1881,7 +1881,7 @@ Typically, $\phi$ is a formula of the form
 \]
 where $\phi_{in}$ is the \emph{precondition}, i.e., a condition over the inputs of $N$, and $\phi_{out}$ is the \emph{postcondition}, i.e., a condition over the outputs of $N$.
 
-An NNV tool attempts to find a \emph{counterexample} input to $N$ that satisfies $\phi_{in}$ but violates $\phi_{out}$.  If no such counterexample exists, $\phi$ is a valid property of $N$. Otherwise, $\phi$ is not valid and the counterexample can be used to retrain or debug the DNN~\cite{huang2017safety}.
+An NNV tool attempts to find a \emph{counterexample} input to $N$ that satisfies $\phi_{in}$ but violates $\phi_{out}$.  If no such counterexample exists, $\phi$ is a valid property of $N$. Otherwise, $\phi$ is not valid and the counterexample can be used to retrain or debug the network~\cite{huang2017safety}.
 \end{definition}
 
 
@@ -1911,10 +1911,10 @@ and the postcondition is
 \begin{figure}
 \centering
 \mydnn{1}
-\caption{\label{fig:dnn-b}A simple DNN (similar to~\autoref{fig:dnn}).}
+\caption{\label{fig:dnn-b}A simple network (similar to~\autoref{fig:dnn}).}
 \end{figure}
 
-For the DNN in~\autoref{fig:dnn-b} a \emph{valid} property is that the output is $x_5 \le 0$ for any inputs $x_1 \in [-1,1], x_2\in[-2,2]$.
+For the network in~\autoref{fig:dnn-b} a \emph{valid} property is that the output is $x_5 \le 0$ for any inputs $x_1 \in [-1,1], x_2\in[-2,2]$.
 
 An \emph{invalid} property is that $x_5 > 0$ for those similar inputs.
 A counterexample showing this property violation is $\{x_1=-1, x_2=2\}$, from which the network evaluates to $x_5=-3.5$.
@@ -1987,7 +1987,7 @@ Use Z3 to do~\autoref{ex:dnn-sat}. You might find~\autoref{ex:z3-dnn} useful.  M
 \begin{figure}
     \centering
     \mydnntwo{1.0}
-    \caption{A simple DNN with 2 inputs, 2 hidden ReLU neurons, and 2 outputs.}
+    \caption{A simple network with 2 inputs, 2 hidden ReLU neurons, and 2 outputs.}
     \label{fig:mydnntwo}
 \end{figure}
 
@@ -2101,17 +2101,17 @@ As described in~\autoref{sec:satisfiability-and-activation-pattern-search} the N
 A straightforward and automated way to do this encoding is using \emph{symbolic execution} (SE)~\cite{baldoni2018survey,king1976symbolic}, a well-known software testing technique for finding bugs.  SE executes a program on symbolic inputs, i.e., inputs represented as symbols rather than concrete values, and tracks the reachability of program state as symbolic expressions, i.e., logical formulae over symbolic inputs. The satisfiability of these formulae is then checked using an SMT solver, and satisfying assignments represent inputs leading to the undesirable (buggy) program state.
 
 \subsection{Symbolic Execution}\label{sec:se}
-We can adapt traditional SE to our problem by treating the DNN as a program and neurons as variables and executing the DNN on symbolic inputs. Affine transformations can easily be represented as logical formulae because they are linear functions. Activation functions such as ReLUs are translated to disjunctions of linear functions or if-then-else statements, i.e., $\relu{x} ~=~ \max(x,0) ~=~ x \ge 0 \land x \lor 0 \land \neg x$.
+We can adapt traditional SE to our problem by treating the network as a program and neurons as variables and executing the network on symbolic inputs. Affine transformations can easily be represented as logical formulae because they are linear functions. Activation functions such as ReLUs are translated to disjunctions of linear functions or if-then-else statements, i.e., $\relu{x} ~=~ \max(x,0) ~=~ x \ge 0 \land x \lor 0 \land \neg x$.
 
 
 \begin{example}\label{ex:se-dnn}
 \begin{figure}
 \centering
 \mydnn{1}
-\caption{\label{fig:dnn-a}A simple DNN (similar to~\autoref{fig:dnn}).}
+\caption{\label{fig:dnn-a}A simple network (similar to~\autoref{fig:dnn}).}
 \end{figure}
 
-To create a logical formula representing the DNN in~\autoref{fig:dnn-a}, we can symbolically execute the DNN on symbolic inputs $x_1,x_2$ and track the values of the neurons $x_3, x_4, x_5$ as a set (conjunction) of logical formulae.  SE starts with the inputs $x_1$ and $x_2$ and computes the values of the neurons in the hidden layer, $x_3$ and $x_4$, using the affine transformations, followed by ReLUs. Finally, SE computes the output neuron $x_5$ as a linear combination of the hidden layer neurons.
+To create a logical formula representing the network in~\autoref{fig:dnn-a}, we can symbolically execute the network on symbolic inputs $x_1,x_2$ and track the values of the neurons $x_3, x_4, x_5$ as a set (conjunction) of logical formulae.  SE starts with the inputs $x_1$ and $x_2$ and computes the values of the neurons in the hidden layer, $x_3$ and $x_4$, using the affine transformations, followed by ReLUs. Finally, SE computes the output neuron $x_5$ as a linear combination of the hidden layer neurons.
 
 \begin{equation}\label{eq:se-dnn}
     \begin{split}
@@ -2124,14 +2124,14 @@ x_4 &= \max(0.5x_1 - 0.5x_2 - 1.0, 0)
 \end{example}
 
 \subsection{SMT Solving}\label{sec:smt}
-After obtaining the symbolic representation of the DNN, we can use an SMT solver~\cite{barrett2010smt} to check the satisfiability of the formula $\alpha \land \phi_{in} \land \neg \phi_{out} $ as shown in~\autoref{eq:nnv2}, where $\alpha$ is the symbolic representation of the DNN, $\phi_{in}$ is the precondition on the inputs, and $\phi_{out}$ is the postcondition on the outputs. 
+After obtaining the symbolic representation of the network, we can use an SMT solver~\cite{barrett2010smt} to check the satisfiability of the formula $\alpha \land \phi_{in} \land \neg \phi_{out} $ as shown in~\autoref{eq:nnv2}, where $\alpha$ is the symbolic representation of the network, $\phi_{in}$ is the precondition on the inputs, and $\phi_{out}$ is the postcondition on the outputs. 
 
 The solver checks if there exists an assignment to the symbolic inputs that satisfies the formula. If such an assignment exists, it means that the property is violated, and we can extract a counterexample from the satisfying assignment. Otherwise, if no such assignment exists, the property is valid.
 
 
 
 \begin{example}\label{ex:smt-dnn}
-    To check that the DNN in~\autoref{fig:dnn-a} satisfies the property $x_5 > 0$ for any inputs $x_1 \in [-1,1], x_2\in[-2,2]$ (\autoref{ex:dnn-sat}), represented as:
+    To check that the network in~\autoref{fig:dnn-a} satisfies the property $x_5 > 0$ for any inputs $x_1 \in [-1,1], x_2\in[-2,2]$ (\autoref{ex:dnn-sat}), represented as:
 \begin{align*}
 \phi_{in} = (x_1 \ge -1) \land (x_1 \le 1) \land (x_2 \ge -2) \land (x_2 \le 2); \quad \phi_{out} = (x_5 > 0)
 \end{align*}
@@ -2151,16 +2151,16 @@ In this case, the SMT solver returns \sat{} and a satisfying assignment, e.g., $
 
 \subsection{Limitations}\label{sec:smt-limitations}
 
-While using symbolic execution and SMT solving is a straightforward way to verify DNNs, it has several practical limitations:
+While using symbolic execution and SMT solving is a straightforward way to verify networks, it has several practical limitations:
 \begin{itemize}
-    \item \textbf{Path Explosion and Scalability}: the number of paths that the solver has to analyze can grow exponentially with the number of ReLU-based neurons and layers as each ReLU, represented as a disjunction of linear functions, has two possible outputs for any input (i.e., the input value itself or 0).  This leads to the notorious \emph{path explosion} problem and becoming intractable for large DNNs. Programming assignment 1 (\autoref{sec:pa1}) demonstrates this issue.
+    \item \textbf{Path Explosion and Scalability}: the number of paths that the solver has to analyze can grow exponentially with the number of ReLU-based neurons and layers as each ReLU, represented as a disjunction of linear functions, has two possible outputs for any input (i.e., the input value itself or 0).  This leads to the notorious \emph{path explosion} problem and becoming intractable for large networks. Programming assignment 1 (\autoref{sec:pa1}) demonstrates this issue.
 
     \item \textbf{Non-linearity:} Other non-linear activation functions (\autoref{sec:activation}), such as Sigmoid or Tanh, might not be easily representable as disjunctions of linear functions as ReLU. This can lead to complex formulae that are hard to reason about and/or result in a large search space for the SMT solver.
 
-    \item \textbf{Precision Issues:} SMT solvers may struggle with precision issues when dealing with floating-point arithmetic, which is common in DNNs. This can lead to incorrect results or false positives/negatives in the verification process.
+    \item \textbf{Precision Issues:} SMT solvers may struggle with precision issues when dealing with floating-point arithmetic, which is common in neural networks. This can lead to incorrect results or false positives/negatives in the verification process.
 \end{itemize}
 
-For these reasons, SMT solving is mostly used on toy examples, e.g., in a classroom setting.  Modern-based DNN verification tools do not use SMT solving, and instead, rely on more efficient techniques such as abstraction (\autoref{chap:abstractions}).
+For these reasons, SMT solving is mostly used on toy examples, e.g., in a classroom setting.  Modern NNV tools do not use SMT solving, and instead, rely on more efficient techniques such as abstraction (\autoref{chap:abstractions}).
 
 %\tvn{Hai, include some references or results, e.g., from Nguyen's, showing that SMT solvers are not scalable for DNN verification.}\hai{where can I find the results?}\tvn{Not sure, I thought Nguyen record the results/graphs in some TeX document. Could you ask him?}
 
@@ -2245,10 +2245,10 @@ This guarantees that the extreme values of $e$ are achieved at some corner of th
 \begin{figure}
 \centering
 \mydnn{1}
-\caption{\label{fig:dnn-c}A simple DNN (similar to~\autoref{fig:dnn}).}
+\caption{\label{fig:dnn-c}A simple network (similar to~\autoref{fig:dnn}).}
 \end{figure}
 
-    Consider neuron $x_3$ in the DNN in~\autoref{fig:dnn-c}.
+    Consider neuron $x_3$ in the network in~\autoref{fig:dnn-c}.
     We have $x_3 = -0.5x_1 + 0.5x_2 + 1.0$ as the pre-activation value of $x_3$. The upper $u_3$ and lower $l_3$ bounds on $x_3$ over the input region $x_1 \in [-1,1]$ and $x_2\in[-2,2]$ are:
 \begin{align*}
     & z_3 = -0.5x_1 + 0.5x_2 + 1.0 \\
@@ -2300,7 +2300,7 @@ Deactivating a neuron, $a_j^{(i)} = 0$, simplifies the first of the (e) constrai
 
 \begin{example}[Full example]\label{ex:milp-dnn}
 
-    We use MILP to formulate and check if the DNN in~\autoref{fig:dnn-c} satisfies the property $x_5 > 0$ for any inputs $x_1 \in [-1,1], x_2\in[-2,2]$. We do this by checking the feasibility of the MILP constraints encoding $\alpha \land \phi_{in} \land \neg \phi_{out}$, where $\alpha$ is the MILP encoding of the DNN, $\phi_{in}$ is the precondition on the inputs, and $\phi_{out}$ is the postcondition on the outputs.  We do this in several steps:
+    We use MILP to formulate and check if the network in~\autoref{fig:dnn-c} satisfies the property $x_5 > 0$ for any inputs $x_1 \in [-1,1], x_2\in[-2,2]$. We do this by checking the feasibility of the MILP constraints encoding $\alpha \land \phi_{in} \land \neg \phi_{out}$, where $\alpha$ is the MILP encoding of the network, $\phi_{in}$ is the precondition on the inputs, and $\phi_{out}$ is the postcondition on the outputs.  We do this in several steps:
 
 
 \begin{enumerate}
@@ -2375,13 +2375,13 @@ Since $x_5 = -3.5 \le 0$, this assignment satisfies our search for $x_5 \le 0$ a
 \begin{figure}
 \centering
 \mydnntwo{1.0}
-\caption{\label{fig:dnn-d}A simple DNN (similar to~\autoref{fig:mydnntwo}).}
+\caption{\label{fig:dnn-d}A simple network (similar to~\autoref{fig:mydnntwo}).}
 \end{figure}
 
 Use MILP encoding and solving to check if the network in~\autoref{fig:dnn-d} satisfies the property $\phi$ that the output $x_5 \ge x_6$ for any inputs $x_1 \in [-1,1], x_2\in[-1,1]$. Specificaly, do the following steps:
 \begin{enumerate}
     \item Write down the precondition $\phi_{in}$ and postcondition $\phi_{out}$ representing the property $\phi$.
-    \item Write down the MILP encoding of the DNN.
+    \item Write down the MILP encoding of the network.
     \item Compute the upper and lower bounds of the pre-activation values of the neurons in the hidden layer.
     \item Substitute the bounds into the MILP encoding.
     \item Write down the final MILP encoding of $\alpha \land \phi_{in} \land \neg{\phi_{out}}$.
@@ -2390,7 +2390,7 @@ Use MILP encoding and solving to check if the network in~\autoref{fig:dnn-d} sat
 \end{problem}
 
 \begin{problem}\label{prob:stable-neuron}
-As shown in~\autoref{ex:relu_milp1}, the upper and lower bounds of neuron $x_3$ of the DNN in~\autoref{fig:dnn-c} are $u_3 = 2.5$ and $l_3 = -0.5$.
+As shown in~\autoref{ex:relu_milp1}, the upper and lower bounds of neuron $x_3$ of the network in~\autoref{fig:dnn-c} are $u_3 = 2.5$ and $l_3 = -0.5$.
 \begin{itemize}
 \item Compute the upper and lower bounds of $x_4$ in the same example.
 \item Change the weights and/or biases of the network in~\autoref{fig:dnn-c}, but keep the input ranges $-1 \le x_1 \le 1$ and $-2 \le x_2 \le 2$, such that $x_3$ becomes a stable neuron (always active or always inactive).  Show the new weights and/or biases, and compute the new upper and lower bounds of $x_3$.
@@ -2404,9 +2404,9 @@ As shown in~\autoref{ex:relu_milp1}, the upper and lower bounds of neuron $x_3$ 
 
 
 \begin{itemize}
-    \item \textbf{Scalability:} While MILP is efficient in dealing with linear constraints, it still cannot be applied directly to real-world DNNs due to the large search space. Each ReLU application to an unstable neuron introduces a binary variable (\autoref{sec:relu-encoding}), leading to exponential number of possible branches, and real-world DNNs can have millions of such ReLUs, making the search space intractable.
+    \item \textbf{Scalability:} While MILP is efficient in dealing with linear constraints, it still cannot be applied directly to real-world neural networks due to the large search space. Each ReLU application to an unstable neuron introduces a binary variable (\autoref{sec:relu-encoding}), leading to exponential number of possible branches, and real-world networks can have millions of such ReLUs, making the search space intractable.
 
-    \item \textbf{Limited exploitation of network structure and modern hardware} Off-the-shelf MILP solvers are designed for arbitrary MILP problems and do not exploit DNN-specific structures and concepts such as activation patterns (\autoref{sec:activation-patterns}) to prune the search space.
+    \item \textbf{Limited exploitation of network structure and modern hardware} Off-the-shelf MILP solvers are designed for arbitrary MILP problems and do not exploit specific structures of neural networks and concepts such as activation patterns (\autoref{sec:activation-patterns}) to prune the search space.
     Moreover, MILP solvers, even industrial-strength ones such as Gurobi~\cite{gurobi}, are primarily CPU-based and does not leverage the massive parallelism provided by modern GPUs to speed up computation.
 
     %\item \textbf{Generic branch-and-bound algorithms:} While MILP solvers employ branch-and-bound (BaB) algorithms, these are generic and not tailored to DNNs. In contrast, specialized DNN verification algorithms leverage DNN-specific BaB strategies, such as layer-wise branching, abstract domain propagation, and neuron-specific heuristics, enabling greater efficiency.
@@ -3027,10 +3027,10 @@ f^{a}([l_1, u_1],..., [l_n, u_n]) = [f^a_L, f^a_U] =
 \begin{figure}
 \centering
 \mydnn{1}
-\caption{\label{fig:dnn-abs}A simple DNN (similar to~\autoref{fig:dnn}).}
+\caption{\label{fig:dnn-abs}A simple network (similar to~\autoref{fig:dnn}).}
 \end{figure}
 
-Consider the DNN in~\autoref{fig:dnn-abs} with inputs \(x_1 \in [1, 2]\) and \(x_2 \in [-1, 3]\). The affine function for the neuron \(x_3\) is:
+Consider the network in~\autoref{fig:dnn-abs} with inputs \(x_1 \in [1, 2]\) and \(x_2 \in [-1, 3]\). The affine function for the neuron \(x_3\) is:
 \[
 f(x_1,x_2) = -0.5\,x_1 + 0.5\,x_2 + 1.0
 \]
@@ -3181,7 +3181,7 @@ Nonetheless, interval domain remains popular due to its simplicity and efficienc
 \subsection{Zonotope}\label{sec:zonotope-abstraction}
 
 
-Interval abstraction (\autoref{sec:interval-abstraction}) treats each variable independently. For example, if \(x_1 \in [1,2]\) and \(x_2 \in [3,4]\), interval assumes any combination of \(x_1\) and \(x_2\) is possible. But variables can correlate: e.g., when \(x_1\) increases, \(x_2\) also increases\tvn{but this doesn't happens in DNN, so why do we need zonotope? does it help with ReLU abstraction?}.  Zonotopes can capture such correlations and therefore  provide a tighter abstraction.
+Interval abstraction (\autoref{sec:interval-abstraction}) treats each variable independently. For example, if \(x_1 \in [1,2]\) and \(x_2 \in [3,4]\), interval assumes any combination of \(x_1\) and \(x_2\) is possible. But variables can correlate: e.g., when \(x_1\) increases, \(x_2\) also increases\tvn{but this doesn't happens in neural networks, so why do we need zonotope? does it help with ReLU abstraction?}.  Zonotopes can capture such correlations and therefore  provide a tighter abstraction.
 
 
 
@@ -3460,7 +3460,7 @@ f^a(\mathcal{Z}) = \left\{ f^c(c) + \sum_{j=1}^{m} \epsilon_j f^g(g_j) \mid \eps
 % Imagine a tilted box in space, then an affine transformation just stretches, rotates, and shifts it---the result is still a tilted box.
 
 \begin{example}\label{ex:zonotope_linear_example}
-Consider the DNN in~\autoref{fig:dnn-abs} with inputs \(x_1 \in [1, 2]\) and \(x_2 \in [-1, 3]\).
+Consider the network in~\autoref{fig:dnn-abs} with inputs \(x_1 \in [1, 2]\) and \(x_2 \in [-1, 3]\).
 The affine function for neuron \(x_3\) is:
 \[
 f(x_1, x_2) = -0.5\,x_1 + 0.5\,x_2 + 1.0
@@ -3935,7 +3935,7 @@ where $*$ means ``undetermined'' or ``don't care''. Each partial activation patt
 
 
 \begin{example}
-Consider a DNN with three ReLU neurons $n_1,n_2,n_3$.
+Consider a network with three ReLU neurons $n_1,n_2,n_3$.
 A complete activation pattern might be
 \[
 p = \langle \texttt{true}, \texttt{false}, \texttt{true} \rangle ,
@@ -3984,7 +3984,7 @@ $\{n_1=\mathsf{true},n_2=\mathsf{false},n_3=\mathsf{false}\}$.
 
 
 \begin{problem}[Counting Complete Patterns Compatible with a Partial Pattern]
-Suppose we have a DNN with $m=10$ ReLU neurons. Consider a partial pattern $p'$ that fixes 4 neurons.
+Suppose we have a network with $m=10$ ReLU neurons. Consider a partial pattern $p'$ that fixes 4 neurons.
 \begin{enumerate}
   \item How many complete patterns extend $p'$?
   \item Suppose we restrict $p'$ further by adding 2 more neuron assignments. How many extensions now?
@@ -4014,17 +4014,17 @@ Thus, given a set of neurons, we can construct an activation pattern by specifyi
 
 
 \subsection{State Space Reduction}\label{sec:pattern-reduction}
-Once having an activation pattern $p$, we can simplify the formula $\alpha$ representing the DNN by replacing each ReLU function with a linear constraint according to the activation status specified in $p$. For example, if $p$ specifies that neuron $n_i$ is active, we replace $\relu{z_i}$ with the constraint $z_i \ge 0$, i.e., the pre-activation value $z_i$ must be non-negative. Otherwise, if $n_i$ is inactive, we replace $\relu{z_i}$ with $z_i < 0$.
+Once having an activation pattern $p$, we can simplify the formula $\alpha$ representing the network by replacing each ReLU function with a linear constraint according to the activation status specified in $p$. For example, if $p$ specifies that neuron $n_i$ is active, we replace $\relu{z_i}$ with the constraint $z_i \ge 0$, i.e., the pre-activation value $z_i$ must be non-negative. Otherwise, if $n_i$ is inactive, we replace $\relu{z_i}$ with $z_i < 0$.
 This gives us the formula $\alpha_p$ corresponding to the linear region defined by $p$.
 
-A complete activation pattern $p$ defines a unique linear region of the DNN. This is because with a complete pattern $p$, $\alpha_p$ becomes a purely linear formula.
+A complete activation pattern $p$ defines a unique linear region of the network. This is because with a complete pattern $p$, $\alpha_p$ becomes a purely linear formula.
 In contrast, a partial activation pattern $q$ defines multiple linear regions, one for each complete pattern it represents.  With $q$, $\alpha_q$ may still contain some ReLU functions that are not fixed by $q$.  However, since $q$ fixes the status of some neurons, we can simplify $\alpha$ by replacing the ReLU functions of those neurons with linear constraints.
 
 In any case, given an activation pattern, we can reduce the complexity of the satisfiability check by fixing the activation status of some neurons. Thus, checking the satisfiability of $\alpha_p \land \phi_{in} \land \neg \phi_{out}$ is easier than checking that of $\alpha \land \phi_{in} \land \neg \phi_{out}$.
 
 
 \begin{example}
-Recall the DNN from~\autoref{fig:dnn-b} can be represented as the formula $\alpha$
+Recall the network from~\autoref{fig:dnn-b} can be represented as the formula $\alpha$
 \[
 \begin{aligned}
 & \hat{x}_3 = -0.5x_1 + 0.5x_2 + 1.0 ~\land\\
@@ -4074,7 +4074,7 @@ Because $q$ does not fix the status of $x_4$, we cannot simplify the ReLU for $x
 
 
 \begin{problem}\label{problem:nnv-pattern}
-Consider the DNN in \autoref{fig:dnn-b}. Suppose we fix the activation pattern $p=\{x_3, x_4\}$.
+Consider the network in \autoref{fig:dnn-b}. Suppose we fix the activation pattern $p=\{x_3, x_4\}$.
 
 \begin{enumerate}
   \item Provide the constraints $\alpha$ induced by $p$.
@@ -4326,7 +4326,7 @@ by showing that no counterexample exists, i.e., no inputs $(x_1,x_2)$ in the giv
             \includegraphics[width=\linewidth]{figure/proof_tree.pdf}
             \caption*{(b)}
         \end{minipage}
-        \caption{(a) A simple DNN  (similar to~\autoref{fig:proofnet}), and (b) BaB search tree. White nodes correspond to \bab{} neuron splitting. Red nodes correspond to leaf nodes where \bab{}determines infeasibility and prunes the branch.}
+        \caption{(a) A simple network  (similar to~\autoref{fig:proofnet}), and (b) BaB search tree. White nodes correspond to \bab{} neuron splitting. Red nodes correspond to leaf nodes where \bab{}determines infeasibility and prunes the branch.}
         \label{fig:bab-example}
     \end{minipage}
 \end{figure}
@@ -4372,10 +4372,10 @@ Do~\autoref{ex:bab} again but make the property is invalid and find a counterexa
 \begin{figure}
 \centering
 \mydnn{1}
-\caption{\label{fig:dnn-bab}A simple DNN (similar to~\autoref{fig:dnn}).}
+\caption{\label{fig:dnn-bab}A simple network (similar to~\autoref{fig:dnn}).}
 \end{figure}
 
-Apply BaB on the DNN in \autoref{fig:dnn-bab} to verify the property $x_5 > 0$ for any inputs $x_1 \in [-1,1], x_2\in[-2,2]$.  Use interval abstraction to compute bounds. For LP solving, you can use any LP solver or solve it manually. Show all steps, e.g., iterations, activation patterns, bounds computed, LP results, etc.
+Apply BaB on the network in \autoref{fig:dnn-bab} to verify the property $x_5 > 0$ for any inputs $x_1 \in [-1,1], x_2\in[-2,2]$.  Use interval abstraction to compute bounds. For LP solving, you can use any LP solver or solve it manually. Show all steps, e.g., iterations, activation patterns, bounds computed, LP results, etc.
 
 \end{problem}
 
@@ -4386,8 +4386,8 @@ Test your understanding of BaB and activation patterns by answering the followin
 
   \item In \autoref{alg:bab}, what happens if \Deduce always returns infeasible?
   \item What happens if \Deduce always returns feasible but \mycode{LP} always returns satisfiable?
-  \item What is the maximum number of activation patterns that \bab{} may need to explore in the worst case for a DNN with $m$ ReLU neurons?
-  \item What is the minimum number of activation patterns that \bab{} may need to explore in the best case for a DNN with $m$ ReLU neurons? What are these patterns?
+  \item What is the maximum number of activation patterns that \bab{} may need to explore in the worst case for a network with $m$ ReLU neurons?
+  \item What is the minimum number of activation patterns that \bab{} may need to explore in the best case for a network with $m$ ReLU neurons? What are these patterns?
 \end{enumerate}
 \end{problem}
 
@@ -4405,7 +4405,7 @@ Even the BaB search itself is optimized to avoid exploring the entire search spa
 \chapter{Adversarial Attacks}\label{chap:adversarial-attacks}
 
 
-A full branch and bound (BaB) search (\autoref{chap:bab}) is typically expensive and slow on large networks. Thus most DNN verification tools implement optimizations to improve performance. A common optimization is to use \emph{adversarial attack} techniques to find counterexamples before running BaB.
+A full branch and bound (BaB) search (\autoref{chap:bab}) is typically expensive and slow on large networks. Thus most NNV tools implement optimizations to improve performance. A common optimization is to use \emph{adversarial attack} techniques to find counterexamples before running BaB.
 Examples of such techniques include randomized attacks~\cite{das2021fast} and gradient-based attacks~\cite{madry2017towards}, described in \autoref{chap:adversarial-attacks}.
 
 Thus, modern verification tools have two phases: (i) attempt to \emph{falsify} the property with adversarial attacks, and (ii) if no counterexample is found, attempt to \emph{verify} the property using search algorithms such as \bab{} (\autoref{chap:bab}). Of course, during the verification phase, the verifier may also discover counterexamples that the falsify phase misses.
@@ -4415,7 +4415,7 @@ Thus, modern verification tools have two phases: (i) attempt to \emph{falsify} t
 \textbf{Random search} is a simple adversarial attack method.  It randomly samples points in the allowed input ranges and checks if any samples violate the property; if so, a counterexample is found.
 
 \begin{example}\label{ex:random-search}
-Suppose the DNN input ranges are:
+Suppose the network input ranges are:
 \[
 -1 \leq x_1 \leq 1,\quad -2 \leq x_2 \leq 2
 \]
@@ -4466,7 +4466,7 @@ Gradient descent is the procedure of repeatedly moving the input a small amount 
 
 Specifically, at each step PGD computes the gradient of the network output with respect to the input and takes a small gradient-descent step that pushes the input toward a stronger property violation. Next, PGD \emph{projects} (clips) the updated input back into the allowed domain if the step goes outside the input bounds.
 
-We will reuse~\autoref{ex:random-search} to illustrate PGD. Here,  the DNN input ranges are $-1 \leq x_1 \leq 1,~-2 \leq x_2 \leq 2$, and the output is $y = 2x_1 - 1.5x_2 + 1$, and the goal is to find a counterexample that satisfies the input ranges and produces $y \leq 0$.
+We will reuse~\autoref{ex:random-search} to illustrate PGD. Here,  the network input ranges are $-1 \leq x_1 \leq 1,~-2 \leq x_2 \leq 2$, and the output is $y = 2x_1 - 1.5x_2 + 1$, and the goal is to find a counterexample that satisfies the input ranges and produces $y \leq 0$.
 
 
 \begin{enumerate}
@@ -4630,9 +4630,9 @@ Depend on your choice of step size $\eta$, PGD might have one or more iterations
 
 \chapter{Proof Generation and Checking}\label{chap:proof-gen-check}
 
-As DNN tools become more complex (e.g., state-of-the-art tools have 20K+ LoCs), they are more prone to bugs. VNN-COMP'23~\cite{brix2023fourth} showed that 3 of the top 7 participants produced unsound results by claiming unsafe DNNs are safe, i.e., they produce \unsat{} on problems that are actually \sat{}.
+As NNV tools become more complex (e.g., state-of-the-art tools have 20K+ LoCs), they are more prone to bugs. VNN-COMP'23~\cite{brix2023fourth} showed that 3 of the top 7 participants produced unsound results by claiming unsafe networks are safe, i.e., they produce \unsat{} on problems that are actually \sat{}.
 
-While checking counterexamples is relatively straightforward (we can just evaluate the DNN on the input), checking \unsat{} results---proving no counterexample exists---is more challenging as it requires tracing the reasoning steps of the verifier.
+While checking counterexamples is relatively straightforward (we can just evaluate the network on the input), checking \unsat{} results---proving no counterexample exists---is more challenging as it requires tracing the reasoning steps of the verifier.
 In this chapter, we discuss work~\cite{duong2025generating} on generating and checking proofs of \unsat{} results generated by BaB-based NNV tools.
 
 \section{Proof Generation for Branch and Bound Algorithms}\label{sec:proofgen}
@@ -4641,7 +4641,7 @@ In this chapter, we discuss work~\cite{duong2025generating} on generating and ch
 \begin{algorithm}
     \small
 
-    \Input{DNN $\mathcal{N}$, property $\phi_{in} \Rightarrow \phi_{out}$}
+    \Input{NN $\mathcal{N}$, property $\phi_{in} \Rightarrow \phi_{out}$}
     \Output{($\unsat, \blue{\prooftree}$) if property is valid, otherwise ($\sat, \counterexample$)}
     \BlankLine
 
@@ -4693,7 +4693,7 @@ At the end of the verification process, the proof tree is returned as the proof 
             \includegraphics[width=\linewidth]{figure/proof_tree.pdf}
             \caption*{(b)}
         \end{minipage}
-        \caption{(a) A simple DNN  (similar to~\autoref{fig:proofnet}), and (b) A proof tree produced by \proofgen{}. White nodes correspond to \bab{} neuron splitting. Red nodes correspond to leaf nodes where \bab{} determines infeasibility and prunes the branch.}
+        \caption{(a) A simple network  (similar to~\autoref{fig:proofnet}), and (b) A proof tree produced by \proofgen{}. White nodes correspond to \bab{} neuron splitting. Red nodes correspond to leaf nodes where \bab{} determines infeasibility and prunes the branch.}
         \label{fig:proof-example}
     \end{minipage}
 \end{figure}
@@ -5586,7 +5586,7 @@ These tighter input bounds propagate through the network and yield tighter neuro
 prune subproblems earlier.
 
 \begin{example}\label{ex:inputboundstigthten}
-Recall the NN from~\autoref{fig:dnn-b} can be represented as:
+Recall the network from~\autoref{fig:dnn-b} can be represented as:
 \[
 \begin{aligned}
 & \hat{x}_3 = -0.5x_1 + 0.5x_2 + 1.0 ~\land\\
@@ -5877,7 +5877,7 @@ O_U = U @ W_plus.T + L @ W_minus.T + b
 \part{Modern NNV Tools}\label{part:modern-tools}
 \chapter{The \neuralsat{} Algorithm}\label{chap:neuralsat}
 
-\neuralsat{}~\cite{duong2025neuralsat,duong2024harnessing} is a relatively new competitor in the DNN verification space, but  it has quickly become a strong contender, consistently placed among the top tools at DNN verification competitions~\autoref{chap:vnncomps}.
+\neuralsat{}~\cite{duong2025neuralsat,duong2024harnessing} is a relatively new competitor in NNV, but  it has quickly become a strong contender, consistently placed among the top tools at NNV competitions~\autoref{chap:vnncomps}.
 
 At its core, \neuralsat{} is BaB, but follows a DPLL(T) framework~\cite{davis1962machine} and includes specialized optimizations and heuristics to improve its search.
 Thus, \neuralsat{} is essentially an SMT solver (\autoref{sec:smt-solvers}) with respect to a theory, in this case, the theory of DNNs.
@@ -5893,7 +5893,7 @@ Thus, \neuralsat{} is essentially an SMT solver (\autoref{sec:smt-solvers}) with
 
 \autoref{fig:overview} gives an overview of \neuralsat{}, which consists of standard DPLL components (light shades) and the theory solver (dark shade).
 \neuralsat{} first constructs a propositional formula over Boolean variables that represent the activation status of neurons (\emph{Boolean Abstraction}). Clauses in the formula assert that each neuron, e.g., neuron $i$, is active or inactive, e.g., $v_i \vee \overline{v_i}$.
-This representation enables using standard DPLL to search for truth values satisfying these clauses and a DNN-specific theory solver to check the feasibility of truth assignments---\emph{activation patterns} (\autoref{sec:activation-patterns})--- with respect to the constraints encoding the DNN and the property of interest.
+This representation enables using standard DPLL to search for truth values satisfying these clauses and a neural network-specific theory solver to check the feasibility of truth assignments---\emph{activation patterns} (\autoref{sec:activation-patterns})--- with respect to the constraints encoding the network and the property of interest.
 
 \neuralsat{} now enters an iterative process to find activation pattern (truth assignment) satisfying the activation clauses.
 First, \neuralsat{} assigns a truth value to an unassigned variable (\emph{Decide}), detects unit clauses caused by this assignment, and infers additional assignments (\emph{Boolean Constraint Propagation}).
@@ -5902,17 +5902,18 @@ Next, \neuralsat{} invokes the theory solver or T-solver (\emph{Deduction}), whi
 
 If the T-solver confirms feasibility, \neuralsat{} continues with new assignments (\emph{Decide}). Otherwise, \neuralsat{} detects a conflict   (\emph{Analyze Conflict}) and learns clauses to remember it and backtrack to a previous decision  (\emph{Backtrack}).
 If \neuralsat{} detects local optima, it would restart (\emph{Restart}) the search by clearing all decisions that have been made, but save the conflict clauses learned so far to avoid reaching the same state in the next runs.
-Restarting especially benefits challenging DNN problems by enabling better clause learning and exploring different decision orderings.
+Restarting especially benefits challenging NNV problems by enabling better clause learning and exploring different decision orderings.
 
-This iterative process repeats until \neuralsat{} can no longer backtrack, and returns \unsat{}, indicating the DNN has the property, or it finds a total assignment for all boolean variables, and returns \sat{}. % (and the user can query \neuralsat{} for a counterexample).
+This iterative process repeats until \neuralsat{} can no longer backtrack, and returns \unsat{}, indicating the network has the property, or it finds a total assignment for all boolean variables, and returns \sat{}. % (and the user can query \neuralsat{} for a counterexample).
 
-\autoref{sec:neuralsat-alg} provides more details on the \neuralsat{} algorithm, describing the main components of \neuralsat{} and how they work together to verify DNNs.
-
+% TODO: uncomment after I put back sec:neuralsat-alg.
+% \autoref{sec:neuralsat-alg} provides more details on the \neuralsat{} algorithm, describing the main components of \neuralsat{} and how they work together to verify networks.
 
 \section{Illustration}
+
 \begin{example}\label{ex:neuralsat}
-We use \neuralsat{} to prove that for inputs $x_1 \in [-1, 1], x_2 \in [-2,2]$ the DNN in~\autoref{fig:dnn} produces the output $x_5 \le 0$.
-\neuralsat{} takes as input the formula $\alpha$ representing the DNN:
+We use \neuralsat{} to prove that for inputs $x_1 \in [-1, 1], x_2 \in [-2,2]$ the network in~\autoref{fig:dnn} produces the output $x_5 \le 0$.
+\neuralsat{} takes as input the formula $\alpha$ representing the network:
 
 \begin{equation*}%\label{eq:ex}
 \begin{aligned}
@@ -6193,7 +6194,7 @@ Thus, \tool{} was able to generate non-chronological backtracks and use BCP to p
 
 \chapter{The \reluplex{} Algorithm}\label{chap:reluplex}
 
-\reluplex{}~\cite{katz2017reluplex} is a classical BaB (\autoref{chap:bab}) approach for NNV. The technique extends the \emph{simplex} method~\cite{nelder1965simplex} to support the ReLU activation function (\textbf{Reluplex} = \textbf{Relu} + Sim\textbf{plex}). \reluplex{} has been succeeded by the more efficient Marabou~\cite{katz2019marabou} tool. However, the core ideas of \reluplex{} are still relevant and thus presented here as another example of BaB-based NNV techniques.
+\reluplex{}~\cite{katz2017reluplex} is a classical BaB (\autoref{chap:bab}) approach for NNV. The technique extends the \emph{simplex} method~\cite{nelder1965simplex} to support the ReLU activation function (\textbf{Reluplex} = \textbf{Relu} + Sim\textbf{plex}). \reluplex{} has been succeeded by the more efficient Marabou tool~\cite{katz2019marabou}. However, the core ideas of \reluplex{} are still relevant and thus presented here as another example of BaB-based NNV techniques.
 
 \section{Algorithm Overview}\label{sec:reluplex-overview}
 
@@ -6258,7 +6259,7 @@ If \reluplex{} explores all possible pivoting options without finding any feasib
 \begin{figure}
     \centering
     \mydnnthree{1}
-    \caption{\label{fig:dnn-replux}A simple DNN.}
+    \caption{\label{fig:dnn-replux}A simple network.}
 \end{figure}
 
 % \begin{figure}
@@ -7317,7 +7318,7 @@ heuristics and optimizations are implemented as independent functions and can be
 
 \chapter{Formal Methods}\label{chap:formal-methods}
 
-Neural network verification (NNV) is a rising topic that applies \emph{formal methods} (FM) to machine learning systems, particularly neural networks (NN).  This chapter explains what FM are, how verification differs from testing and debugging, and key concepts such as specifications and common FM techniques.
+Neural network verification (NNV) is a rising topic that applies \emph{formal methods} (FM) to ML systems, particularly neural networks (NN).  This chapter explains what FM are, how verification differs from testing and debugging, and key concepts such as specifications and common FM techniques.
 
 \section{What Are Formal Methods (FM)?}
 
@@ -9955,7 +9956,7 @@ Running an LP solver with objective $\min 0$ will return a point, e.g., (x=0,y=0
     \item Week 4 (2/17):
     \begin{itemize}
         \item Topics: NN Properties~\autoref{chap:properties} 
-        \item In class exercise: Using Z3 to check satisfiability of DNNs and properties~\autoref{prob:z3-dnn}
+        \item In class exercise: Using Z3 to check satisfiability of networks and properties~\autoref{prob:z3-dnn}
         \item Quiz:~\autoref{problem:milp-hand}
         \item HW: Neural Networks and Properties~\autoref{problem:z3-properties}
 
@@ -10182,5 +10183,8 @@ So the **maximum value** is \(z = 16\) at \((2,2)\).
 All vertices are integers, so \((2,2)\) is valid for the MILP.  
 
 \end{example}
+
+
+
 
 
