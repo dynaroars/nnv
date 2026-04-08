@@ -3534,12 +3534,74 @@ The benefit of zonotopes becomes clear in deeper layers, where they preserve lin
 \begin{problem}\label{prob:zonotope_linear_example_x4}
      Compute the bounds for \(x_4\) in~\autoref{fig:dnn-abs} using zonotope abstraction, with inputs \(x_1 \in [1, 2]\) and \(x_2 \in [-1, 3]\), and the affine function for \(x_4\) is:
 \[
-f(x_1,x_2) = 0.5x_1 + -0.5x_2 + 1
+f(x_1,x_2) = 0.5x_1 -0.5x_2 - 1
 \]
 
 \begin{solution}
+\section*{Problem 5.2.3: Zonotope Abstraction for $x_4$}
+
+Given inputs $x_1 \in [1, 2]$ and $x_2 \in [-1, 3]$, and the affine function:
+\[
+f(x_1, x_2) = 0.5x_1 - 0.5x_2 + 1
+\]
+
+\subsection*{Step 1: Represent Inputs as a Zonotope}
+
+The center $c_i$ represents the midpoint of each input interval:
+\[
+c_1 = \frac{1 + 2}{2} = 1.5, \qquad c_2 = \frac{-1 + 3}{2} = 1.0
+\]
+and the generator $g_i$ captures the half-width of each interval:
+\[
+g_1 = \frac{2 - 1}{2} = 0.5, \qquad g_2 = \frac{3 - (-1)}{2} = 2.0
+\]
+
+Thus, the input zonotope is:
+\[
+Z = \left\{(1.5,\ 1.0) + \epsilon_1(0.5,\ 0) + \epsilon_2(0,\ 2.0) \;\middle|\; \epsilon_1, \epsilon_2 \in [-1, 1]\right\}
+\]
+
+\subsection*{Step 2: Apply the Affine Transformation}
+
+We apply the affine function $f(x_1, x_2) = 0.5x_1 - 0.5x_2 + 1$ to the input zonotope $Z$:
+\[
+f^a(Z) = \bigl(0.5\,c_1 - 0.5\,c_2 + 1\bigr)
+        + \epsilon_1\bigl(0.5\,g_{1x} - 0.5\,g_{1y}\bigr)
+        + \epsilon_2\bigl(0.5\,g_{2x} - 0.5\,g_{2y}\bigr)
+\]
+
+Substituting the values:
+\[
+= \bigl(0.5(1.5) - 0.5(1.0) + 1\bigr)
+  + \epsilon_1\bigl(0.5(0.5) - 0.5(0)\bigr)
+  + \epsilon_2\bigl(0.5(0) - 0.5(2.0)\bigr)
+\]
+\[
+= (0.75 - 0.5 + 1) + \epsilon_1(0.25) + \epsilon_2(-1.0)
+\]
+\[
+= 1.25 + 0.25\,\epsilon_1 - 1.0\,\epsilon_2
+\]
+
+Hence, the output zonotope for $x_4$ is:
+\[
+\left\{1.25 + \epsilon_1(0.25) + \epsilon_2(-1.0) \;\middle|\; \epsilon_1, \epsilon_2 \in [-1, 1]\right\}
+\]
+\subsection*{Step 3: Compute Output Bounds}
+
+From the output zonotope, we compute the lower and upper bounds for $x_4$ by
+subtracting and adding the absolute values of the generator coefficients:
+\[
+f^a_L = c' - \bigl(|g'_1| + |g'_2|\bigr) = 1.25 - (0.25 + 1.0) = 0.0
+\]
+\[
+f^a_U = c' + \bigl(|g'_1| + |g'_2|\bigr) = 1.25 + (0.25 + 1.0) = 2.5
+\]
+
+Thus, the output range of $x_4$ is $[0.0,\ 2.5]$.
 \end{solution}
 \end{problem}
+
 
 \subsubsection{ReLU Transformer}
 
@@ -4029,7 +4091,7 @@ Recall the network from~\autoref{fig:dnn-b} can be represented as the formula $\
 \[
 \begin{aligned}
 & \hat{x}_3 = -0.5x_1 + 0.5x_2 + 1.0 ~\land\\
-& \hat{x}_4 = 0.5x_1 - 0.5x_2 + 1.0 ~\land\\
+& \hat{x}_4 = 0.5x_1 - 0.5x_2 - 1.0 ~\land\\
 & x_3 = \relu{\hat{x}_3} ~\land \\
 & x_4 = \relu{\hat{x}_4} ~\land \\
 & x_5 = -x_3 + x_4 - 1.0,
@@ -4062,7 +4124,7 @@ Thus, if we fix the activation status of $x_3$ and $x_4$, we can simplify $\alph
   means $\hat{x}_3 \geq 0$ but places no restriction on $\hat{x}_4$.  Here, $\alpha$ reduces to
 \[
 \begin{aligned}
-& \hat{x}_4 = 0.5x_1 - 0.5x_2 + 1.0 ~\land\\
+& \hat{x}_4 = 0.5x_1 - 0.5x_2 - 1.0 ~\land\\
 & x_4 = \relu{\hat{x}_4} ~\land \\
 & x_5 = -(-0.5x_1 + 0.5x_2 + 1.0) + x_4 - 1.0,
 \end{aligned}
