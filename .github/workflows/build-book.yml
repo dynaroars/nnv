@@ -57,15 +57,15 @@ jobs:
           fi
           echo "docs/book.pdf built successfully."
 
-      - name: Commit and push PDF
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git add docs/book.pdf
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update book.pdf [skip ci]" && git push)
+      # - name: Commit and push PDF
+      #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      #   run: |
+      #     git config --local user.email "github-actions[bot]@users.noreply.github.com"
+      #     git config --local user.name "github-actions[bot]"
+      #     git add docs/book.pdf
+      #     git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update book.pdf [skip ci]" && git push)
 
-      # - name: Upload artifact
+       # - name: Upload artifact
       #   if: success()
       #   uses: actions/upload-artifact@v4
       #   with:
@@ -75,7 +75,7 @@ jobs:
       - name: Prep dir
         run: |
           mkdir -p _site
-          cp docs/book.pdf _site/book.pdf
+          cp book.pdf _site/book.pdf
 
       - name: Setup redirect
         run: |
