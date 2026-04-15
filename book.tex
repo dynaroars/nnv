@@ -4087,7 +4087,7 @@ In any case, given an activation pattern, we can reduce the complexity of the sa
 
 
 \begin{example}
-Recall the network from~\autoref{fig:dnn-b} can be represented as the formula $\alpha$
+Recall the network from~\autoref{fig:dnn-b} can be represented as the formula $\alpha$:
 \[
 \begin{aligned}
 & \hat{x}_3 = -0.5x_1 + 0.5x_2 + 1.0 ~\land\\
@@ -4114,6 +4114,8 @@ Thus, if we fix the activation status of $x_3$ and $x_4$, we can simplify $\alph
   \[
   x_5 = -(-0.5x_1 + 0.5x_2 + 1.0) + 0 - 1.0 = 0.5x_1 - 0.5x_2 - 2.0 .
   \]
+    
+  This reduction significantly simplifies the satisfiability check: we no longer have to reason about the non-linearity of ReLU, and can directly check whether the linear constraint is satisfiable with the input and output constraints.
 
   \item \textbf{Partial activation pattern.}
   A partial pattern specifies only some activation statuses.
@@ -4130,7 +4132,7 @@ Thus, if we fix the activation status of $x_3$ and $x_4$, we can simplify $\alph
 \end{aligned}
 \]
 
-Because $q$ does not fix the status of $x_4$, we cannot simplify the ReLU for $x_4$. Thus, the formula still contains a ReLU function which splits $x_4$ into two linear regions corresponding to the two possible activation statuses of $x_4$.
+Because $q$ does not fix the status of $x_4$, we cannot simplify the ReLU for $x_4$. Thus, the formula still contains a ReLU function which splits $x_4$ into two linear regions corresponding to the two possible activation statuses of $x_4$.  Note that this is still simpler than the original formula $\alpha$ because we have simplified the ReLU for $x_3$.
 \end{itemize}
 \end{example}
 
@@ -5617,8 +5619,8 @@ In addition to adversarial attacks (\autoref{chap:adversarial-attacks}), NNV too
 
 \section{Input Splitting}\label{sec:input-splitting}
 
-Many verifiers, e.g.,~\cite{katz2019marabou,wang2018formal,wang2021beta,duong2025neuralsat}, use a technique called \emph{input splitting} to quickly deal with networks with verification problems involving low-dimensional networks, such as those in the ACAS Xu benchmark~\autoref{sec:acasxu} where the networks have a small number of inputs (e.g., $\le 50$).
-
+Many verifiers, e.g.,~\cite{katz2019marabou,wang2018formal,wang2021beta,duong2025neuralsat}, use a technique called \emph{input splitting} to quickly deal with networks with verification problems involving low-dimensional networks, such as those in the ACAS Xu benchmark where the networks have a small number of inputs (e.g., $\le 50$).
+%~\autoref{sec:acasxu}
 The idea is to split the original verification problem into subproblems, each checking whether the network produces the desired output from a smaller input region and returns \unsat{} if all subproblems are verified and \sat{} if a counterexample is found in any subproblem. Input splitting avoids BaB search (\autoref{chap:bab})---which performs \emph{neuron splitting}---and is often used to quickly eliminate easy cases.
 
 Moreover, each subproblem now has a smaller input region, thus the verifier can often verify them more quickly than the original problem.
@@ -5688,8 +5690,9 @@ For example, to tighten the upper bounds of $x_1$, we can create an optimization
 We can apply the same approach to tighten the lower bounds of $x_1$ using a minimization problem.  Similarly, we can create optimization problems to tighten both the bounds of $x_2$.
 
 \end{example}
+%~\autoref{sec:acasxu}
 
-Note that, this approach works well for networks with small inputs, e.g., the ACAS Xu benchmark~\autoref{sec:acasxu} with 5 inputs, and is adopted by many modern NNV tools, including \marabou{} and \nnenum{}.
+Note that, this approach works well for networks with small inputs, e.g., the ACAS Xu benchmark with 5 inputs, and is adopted by many modern NNV tools, including \marabou{} and \nnenum{}.
 For larger input dimensions networkswe, it will take much time as we need to run $2 \times$ the number of inputs to tighten all the input bounds (for each input, we need to tighten the upper and lower bounds individually).
 
 To reduce the time complexity, we can prioritize the input variables to tighten first, e.g., deciding the variable with the largest bounds first, and only tighten up to a maxinum number of inputs, e.g., 10 inputs.
@@ -9974,7 +9977,7 @@ Running an LP solver with objective $\min 0$ will return a point, e.g., (x=0,y=0
 
 \input{pa/pa1.tex}
 \input{pa/pa2.tex}
-% \input{pa/pa3.tex}
+\input{pa/pa3.tex}
 % \input{pa/pa4.tex}
 
 \chapter{Schedule}\label{chap:schedule}
@@ -10033,8 +10036,6 @@ Running an LP solver with objective $\min 0$ will return a point, e.g., (x=0,y=0
         \item HW:~\autoref{ex:negation-trick}
     \end{itemize}
        
-%     \item Week 5 (Sept 24): No class this week (prof not available). No quiz or HW due.
-
     \item Programming Assignment 1 (PA1)
     \begin{itemize}
         \item Topics: Symbolic Execution of Neural Networks~\autoref{sec:pa1}
@@ -10086,11 +10087,11 @@ Running an LP solver with objective $\min 0$ will return a point, e.g., (x=0,y=0
         % ~\autoref{prob:bab-counterexample}, and ~\autoref{prob:bab-interval}
 
     \end{itemize}
-    % \item Programming Assignment 3 (PA3)
-    % \begin{itemize}
-    %     \item Branch and Bound~\autoref{sec:pa3}
-    %     \item Due date \alert{Tuesday Nov 25, 2025 11:59pm}\label{
-    % \end{itemize}
+    \item Programming Assignment 3 (PA3)
+    \begin{itemize}
+        \item Branch and Bound~\autoref{sec:pa3}
+        \item Due date \alert{Monday April 28, 2026 11:59pm}
+    \end{itemize}
 
 
 %     \item Week 7 (Oct 8):
@@ -10117,16 +10118,19 @@ Running an LP solver with objective $\min 0$ will return a point, e.g., (x=0,y=0
 %         \item Topics: Zonotope~\autoref{sec:zonotope-abstraction} and BaB Algorithm~\autoref{chap:bab}
 %         \item Quiz: attendance
 %     \end{itemize}
-%     \item Week 12 (Nov 12):
-%     \begin{itemize}
-%         \item Topics: Engineering and Optimization Tricks~\autoref{chap:common-engineering}, \neuralsat{} algorithm~\autoref{chap:neuralsat}, \reluplex{} algorithm~\autoref{chap:reluplex}
-%         \item HW: Do~\autoref{prob:compute-gradients},~\autoref{prob:pgd-iterations}
-%         \item Quiz:~\autoref{prob:pgd-iterations} (part 2 only)
-%     \end{itemize}
+    \item Week 10 (April 14):
+    \begin{itemize}
+        \item Short Clip: \href{https://www.youtube.com/watch?v=YYgepDY3rHw}{Mathematical Proofs}
+        \item Topics: Proof Generation for NNV~\autoref{chap:proof-gen-check}, Engineering and Optimization Tricks~\autoref{chap:common-engineering}, \neuralsat{} algorithm~\autoref{chap:neuralsat}. %, \reluplex{} algorithm~\autoref{chap:reluplex}
+        \item Quiz:~\autoref{prob:pgd-iterations} (part 2 only)
+        %\item HW: Do~\autoref{prob:proof-tree}  and~\autoref{problem:reluplex-hand}
+        %\item HW: Do~\autoref{prob:compute-gradients},~\autoref{prob:pgd-iterations}
+        
+    \end{itemize}
 %     \item Week 13 (Nov 19):
 %     \begin{itemize}
 %         \item Topics: TBD
-%         \item HW: Do~\autoref{prob:proof-tree} and~\autoref{problem:reluplex-hand}
+%         
 %         \item Quiz: \autoref{problem:reluplex-basic-nonbasic}
 %     \end{itemize}
 %     \item Final Project---Programming Assignment 4 (PA4)
