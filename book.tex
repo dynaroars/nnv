@@ -10129,14 +10129,15 @@ Running an LP solver with objective $\min 0$ will return a point, e.g., (x=0,y=0
         \item HW: no new HW
     \end{itemize}
 
-    % \item Week 11 (April 21):
-    % \begin{itemize}
-    %     \item Short Clip: \href{https://www.youtube.com/watch?v=YYgepDY3rHw}{Mathematical Proofs}
-    %     \item Topics: Proof Generation for NNV~\autoref{chap:proof-gen-check}, Engineering and Optimization Tricks~\autoref{chap:common-engineering}, \neuralsat{} algorithm~\autoref{chap:neuralsat}. %, \reluplex{} algorithm~\autoref{chap:reluplex}
-    %     \item Quiz:~\autoref{prob:pgd-iterations} (part 2 only)
-        %\item HW: Do~\autoref{prob:proof-tree}  and~\autoref{problem:reluplex-hand}
-        %\item HW: Do~\autoref{prob:compute-gradients},~\autoref{prob:pgd-iterations}
-        
+    \item Week 11 (April 21):
+    \begin{itemize}
+        \item Short Clip: \href{https://www.youtube.com/watch?v=YYgepDY3rHw}{Mathematical Proofs}
+        \item Topics: Proof Generation for NNV~\autoref{chap:proof-gen-check}, Engineering and Optimization Tricks~\autoref{chap:common-engineering}, \neuralsat{} algorithm~\autoref{chap:neuralsat}. %, \reluplex{} algorithm~\autoref{chap:reluplex}
+        \item Quiz:~\autoref{prob:pgd-iterations} (part 2 only)
+        \item HW: Do~\autoref{prob:proof-tree}  and~\autoref{problem:reluplex-hand}
+        \item HW: Do~\autoref{prob:compute-gradients},~\autoref{prob:pgd-iterations}
+    \end{itemize}        
+
 %     \item Week 13 (Nov 19):
 %     \begin{itemize}
 %         \item Topics: TBD
@@ -10154,118 +10155,7 @@ Running an LP solver with objective $\min 0$ will return a point, e.g., (x=0,y=0
 
 
 
-
-
-
 \bibliographystyle{abbrv}
 \bibliography{book.bib}
 
 \end{document}
-
-
-"This statement is not provable"
-True: that means something statement is true but cannot be proved
-False: we can prove a false statement 
-
-Undecidable :  considered hardest problem
-
-Halting 
-
-
-
-
-boolean values: true or false
-
-satisfiability problem  : determiene whether a formula (that only involves boolean variables) is satisfiable or not  :   NP-Complete, takes exponential time
-
-
-Z3 SMT solver from Microsoft. 
-
-Forall x,  ThereExists y,    y > x 
-ThereExits x.  ForallY      y <= x 
-
-
-For everynumber x, there is NO number y such that y > x 
-
-
--2x + -y = -3 
- x + 2y  =  4 
---------------- 
-3y = 5
-y = 5/3
-x = 2/3
-
-
-
-
-
-\begin{example}\label{ex:milp-simple}
-Maximize
-\[
-z = 3x + 5y
-\]
-subject to:
-\[
-\begin{aligned}
-x + 2y &\le 6,\\
-2x + y &\le 6,\\
-x &\ge 0,\ y \ge 0,\\
-x &\in \mathbb{Z},\ y \in \mathbb{Z}.
-\end{aligned}
-\]
-
-\paragraph{Step 1: Find vertices of the feasible region (ignoring integer constraints)}
-\[
-\begin{aligned}
-x + 2y &= 6,\\
-2x + y &= 6,\\
-x &= 0,\\
-y &= 0.
-\end{aligned}
-\]
-
-Solving the line intersections:
-
-- Intersection of \(x + 2y = 6\) and \(2x + y = 6\):
-\[
-x = 2, \ y = 2
-\]
-
-- Intersection with axes:
-\[
-(0,0),\ (0,3),\ (3,0)
-\]
-
-Vertices of the feasible region: \((0,0),\ (0,3),\ (3,0),\ (2,2)\).
-
----
-
-\paragraph{Step 2: Evaluate objective function at vertices}
-
-\begin{center}
-\begin{tabular}{ccc}
-\hline
-x & y & z = 3x + 5y \\
-\hline
-0 & 0 & 0 \\
-0 & 3 & 15 \\
-3 & 0 & 9 \\
-2 & 2 & 16 \\
-\hline
-\end{tabular}
-\end{center}
-
-So the **maximum value** is \(z = 16\) at \((2,2)\).
-
----
-
-\paragraph{Step 3: Integer constraint check}
-
-All vertices are integers, so \((2,2)\) is valid for the MILP.  
-
-\end{example}
-
-
-
-
-
