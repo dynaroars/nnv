@@ -4404,8 +4404,12 @@ Then \bab{} enters its main loop.
 \item \textbf{First iteration.}~\bab{} selects the only available activation pattern $\emptyset$, i.e., $\sigma_i = \emptyset$,
 and  calls \Deduce to check the feasibility of the problem based $\sigma_i$.
 
-Here, \Deduce determines that the problem is feasible, e.g., the bounds of $y_1$ and $y_2$ indicate that $y_1 \le y_2$ can be satisfied. Thus, \bab{} calls \mycode{LP} to check the satisfiability of the problem using an LP solver. The LP solver returns unsatisfiable (or unknown)--meaning no counterexample is found using this activation pattern.  \bab{} then randomly selects a neuron to split (\Decide). Assume that it chooses $v_4$ to split, i.e., the problem spawns two independent subproblems: one with $v_4$ active and the other with $v_4$ inactive.
-It does so by unioning $\{v_4\}$ and $\{\overline{v_4}\}$ with $\sigma_i$ and adds both new activation patterns to \problems. Next, \bab{} loops back to process the next activation pattern.
+Here, \Deduce determines that the problem is feasible, e.g., the computed bounds of $y_1$ and $y_2$ indicate that $y_1 \le y_2$ can be satisfied. Next, \bab{} calls \mycode{LP} to check the satisfiability of the problem using an LP solver. The LP solver returns unsatisfiable (or unknown)--meaning no counterexample is found using this activation pattern.  In other words, the more precise LP check cannot find a counterexample, even though the abstraction-based \Deduce indicates that one may exist.  This is a common case because abstraction is an over-approximation and thus may yield false positives. However, in the first iteration, it is likely that LP returns unknown because the problem is too complex to solve without fixing any neuron status. In either case, we cannot conclude that the property is valid or invalid and thus needs to make the search smaller by \emph{splitting} a neuron (i.e., fixing its activation status).
+
+\bab{} then randomly selects a neuron to split (\Decide). Assume that it chooses $v_4$ to split, i.e., the problem spawns two independent subproblems: one with $v_4$ active and the other with $v_4$ inactive.
+It does so by unioning $\{v_4\}$ and $\{\overline{v_4}\}$ with $\sigma_i$ and adds both new activation patterns to \problems. 
+Next, \bab{} loops back to process the next activation pattern.
+Thus, each of the two new subproblem is simpler than the original one because we have fixed the status of one neuron ($v_4$), which hopefully makes \Deduce{} and \mycode{LP} more precise and efficient in the next iterations.
 
 
 \item \textbf{Second iteration.}~\bab{} has two subproblems. For the subproblem with activation pattern $\{v_4\}$, \Deduce decides feasibility but \mycode{LP} returns unsatisfiable (or unknown),
@@ -10124,7 +10128,7 @@ Running an LP solver with objective $\min 0$ will return a point, e.g., (x=0,y=0
         \item Quiz: No quiz due to homework extension
         \item HW: no new HW
     \end{itemize}
-    
+
     % \item Week 11 (April 21):
     % \begin{itemize}
     %     \item Short Clip: \href{https://www.youtube.com/watch?v=YYgepDY3rHw}{Mathematical Proofs}
@@ -10133,7 +10137,6 @@ Running an LP solver with objective $\min 0$ will return a point, e.g., (x=0,y=0
         %\item HW: Do~\autoref{prob:proof-tree}  and~\autoref{problem:reluplex-hand}
         %\item HW: Do~\autoref{prob:compute-gradients},~\autoref{prob:pgd-iterations}
         
-    \end{itemize}
 %     \item Week 13 (Nov 19):
 %     \begin{itemize}
 %         \item Topics: TBD
