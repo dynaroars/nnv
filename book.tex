@@ -182,6 +182,7 @@
 
 \newtcolorbox{mysolbox}{
   enhanced,
+    breakable,
   boxrule=0pt,frame hidden,
   borderline west={2pt}{0pt}{red!75!black},
   colback=blue!10!white,
@@ -4694,7 +4695,94 @@ Depend on your choice of step size $\eta$, PGD might have one or more iterations
     \item With step size $\eta_1$, PGD finds a counterexample in \emph{one} iteration.
     \item With step size $\eta_2$, PGD finds a counterexample in \emph{two or more} iterations.
 \end{enumerate}
+\begin{solution}
+\subsection*{Problem 7.2.2}
 
+Let $y = 2x_1 - 3x_2 + 1$, with $-1 \leq x_1, x_2 \leq 1$.
+We use PGD starting from $(x_1^{(0)}, x_2^{(0)}) = (0, 0)$ to minimize $y$ and find a counterexample violating $y > 0$.
+
+\paragraph{Step 1: Initialize.}
+Starting point: $(x_1^{(0)}, x_2^{(0)}) = (0, 0)$.
+
+Check the property:
+\[
+y = 2(0) - 3(0) + 1 = 1 > 0.
+\]
+The property holds, so we proceed with PGD.
+
+\paragraph{Step 2: Compute the gradient.}
+\[
+\nabla_x y = \left(\frac{\partial y}{\partial x_1},\, \frac{\partial y}{\partial x_2}\right) = (2,\,-3).
+\]
+Increasing $x_1$ increases $y$ by twice that amount; increasing $x_2$ decreases $y$ by three times that amount. To minimize $y$, we move in the direction $-\nabla_x y$.
+
+\subsubsection*{Case A: Step size $\eta_1 = 0.5$}
+\par\medskip
+\noindent\textbf{Iteration 1.}\par
+
+\textit{Gradient update:}
+\begin{align*}
+x_1^{(1)} &= x_1^{(0)} - \eta_1 \cdot 2 = 0 - 0.5(2) = -1, \\
+x_2^{(1)} &= x_2^{(0)} - \eta_1 \cdot (-3) = 0 - 0.5(-3) = 1.5.
+\end{align*}
+Candidate input: $(-1,\; 1.5)$.
+
+\textit{Clip to valid range $[-1,1]$:}
+\begin{align*}
+x_1^{(1)} &= \max(-1,\,\min(-1,\,1)) = -1 \quad \text{(already in range)}, \\
+x_2^{(1)} &= \max(-1,\,\min(1.5,\,1)) = 1 \quad \text{(clipped to boundary)}.
+\end{align*}
+Projected input: $(-1,\; 1)$.
+
+\textit{Check for violation:}
+\[
+y = 2(-1) - 3(1) + 1 = -2 - 3 + 1 = -4 < 0.
+\]
+Counterexample found at $(x_1, x_2) = (-1,\, 1)$ after \textbf{one iteration}.
+
+\subsubsection*{Case B: Step size $\eta_2 = 0.07$}
+\par\medskip
+\noindent\textbf{Iteration 0 (initialization).}\par
+$(x_1^{(0)}, x_2^{(0)}) = (0, 0)$, $y = 1 > 0$.
+
+Continue.
+
+\par\medskip
+\noindent\textbf{Iteration 1.}\par
+
+\textit{Gradient update:}
+\begin{align*}
+x_1^{(1)} &= 0 - 0.07(2) = -0.14, \\
+x_2^{(1)} &= 0 - 0.07(-3) = 0.21.
+\end{align*}
+Candidate input: $(-0.14,\; 0.21)$.
+
+\textit{Clip:} Both values are within $[-1,1]$; no clipping required.
+
+\textit{Check for violation:}
+\[
+y = 2(-0.14) - 3(0.21) + 1 = -0.28 - 0.63 + 1 = 0.09 > 0.
+\]
+Property not violated. Continue to next iteration.
+
+\par\medskip
+\noindent\textbf{Iteration 2.}\par
+
+\textit{Gradient update:}
+\begin{align*}
+x_1^{(2)} &= -0.14 - 0.07(2) = -0.28, \\
+x_2^{(2)} &= 0.21 - 0.07(-3) = 0.42.
+\end{align*}
+Candidate input: $(-0.28,\; 0.42)$.
+
+\textit{Clip:} Both values are within $[-1,1]$; no clipping required.
+
+\textit{Check for violation:}
+\[
+y = 2(-0.28) - 3(0.42) + 1 = -0.56 - 1.26 + 1 = -0.82 < 0.
+\]
+Counterexample found at $(x_1, x_2) = (-0.28,\, 0.42)$ after \textbf{two iterations}.
+\end{solution}
 \end{problem}
 
 \chapter{Proof Generation and Checking}\label{chap:proof-gen-check}
